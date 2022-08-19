@@ -19,8 +19,6 @@ export const ServerComponent = memo(
       )) {
         const { setLoaded, loaded, loader, states } = componentData;
 
-        console.log("*** componentData", componentData);
-
         // Don't re-replace after hydration.
         if (loaded) return;
 
@@ -31,8 +29,6 @@ export const ServerComponent = memo(
         setLoaded();
 
         (async () => {
-          console.log("*** must load components...");
-
           const $wrapper = document.getElementById(componentName);
 
           if (!$wrapper) return;
