@@ -1,15 +1,8 @@
-// import dynamic from "next/dynamic";
 import { memo, ReactPortal, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRecoilValue } from "recoil";
 import { textState, textStateInitialValue } from "../state/textState";
 import { ServerComponentWrapper } from "./ServerComponentWrapper";
-
-// const ServerComponentDynamic = dynamic<unknown>(() =>
-//   import(
-//     /* webpackChunkName: "ServerComponentWrapper" */ "./ServerComponentWrapper"
-//   ).then((mod) => mod.ServerComponentWrapper)
-// );
 
 export const ServerComponent = memo(
   () => {
