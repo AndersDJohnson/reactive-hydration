@@ -2,21 +2,19 @@ import dynamic from "next/dynamic";
 import { memo } from "react";
 import { useRecoilValue } from "recoil";
 import { shouldLoadState } from "../state/shouldLoad";
-import { ServerComponentInner } from "./ServerComponentInner";
 
-const ServerComponentDynamic = dynamic<unknown>(
-  /* webpackChunkName: "ServerComponentInner" */ () =>
-    import("./ServerComponentInner").then((mod) => mod.ServerComponentInner)
+const ServerComponentDynamic = dynamic<unknown>(() =>
+  import(
+    /* webpackChunkName: "ServerComponentInner" */ "./ServerComponentInner"
+  ).then((mod) => mod.ServerComponentInner)
 );
 
 export const ServerComponent = memo(
   () => {
     const shouldLoad = useRecoilValue(shouldLoadState);
 
-    console.log("*** shouldLoad", shouldLoad);
-
-    if (typeof window === "undefined") {
-      return <ServerComponentInner />;
+    if (typeof window !== "object") {
+      return <ServerComponentDynamic />;
     }
 
     if (shouldLoad) {
