@@ -1,15 +1,19 @@
 import type { NextPage } from "next";
-import { useState } from "react";
-import { useRecoilState } from "recoil";
+import { useCallback } from "react";
+import { useSetRecoilState } from "recoil";
 import { ServerComponent } from "./components/ServerComponent";
 import { shouldLoadState } from "./state/shouldLoad";
 
 const Home: NextPage = () => {
-  const [, setShouldLoad] = useRecoilState(shouldLoadState);
+  const setShouldLoad = useSetRecoilState(shouldLoadState);
+
+  const handleClick = useCallback(() => {
+    setShouldLoad(true);
+  }, [setShouldLoad]);
 
   return (
     <div>
-      <button onClick={() => setShouldLoad(true)}>Load</button>
+      <button onClick={handleClick}>Load</button>
       <ServerComponent />
     </div>
   );

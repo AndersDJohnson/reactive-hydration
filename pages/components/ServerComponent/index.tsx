@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { shouldLoadState } from "../../state/shouldLoad";
 import { ServerComponentInner } from "./ServerComponentInner";
 
@@ -8,7 +8,7 @@ const ServerComponentDynamic = dynamic<unknown>(() =>
 );
 
 export const ServerComponent = () => {
-  const [shouldLoad] = useRecoilState(shouldLoadState);
+  const shouldLoad = useRecoilValue(shouldLoadState);
 
   if (typeof window === "undefined") {
     return <ServerComponentInner />;
