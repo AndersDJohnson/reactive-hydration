@@ -6,7 +6,7 @@ export const ServerComponentInner = memo(
   () => {
     const text = useRecoilValue(textState);
     return (
-      <div>
+      <div id="ServerComponentInner">
         <div>SERVER? {(typeof window !== "object").toString()}</div>
         <div>TEXT STATE: {text}</div>
       </div>

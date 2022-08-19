@@ -1,33 +1,60 @@
-import dynamic from "next/dynamic";
-import { memo } from "react";
+// import dynamic from "next/dynamic";
+import { memo, ReactPortal, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRecoilValue } from "recoil";
 import { textState, textStateInitialValue } from "../state/textState";
+import { ServerComponentWrapper } from "./ServerComponentWrapper";
 
-const ServerComponentDynamic = dynamic<unknown>(() =>
-  import(
-    /* webpackChunkName: "ServerComponentInner" */ "./ServerComponentInner"
-  ).then((mod) => mod.ServerComponentInner)
-);
+// const ServerComponentDynamic = dynamic<unknown>(() =>
+//   import(
+//     /* webpackChunkName: "ServerComponentWrapper" */ "./ServerComponentWrapper"
+//   ).then((mod) => mod.ServerComponentWrapper)
+// );
 
 export const ServerComponent = memo(
   () => {
+    const ref = useRef<HTMLDivElement>(null);
+
     const text = useRecoilValue(textState);
 
-    if (typeof window !== "object") {
-      return <ServerComponentDynamic />;
-    }
+    const [portal, setPortal] = useState<ReactPortal | null>(null);
 
-    if (text !== textStateInitialValue) {
-      return <ServerComponentDynamic />;
+    useEffect(() => {
+      if (text === textStateInitialValue) return;
+
+      (async () => {
+        console.log("*** must load components...");
+
+        const $wrapper = document.getElementById("ServerComponentInner");
+
+        if (!$wrapper) return;
+
+        const ServerComponentInner = await import(
+          "./ServerComponentInner"
+        ).then((mod) => mod.ServerComponentInner);
+
+        // TODO: Remove children more performantly.
+        $wrapper.innerHTML = "";
+
+        setPortal(createPortal(<ServerComponentInner />, $wrapper));
+      })();
+    }, [text]);
+
+    if (typeof window !== "object") {
+      return <ServerComponentWrapper />;
     }
 
     return (
-      <div
-        dangerouslySetInnerHTML={{
-          __html: "",
-        }}
-        suppressHydrationWarning
-      />
+      <>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: "",
+          }}
+          ref={ref}
+          suppressHydrationWarning
+        />
+        {portal}
+      </>
     );
   },
   () => true
