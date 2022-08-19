@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import { memo } from "react";
 import { useRecoilValue } from "recoil";
-import { shouldLoadState } from "../state/shouldLoad";
+import { textState, textStateInitialValue } from "../state/textState";
 
 const ServerComponentDynamic = dynamic<unknown>(() =>
   import(
@@ -11,13 +11,13 @@ const ServerComponentDynamic = dynamic<unknown>(() =>
 
 export const ServerComponent = memo(
   () => {
-    const shouldLoad = useRecoilValue(shouldLoadState);
+    const text = useRecoilValue(textState);
 
     if (typeof window !== "object") {
       return <ServerComponentDynamic />;
     }
 
-    if (shouldLoad) {
+    if (text !== textStateInitialValue) {
       return <ServerComponentDynamic />;
     }
 
