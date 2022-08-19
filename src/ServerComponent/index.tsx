@@ -54,7 +54,13 @@ export const ServerComponent = memo(
 
     // It will be passed on the server.
     if (Comp) {
-      return <Comp />;
+      return (
+        <>
+          <div>
+            <Comp />
+          </div>
+        </>
+      );
     }
 
     return (
