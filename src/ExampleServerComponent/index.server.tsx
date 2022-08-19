@@ -2,7 +2,7 @@ import { memo, useCallback, useMemo, useRef } from "react";
 import {
   ExampleServerComponentInner,
   useStates as useStatesServerComponentInner,
-} from "./ExampleServerComponentInner";
+} from "./ExampleServerComponentInner.client";
 
 export const ExampleServerComponent = memo(
   () => {
@@ -46,7 +46,7 @@ export const useNested = () => {
     () =>
       import(
         /* webpackChunkName: "ExampleServerComponentInner" */
-        "./ExampleServerComponentInner"
+        "./ExampleServerComponentInner.client"
       ).then((mod) => mod.ExampleServerComponentInner),
     []
   );

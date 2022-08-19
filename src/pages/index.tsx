@@ -9,7 +9,7 @@ import {
   ExampleServerComponent,
   // This `useNested` import could be handled be a compiler when we import `ExampleServerComponent`.
   useNested as useNestedExampleServerComponent,
-} from "../ExampleServerComponent";
+} from "../ExampleServerComponent/index.server";
 
 const Home: NextPage = () => {
   const setText = useSetRecoilState(textState);
