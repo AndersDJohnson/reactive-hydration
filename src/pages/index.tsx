@@ -13,7 +13,7 @@ const Home: NextPage = () => {
 
   return (
     <div>
-      <button onClick={handleClick}>Load</button>
+      <button onClick={handleClick}>Update text on client</button>
       <ServerComponent />
     </div>
   );
