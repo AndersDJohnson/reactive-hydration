@@ -6,6 +6,10 @@ import {
 
 export const ExampleServerComponent = memo(
   () => {
+    console.log(
+      "*** rendering ExampleServerComponent (should be on server only)"
+    );
+
     return (
       <div id="ExampleServerComponent">
         <div>(Wrapper...)</div>
