@@ -9,13 +9,13 @@ const Home: NextPage = () => {
   const setText = useSetRecoilState(textState);
 
   const handleClick = useCallback(() => {
-    setText("(client value)");
+    setText(`(client value: ${Math.random()}`);
   }, [setText]);
 
   const setText2 = useSetRecoilState(text2State);
 
   const handleClick2 = useCallback(() => {
-    setText2("(client value)");
+    setText2(`(client value: ${Math.random()}`);
   }, [setText2]);
 
   return (
