@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import { memo } from "react";
 import { useRecoilValue } from "recoil";
-import { shouldLoadState } from "../../state/shouldLoad";
+import { shouldLoadState } from "../state/shouldLoad";
 import { ServerComponentInner } from "./ServerComponentInner";
 
 const ServerComponentDynamic = dynamic<unknown>(

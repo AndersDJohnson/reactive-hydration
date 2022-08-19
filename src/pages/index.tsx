@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
 import { useCallback } from "react";
 import { useSetRecoilState } from "recoil";
-import { ServerComponent } from "./components/ServerComponent";
-import { shouldLoadState } from "./state/shouldLoad";
+import { ServerComponent } from "../ServerComponent";
+import { shouldLoadState } from "../state/shouldLoad";
 
 const Home: NextPage = () => {
   const setShouldLoad = useSetRecoilState(shouldLoadState);
