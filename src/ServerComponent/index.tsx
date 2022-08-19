@@ -23,7 +23,8 @@ export const ServerComponent = memo(
         if (!$wrapper) return;
 
         const ServerComponentInner = await import(
-          /* webpackChunkName: "ServerComponentInner" */ "./ServerComponentInner"
+          /* webpackChunkName: "ServerComponentInner" */
+          "./ServerComponentInner"
         ).then((mod) => mod.ServerComponentInner);
 
         // TODO: Remove children more performantly.
