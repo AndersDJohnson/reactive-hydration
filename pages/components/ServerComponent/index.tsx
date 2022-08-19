@@ -1,29 +1,38 @@
 import dynamic from "next/dynamic";
+import { memo } from "react";
 import { useRecoilValue } from "recoil";
 import { shouldLoadState } from "../../state/shouldLoad";
 import { ServerComponentInner } from "./ServerComponentInner";
 
-const ServerComponentDynamic = dynamic<unknown>(() =>
-  import("./ServerComponentInner").then((mod) => mod.ServerComponentInner)
+const ServerComponentDynamic = dynamic<unknown>(
+  /* webpackChunkName: "ServerComponentInner" */ () =>
+    import("./ServerComponentInner").then((mod) => mod.ServerComponentInner)
 );
 
-export const ServerComponent = () => {
-  const shouldLoad = useRecoilValue(shouldLoadState);
+export const ServerComponent = memo(
+  () => {
+    const shouldLoad = useRecoilValue(shouldLoadState);
 
-  if (typeof window === "undefined") {
-    return <ServerComponentInner />;
-  }
+    console.log("*** shouldLoad", shouldLoad);
 
-  if (shouldLoad) {
-    return <ServerComponentDynamic />;
-  }
+    if (typeof window === "undefined") {
+      return <ServerComponentInner />;
+    }
 
-  return (
-    <div
-      dangerouslySetInnerHTML={{
-        __html: "",
-      }}
-      suppressHydrationWarning
-    />
-  );
-};
+    if (shouldLoad) {
+      return <ServerComponentDynamic />;
+    }
+
+    return (
+      <div
+        dangerouslySetInnerHTML={{
+          __html: "",
+        }}
+        suppressHydrationWarning
+      />
+    );
+  },
+  () => true
+);
+
+ServerComponent.displayName = "ServerComponent";
