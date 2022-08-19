@@ -1,14 +1,18 @@
 import { memo, useMemo } from "react";
 import { useRecoilValue } from "recoil";
 import { textState } from "../state/textState";
+import { text2State } from "../state/text2State";
 
 export const ServerComponentInner = memo(
   () => {
     const text = useRecoilValue(textState);
+    const text2 = useRecoilValue(text2State);
+
     return (
       <div id="ServerComponentInner">
         <div>SERVER? {(typeof window !== "object").toString()}</div>
         <div>TEXT STATE: {text}</div>
+        <div>TEXT 2 STATE: {text2}</div>
       </div>
     );
   },
@@ -22,6 +26,7 @@ ServerComponentInner.displayName = "ServerComponentInner";
  */
 export const useStates = () => {
   const text = useRecoilValue(textState);
+  const text2 = useRecoilValue(text2State);
 
   return useMemo(
     () => [
@@ -29,7 +34,11 @@ export const useStates = () => {
         state: textState,
         value: text,
       },
+      {
+        state: text2State,
+        value: text2,
+      },
     ],
-    [text]
+    [text, text2]
   );
 };

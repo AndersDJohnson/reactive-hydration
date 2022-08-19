@@ -1,7 +1,5 @@
 import { memo, ReactPortal, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useRecoilValue } from "recoil";
-import { textState } from "../state/textState";
 import {
   ServerComponentWrapper,
   useNested as useNestedServerComponentWrapper,
@@ -11,19 +9,26 @@ export const ServerComponent = memo(
   () => {
     const ref = useRef<HTMLDivElement>(null);
 
-    const text = useRecoilValue(textState);
-
     const [portal, setPortal] = useState<ReactPortal | null>(null);
 
     const nestedServerComponentWrapper = useNestedServerComponentWrapper();
 
     useEffect(() => {
-      for (const [componentName, { loader, states }] of Object.entries(
+      for (const [componentName, componentData] of Object.entries(
         nestedServerComponentWrapper
       )) {
+        const { setLoaded, loaded, loader, states } = componentData;
+
+        console.log("*** componentData", componentData);
+
+        // Don't re-replace after hydration.
+        if (loaded) return;
+
         if (states.every((state) => state.value === state.state.default)) {
           return;
         }
+
+        setLoaded();
 
         (async () => {
           console.log("*** must load components...");

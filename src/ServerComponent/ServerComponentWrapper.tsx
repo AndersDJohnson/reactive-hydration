@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo, useCallback, useMemo, useRef } from "react";
 import {
   ServerComponentInner,
   useStates as useStatesServerComponentInner,
@@ -25,17 +25,30 @@ ServerComponentWrapper.displayName = "ServerComponentWrapper";
 export const useNested = () => {
   const statesServerComponentInner = useStatesServerComponentInner();
 
+  const loadedRef = useRef(false);
+
+  const setLoaded = useCallback(() => {
+    loadedRef.current = true;
+  }, []);
+
+  const loader = useCallback(
+    () =>
+      import(
+        /* webpackChunkName: "ServerComponentInner" */
+        "./ServerComponentInner"
+      ).then((mod) => mod.ServerComponentInner),
+    []
+  );
+
   return useMemo(
     () => ({
       ServerComponentInner: {
         states: statesServerComponentInner,
-        loader: () =>
-          import(
-            /* webpackChunkName: "ServerComponentInner" */
-            "./ServerComponentInner"
-          ).then((mod) => mod.ServerComponentInner),
+        loaded: loadedRef.current,
+        setLoaded,
+        loader,
       },
     }),
-    [statesServerComponentInner]
+    [statesServerComponentInner, loader, setLoaded]
   );
 };
