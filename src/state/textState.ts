@@ -1,8 +1,7 @@
-import { atom, RecoilState } from "recoil";
+import { atom } from "recoil";
+import { AtomWithDefault } from "../ServerComponent/types";
 
 const defaultValue = "(initial value)";
-
-type AtomWithDefault<T> = RecoilState<T> & { default?: any };
 
 export const textState: AtomWithDefault<string> = atom({
   key: "textState", // unique ID (with respect to other atoms/selectors)

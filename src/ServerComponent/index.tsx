@@ -1,22 +1,30 @@
-import { memo, ReactPortal, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import {
-  ServerComponentWrapper,
-  useNested as useNestedServerComponentWrapper,
-} from "./ServerComponentWrapper";
+  ComponentType,
+  memo,
+  ReactPortal,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
+import { UseNested } from "./types";
 
 export const ServerComponent = memo(
-  () => {
+  ({
+    Comp,
+    useNested,
+  }: {
+    Comp: ComponentType<unknown> | undefined;
+    useNested: UseNested;
+  }) => {
     const ref = useRef<HTMLDivElement>(null);
 
     const [portals, setPortals] = useState<ReactPortal[]>([]);
 
-    const nestedServerComponentWrapper = useNestedServerComponentWrapper();
+    const nested = useNested();
 
     useEffect(() => {
-      for (const [componentName, componentData] of Object.entries(
-        nestedServerComponentWrapper
-      )) {
+      for (const [componentName, componentData] of Object.entries(nested)) {
         const { setLoaded, loaded, loader, states } = componentData;
 
         // Don't re-replace after hydration.
@@ -42,10 +50,11 @@ export const ServerComponent = memo(
           setPortals((ps) => [...ps, createPortal(<Comp />, $wrapper)]);
         })();
       }
-    }, [nestedServerComponentWrapper]);
+    }, [nested]);
 
-    if (typeof window !== "object") {
-      return <ServerComponentWrapper />;
+    // It will be passed on the server.
+    if (Comp) {
+      return <Comp />;
     }
 
     return (
