@@ -9,7 +9,7 @@ export const ServerComponent = memo(
   () => {
     const ref = useRef<HTMLDivElement>(null);
 
-    const [portal, setPortal] = useState<ReactPortal | null>(null);
+    const [portals, setPortals] = useState<ReactPortal[]>([]);
 
     const nestedServerComponentWrapper = useNestedServerComponentWrapper();
 
@@ -29,6 +29,7 @@ export const ServerComponent = memo(
         setLoaded();
 
         (async () => {
+          // TODO: Find a better way to have unique IDs.
           const $wrapper = document.getElementById(componentName);
 
           if (!$wrapper) return;
@@ -38,7 +39,7 @@ export const ServerComponent = memo(
           // TODO: Remove children more performantly.
           $wrapper.innerHTML = "";
 
-          setPortal(createPortal(<Comp />, $wrapper));
+          setPortals((ps) => [...ps, createPortal(<Comp />, $wrapper)]);
         })();
       }
     }, [nestedServerComponentWrapper]);
@@ -56,7 +57,7 @@ export const ServerComponent = memo(
           ref={ref}
           suppressHydrationWarning
         />
-        {portal}
+        {portals}
       </>
     );
   },
