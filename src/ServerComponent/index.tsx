@@ -1,8 +1,11 @@
 import { memo, ReactPortal, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRecoilValue } from "recoil";
-import { textState, textStateInitialValue } from "../state/textState";
-import { ServerComponentWrapper } from "./ServerComponentWrapper";
+import { textState } from "../state/textState";
+import {
+  ServerComponentWrapper,
+  useNested as useNestedServerComponentWrapper,
+} from "./ServerComponentWrapper";
 
 export const ServerComponent = memo(
   () => {
@@ -12,27 +15,32 @@ export const ServerComponent = memo(
 
     const [portal, setPortal] = useState<ReactPortal | null>(null);
 
+    const nestedServerComponentWrapper = useNestedServerComponentWrapper();
+
     useEffect(() => {
-      if (text === textStateInitialValue) return;
+      for (const [componentName, { loader, states }] of Object.entries(
+        nestedServerComponentWrapper
+      )) {
+        if (states.every((state) => state.value === state.state.default)) {
+          return;
+        }
 
-      (async () => {
-        console.log("*** must load components...");
+        (async () => {
+          console.log("*** must load components...");
 
-        const $wrapper = document.getElementById("ServerComponentInner");
+          const $wrapper = document.getElementById(componentName);
 
-        if (!$wrapper) return;
+          if (!$wrapper) return;
 
-        const ServerComponentInner = await import(
-          /* webpackChunkName: "ServerComponentInner" */
-          "./ServerComponentInner"
-        ).then((mod) => mod.ServerComponentInner);
+          const Comp = await loader();
 
-        // TODO: Remove children more performantly.
-        $wrapper.innerHTML = "";
+          // TODO: Remove children more performantly.
+          $wrapper.innerHTML = "";
 
-        setPortal(createPortal(<ServerComponentInner />, $wrapper));
-      })();
-    }, [text]);
+          setPortal(createPortal(<Comp />, $wrapper));
+        })();
+      }
+    }, [nestedServerComponentWrapper]);
 
     if (typeof window !== "object") {
       return <ServerComponentWrapper />;

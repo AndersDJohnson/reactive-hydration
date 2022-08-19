@@ -1,8 +1,12 @@
-import { atom } from "recoil";
+import { atom, RecoilState } from "recoil";
 
-export const textStateInitialValue = "(initial value)";
+const defaultValue = "(initial value)";
 
-export const textState = atom({
+type AtomWithDefault<T> = RecoilState<T> & { default?: any };
+
+export const textState: AtomWithDefault<string> = atom({
   key: "textState", // unique ID (with respect to other atoms/selectors)
-  default: textStateInitialValue, // default value (aka initial value)
+  default: defaultValue, // default value (aka initial value)
 });
+
+textState.default = defaultValue;
