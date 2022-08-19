@@ -9,11 +9,11 @@ export const ServerComponentInner = memo(
     const text2 = useRecoilValue(text2State);
 
     return (
-      <div id="ServerComponentInner">
+      <>
         <div>SERVER? {(typeof window !== "object").toString()}</div>
         <div>TEXT STATE: {text}</div>
         <div>TEXT 2 STATE: {text2}</div>
-      </div>
+      </>
     );
   },
   () => true
