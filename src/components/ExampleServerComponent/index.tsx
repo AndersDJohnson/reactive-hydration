@@ -1,9 +1,9 @@
 import { ExampleClientComponent } from "../ExampleClientComponent";
 import { ExampleClientComponent2 } from "../ExampleClientComponent2";
-import { ExampleClientComponentNested } from "../ExampleClientComponentNested";
+import { ExampleClientComponentNesting } from "../ExampleClientComponentNesting";
 
 export const ExampleServerComponent = () => {
-  console.log("rendering ExampleServerComponent (should be on server only)");
+  console.debug("Rendering ExampleServerComponent (should be on server only)");
 
   return (
     <>
@@ -11,7 +11,7 @@ export const ExampleServerComponent = () => {
       <ExampleClientComponent />
       <ExampleClientComponent />
       <ExampleClientComponent2 />
-      <ExampleClientComponentNested />
+      <ExampleClientComponentNesting />
       <div>(...wrapper!)</div>
     </>
   );

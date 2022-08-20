@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { AtomWithInit, getRegisteredState } from "../state/registry";
+import { getRegisteredState, State } from "../state/registry";
 import { truthy } from "../utilities/truthy";
 
 const loadedNestedsMap = new WeakMap();
@@ -24,7 +24,7 @@ export const ServerComponent = memo(
     const [allNesteds, setAllNesteds] = useState<
       {
         component: string;
-        states: AtomWithInit<unknown>[];
+        states: State<unknown>[];
         $nested: HTMLDivElement;
       }[]
     >([]);
@@ -61,7 +61,7 @@ export const ServerComponent = memo(
         (async () => {
           if (loadedNestedsMap.has($nested)) return;
 
-          console.log(
+          console.debug(
             "Hydrating due to state(s) changed:",
             statesChanged.map((state) => state.key).join(", "),
             $nested
@@ -91,28 +91,54 @@ export const ServerComponent = memo(
       const $nesteds =
         ref.current.querySelectorAll<HTMLDivElement>("[data-component]");
 
-      const newAllNesteds = Array.from($nesteds)
-        .map(($nested) => {
-          const component = $nested.dataset.component;
+      const parentsMap = new Map<
+        HTMLDivElement,
+        {
+          states: State<any>[];
+        }
+      >();
 
-          if (!component) return;
+      $nesteds.forEach(($nested) => {
+        const stateNames = $nested.dataset.states?.split(",");
 
-          const stateNames = $nested.dataset.states?.split(",");
+        const states = stateNames
+          ?.map((stateName: string) => getRegisteredState(stateName))
+          // TODO: Handle unresolved state references with error?
+          .filter(truthy);
 
-          const states = stateNames
-            ?.map((stateName: string) => getRegisteredState(stateName))
-            // TODO: Handle unresolved state references with error?
-            .filter(truthy);
+        if (!states) return;
 
-          if (!states) return;
+        const containingParent = Array.from(parentsMap.keys()).find(($parent) =>
+          $parent.contains($nested)
+        );
 
-          return {
+        if (containingParent) {
+          console.debug(
+            "Including nested with parent:",
             $nested,
-            component,
-            states,
-          };
+            containingParent
+          );
+
+          const parentValue = parentsMap.get(containingParent);
+
+          if (parentValue) {
+            parentValue.states = [...parentValue.states, ...states];
+          }
+
+          return;
+        }
+
+        parentsMap.set($nested, { states });
+      });
+
+      const newAllNesteds = Array.from(parentsMap.entries()).map(
+        ([$nested, { states }]) => ({
+          $nested,
+          // TODO: Handle the component name data attribute not existing with error?
+          component: $nested.dataset.component ?? "",
+          states,
         })
-        .filter(truthy);
+      );
 
       setAllNesteds((a) => [...a, ...newAllNesteds]);
     }, []);
