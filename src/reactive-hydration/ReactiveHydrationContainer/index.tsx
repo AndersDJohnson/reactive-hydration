@@ -1,4 +1,4 @@
-import { lazy, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { atom, useAtom } from "jotai";
 import { readAtom } from "jotai-nexus";
 import {
@@ -26,10 +26,23 @@ export const ReactiveHydrationContainer = memo(
     LazyComp,
   }: {
     /**
-     * Only passed on server-side render.
+     * Only for server-side render.
+     *
+     * In Next.js, it may work best to pass a `next/dynamic` wrapper component here.
+     *
+     * In some frameworks, it's enough to pass something like:
+     *   `typeof window === 'undefined' ? Comp : undefined`
+     * to tree-shake a reference to the real component out of client bundles.
      */
     Comp?: ComponentType<unknown>;
-    LazyComp: ReturnType<typeof lazy>;
+    /**
+     * Only passed on server-side render.
+     *
+     * In Next.js, it may work best to pass a `next/dynamic` wrapper component here.
+     *
+     * In some frameworks, a `React.lazy` wrapped component may work.
+     */
+    LazyComp: ComponentType<unknown>;
   }) => {
     const ref = useRef<HTMLDivElement>(null);
 
