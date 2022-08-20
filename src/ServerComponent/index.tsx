@@ -77,10 +77,16 @@ export const ServerComponent = memo(
             `../components/${component}`
           ).then((mod) => mod[component]);
 
-          // TODO: Remove children more performantly (e.g., `removeChild` loop)
-          $nested.innerHTML = "";
+          const $portal = $nested.parentElement;
 
-          setPortals((ps) => [...ps, createPortal(<Comp />, $nested)]);
+          console.log("*** $portal", $portal);
+
+          if (!$portal) return;
+
+          // TODO: Remove children more performantly (e.g., `removeChild` loop)
+          $portal.innerHTML = "";
+
+          setPortals((ps) => [...ps, createPortal(<Comp />, $portal)]);
         })();
       });
     }, [allNestedValuesAtom, allNesteds]);
