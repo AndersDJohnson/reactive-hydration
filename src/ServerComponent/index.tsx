@@ -49,16 +49,23 @@ export const ServerComponent = memo(
       allNesteds.forEach((nested) => {
         const { component, states, $nested } = nested;
 
-        const haveAnyStatesChanged = states.some(
+        // TODO: When not debugging, this could be faster with `.some`.
+        const statesChanged = states.filter(
           (state) => state.init !== readAtom(state)
         );
 
-        if (!haveAnyStatesChanged) {
+        if (!statesChanged.length) {
           return;
         }
 
         (async () => {
           if (loadedNestedsMap.has($nested)) return;
+
+          console.log(
+            "Hydrating due to state(s) changed:",
+            statesChanged.map((state) => state.key).join(", "),
+            $nested
+          );
 
           loadedNestedsMap.set($nested, true);
 

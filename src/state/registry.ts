@@ -1,13 +1,20 @@
-import { atom, PrimitiveAtom } from "jotai";
+import { atom } from "jotai";
 
-export type AtomWithInit<T> = ReturnType<typeof atom<T>>;
+type AtomWithInit<T> = ReturnType<typeof atom<T>>;
 
-const _registry: Record<string, AtomWithInit<any> | undefined> = {};
+export type State<T> = AtomWithInit<T> & { key: string }
+
+const _registry = new Map<string, State<any> | undefined>()
 
 export const registerState = <T>(key: string, state: AtomWithInit<T>) => {
-  _registry[key] = state;
 
-  return state;
+  const stateWithKey = state as State<T>
+
+  stateWithKey.key       = key
+
+  _registry.set(key, stateWithKey)
+ 
+  return stateWithKey;
 };
 
-export const getRegisteredState = (key: string) => _registry[key];
+export const getRegisteredState = (key: string) => _registry.get(key)
