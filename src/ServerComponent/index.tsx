@@ -79,8 +79,6 @@ export const ServerComponent = memo(
 
           const $portal = $nested.parentElement;
 
-          console.log("*** $portal", $portal);
-
           if (!$portal) return;
 
           // TODO: Remove children more performantly (e.g., `removeChild` loop)
