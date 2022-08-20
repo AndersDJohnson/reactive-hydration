@@ -29,8 +29,6 @@ export const ServerComponent = memo(
       }[]
     >([]);
 
-    console.log("*** allNesteds", allNesteds);
-
     const allNestedValuesAtom = useAtom(
       useMemo(
         () =>
@@ -46,8 +44,6 @@ export const ServerComponent = memo(
     );
 
     useEffect(() => {
-      console.log("*** allNesteds", allNesteds);
-
       // State has changed - we must load!
 
       allNesteds.forEach((nested) => {
@@ -73,8 +69,6 @@ export const ServerComponent = memo(
             (mod) => mod[file]
           );
 
-          console.log("*** Comp", Comp);
-
           // TODO: Remove children more performantly (e.g., `removeChild` loop)
           $nested.innerHTML = "";
 
@@ -89,15 +83,8 @@ export const ServerComponent = memo(
       const $nesteds =
         ref.current.querySelectorAll<HTMLDivElement>("[data-file]");
 
-      console.log("*** $nesteds", $nesteds);
-
       const newAllNesteds = Array.from($nesteds)
         .map(($nested) => {
-          console.log("*** $nested", $nested);
-
-          console.log("*** $nested.dataset.file", $nested.dataset.file);
-          console.log("*** $nested.dataset.states", $nested.dataset.states);
-
           // TODO: Don't re-replace after hydration.
           // if (loaded) return;
 
@@ -113,8 +100,6 @@ export const ServerComponent = memo(
             .filter(truthy);
 
           if (!states) return;
-
-          console.log("*** states", states);
 
           return {
             $nested,
