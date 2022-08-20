@@ -12,7 +12,7 @@ export const ExampleClientComponent = () => {
       data-component="ExampleClientComponent"
       data-states="textState,text2State"
     >
-      <h2>ExampleClientComponent</h2>
+      <h4>ExampleClientComponent</h4>
       <div>SERVER? {(typeof window !== "object").toString()}</div>
       <div>TEXT STATE: {text}</div>
       <div>TEXT 2 STATE: {text2}</div>

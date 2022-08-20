@@ -8,7 +8,7 @@ export const ExampleClientComponentNesting = () => {
   return (
     // This state metadata could perhaps be injected in a wrapper by the compiler...
     <div data-component="ExampleClientComponentNesting" data-states="textState">
-      <h2>ExampleClientComponentNesting</h2>
+      <h4>ExampleClientComponentNesting</h4>
       <div>SERVER? {(typeof window !== "object").toString()}</div>
       <div>TEXT STATE: {text}</div>
       <div style={{ paddingLeft: 48 }}>
