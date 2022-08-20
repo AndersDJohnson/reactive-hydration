@@ -22,10 +22,10 @@ const Home: NextPage = () => {
 
   return (
     <div>
-      <h1>Home Page</h1>
+      <h1>Other Page</h1>
 
       <nav>
-        <Link href="/other">Other Page</Link>
+        <Link href="/">Home Page</Link>
       </nav>
 
       <button onClick={handleClick}>Update text on client</button>
