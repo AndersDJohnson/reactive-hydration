@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 import { ReactiveHydrate } from "reactive-hydration";
-import { textState } from "../../state/textState";
-import { text2State } from "../../state/text2State";
+import { textState } from "state/textState";
+import { text2State } from "state/text2State";
 
 export const ExampleClientComponent = () => {
   const [text] = useAtom(textState);

@@ -10,14 +10,21 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { getRegisteredState, State } from "../../state/registry";
-import { truthy } from "../../utilities/truthy";
+import { getRegisteredState, State } from "state/registry";
+import { truthy } from "utilities/truthy";
 
 const loadedNestedsMap = new WeakMap();
+
 const clicksMap = new WeakMap();
 
 export const ReactiveHydrationContainer = memo(
-  ({ Comp }: { Comp: ComponentType<unknown> | undefined }) => {
+  ({
+    Comp,
+    loader,
+  }: {
+    Comp: ComponentType<unknown>;
+    loader: () => Promise<ComponentType<unknown>> | undefined;
+  }) => {
     const ref = useRef<HTMLDivElement>(null);
 
     const [portals, setPortals] = useState<ReactPortal[]>([]);
@@ -222,7 +229,7 @@ export const ReactiveHydrationContainer = memo(
       );
 
       setAllNesteds((a) => [...a, ...newAllNesteds]);
-    }, []);
+    }, [hydrate]);
 
     // The component will only be passed to us on server-side render.
     if (Comp) {

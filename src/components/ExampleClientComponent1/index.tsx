@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import { ReactiveHydrate } from "reactive-hydration";
-import { textState } from "../../state/textState";
+import { textState } from "state/textState";
 
 export const ExampleClientComponent1 = () => {
   const [text] = useAtom(textState);
@@ -8,7 +8,7 @@ export const ExampleClientComponent1 = () => {
   return (
     <ReactiveHydrate name="ExampleClientComponent1" states="textState">
       <h4>ExampleClientComponent1</h4>
-      <div>SERVER? {(typeof window !== "object").toString()}</div>A
+      <div>SERVER? {(typeof window !== "object").toString()}</div>
       <div>TEXT STATE: {text}</div>
     </ReactiveHydrate>
   );
