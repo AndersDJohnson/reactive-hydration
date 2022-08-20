@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import domElementPath from "dom-element-path";
 import { getRegisteredState, State } from "state/registry";
 import { truthy } from "utilities/truthy";
 
@@ -210,30 +211,34 @@ export const ReactiveHydrationContainer = memo(
             );
             console.log("*** idOrAncestorId", idOrAncestorId);
 
-            const clickId = $click.dataset.click;
+            // const clickId = $click.dataset.click;
+
+            const clickPath = domElementPath($click);
 
             hydrate({
               $element: $nestedOrAncestor,
               component: componentOrAncestorComponent,
               reason: ["clicked", $click],
               callback: () => {
-                const $portal = document.querySelector(
-                  `[data-id="${idOrAncestorId}"]`
-                );
+                // const $portal = document.querySelector(
+                //   `[data-id="${idOrAncestorId}"]`
+                // );
 
-                console.log("*** $portal", $portal);
+                // console.log("*** $portal", $portal);
 
-                if (!$portal) return;
+                // if (!$portal) return;
 
-                const newId = ($portal.children[0] as HTMLDivElement).dataset
-                  .id;
+                // const newId = ($portal.children[0] as HTMLDivElement).dataset
+                //   .id;
 
-                const postClickSelector = `[data-id="${newId}"][data-click="${clickId}"]`;
+                // const postClickSelector = `[data-id="${newId}"][data-click="${clickId}"]`;
 
-                console.log("*** postClickSelector", postClickSelector);
+                // console.log("*** postClickSelector", postClickSelector);
 
                 const $postClick =
-                  document.querySelector<HTMLElement>(postClickSelector);
+                  document.querySelector<HTMLElement>(clickPath);
+
+                // TODO: Handle missing element target? Maybe something else in DOM changed during load.
 
                 $postClick?.click();
               },

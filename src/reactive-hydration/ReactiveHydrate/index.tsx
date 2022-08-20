@@ -1,4 +1,8 @@
-import { PropsWithChildren, useId } from "react";
+import { createContext, PropsWithChildren, useContext, useId } from "react";
+
+const ReactiveHydrateContext = createContext({
+  isNested: false,
+});
 
 /**
  * On server we'll create a wrapper `div` as a portal host to mount into,
@@ -22,15 +26,21 @@ export const ReactiveHydrate = (
     </div>
   );
 
-  return typeof window !== "object" ? (
-    <div
-      data-portal
-      // This ID has to be here since it's the only one stable between server render and post client hydration.
-      data-id={id}
-    >
-      {inner}
-    </div>
-  ) : (
-    <>{inner}</>
+  const { isNested } = useContext(ReactiveHydrateContext);
+
+  return (
+    <ReactiveHydrateContext.Provider value={{ isNested: true }}>
+      {typeof window !== "object" && !isNested ? (
+        <div
+          data-portal
+          // This ID has to be here since it's the only one stable between server render and post client hydration.
+          data-id={id}
+        >
+          {inner}
+        </div>
+      ) : (
+        <>{inner}</>
+      )}
+    </ReactiveHydrateContext.Provider>
   );
 };
