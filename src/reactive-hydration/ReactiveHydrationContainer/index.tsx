@@ -25,7 +25,10 @@ export const ReactiveHydrationContainer = memo(
     Comp,
     LazyComp,
   }: {
-    Comp: ComponentType<unknown>;
+    /**
+     * Only passed on server-side render.
+     */
+    Comp?: ComponentType<unknown>;
     LazyComp: ReturnType<typeof lazy>;
   }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -234,7 +237,7 @@ export const ReactiveHydrationContainer = memo(
       setAllNesteds((a) => [...a, ...newAllNesteds]);
     }, [hydrate]);
 
-    if (typeof window !== "object") {
+    if (typeof window !== "object" && Comp) {
       return (
         // This `div` wrapper matches the suppress hydration `div` below to avoid hydration mismatch.
         <div>
