@@ -16,7 +16,7 @@ import { truthy } from "../utilities/truthy";
 const loadedNestedsMap = new WeakMap();
 const clicksMap = new WeakMap();
 
-export const ServerComponent = memo(
+export const ReactiveHydration = memo(
   ({ Comp }: { Comp: ComponentType<unknown> | undefined }) => {
     const ref = useRef<HTMLDivElement>(null);
 
@@ -251,4 +251,4 @@ export const ServerComponent = memo(
   () => true
 );
 
-ServerComponent.displayName = "ServerComponent";
+ReactiveHydration.displayName = "ReactiveHydration";
