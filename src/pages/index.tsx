@@ -1,20 +1,20 @@
 import type { NextPage } from "next";
 import { useCallback } from "react";
-import { useSetRecoilState } from "recoil";
+import { useAtom } from "jotai";
 import { textState } from "../state/textState";
 import { text2State } from "../state/text2State";
 // This `ServerComponent` import could be handled be a compiler when we import `ExampleServerComponent`.
 import { ServerComponent } from "../ServerComponent";
-import { ExampleServerComponent } from "../ExampleServerComponent/index.server";
+import { ExampleServerComponent } from "../components/ExampleServerComponent";
 
 const Home: NextPage = () => {
-  const setText = useSetRecoilState(textState);
+  const [, setText] = useAtom(textState);
 
   const handleClick = useCallback(() => {
     setText(`(client value: ${Math.random()}`);
   }, [setText]);
 
-  const setText2 = useSetRecoilState(text2State);
+  const [, setText2] = useAtom(text2State);
 
   const handleClick2 = useCallback(() => {
     setText2(`(client value: ${Math.random()}`);

@@ -1,11 +1,13 @@
+import { Provider as JotaiProvider } from "jotai";
+import JotaiNexus from "jotai-nexus";
 import type { AppProps } from "next/app";
-import { RecoilRoot } from "recoil";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <RecoilRoot>
+    <JotaiProvider>
+      <JotaiNexus />
       <Component {...pageProps} />
-    </RecoilRoot>
+    </JotaiProvider>
   );
 }
 

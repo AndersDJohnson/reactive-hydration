@@ -1,10 +1,13 @@
-import { RecoilStateWithDefault } from "../ServerComponent/types";
+import { atom, PrimitiveAtom } from "jotai";
 
-const _registry: Record<string, RecoilStateWithDefault<string> | undefined> =
-  {};
+export type AtomWithInit<T> = ReturnType<typeof atom<T>>;
 
-export const registerState = (state: RecoilStateWithDefault<any>) => {
-  _registry[state.key] = state;
+const _registry: Record<string, AtomWithInit<any> | undefined> = {};
+
+export const registerState = <T>(key: string, state: AtomWithInit<T>) => {
+  _registry[key] = state;
+
+  return state;
 };
 
 export const getRegisteredState = (key: string) => _registry[key];
