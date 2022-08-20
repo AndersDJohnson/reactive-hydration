@@ -1,10 +1,8 @@
 import { useCallback, useState } from "react";
 import { useAtom } from "jotai";
-import { textState } from "../../state/textState";
 import { text2State } from "../../state/text2State";
 
 export const ExampleClientComponent2 = () => {
-  const [text] = useAtom(textState);
   const [text2] = useAtom(text2State);
 
   const [count, setCount] = useState(0);
