@@ -23,7 +23,13 @@ export const ClientComponent = (
   );
 
   return typeof window !== "object" ? (
-    <div data-portal>{inner}</div>
+    <div
+      data-portal
+      // This ID has to be here since it's the only one stable between server render and post client hydration.
+      data-id={id}
+    >
+      {inner}
+    </div>
   ) : (
     <>{inner}</>
   );

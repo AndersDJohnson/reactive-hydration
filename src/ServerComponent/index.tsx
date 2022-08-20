@@ -37,7 +37,12 @@ export const ServerComponent = memo(
 
         if (loadedNestedsMap.has($element)) return;
 
-        console.debug("Hydrating", $element, "due to:", reason);
+        console.debug(
+          "Hydrating",
+          $element,
+          "due to:",
+          ...(Array.isArray(reason) ? reason : [reason])
+        );
 
         loadedNestedsMap.set($element, true);
 
@@ -142,9 +147,9 @@ export const ServerComponent = memo(
           // TODO: Handle unresolved state references with error?
           .filter(truthy);
 
-        const $clicks = $nested.querySelectorAll<HTMLElement>(
-          `[data-id="${id}"][data-click]`
-        );
+        const clicksSelector = `[data-id="${id}"][data-click]`;
+
+        const $clicks = $nested.querySelectorAll<HTMLElement>(clicksSelector);
 
         $clicks.forEach(($click) => {
           if (clicksMap.has($click)) return;
@@ -162,9 +167,19 @@ export const ServerComponent = memo(
               component,
               reason: ["clicked", $click],
               callback: () => {
-                document
-                  .querySelector<HTMLElement>(`[data-click="${clickId}"]`)
-                  ?.click();
+                const $portal = document.querySelector(`[data-id="${id}"]`);
+
+                if (!$portal) return;
+
+                const newId = ($portal.children[0] as HTMLDivElement).dataset
+                  .id;
+
+                const postClickSelector = `[data-id="${newId}"][data-click="${clickId}"]`;
+
+                const $postClick =
+                  document.querySelector<HTMLElement>(postClickSelector);
+
+                $postClick?.click();
               },
             });
           });
