@@ -23,7 +23,7 @@ export const ServerComponent = memo(
 
     const [allNesteds, setAllNesteds] = useState<
       {
-        file: string;
+        component: string;
         states: AtomWithInit<unknown>[];
         $nested: HTMLDivElement;
       }[]
@@ -47,7 +47,7 @@ export const ServerComponent = memo(
       // State has changed - we must load!
 
       allNesteds.forEach((nested) => {
-        const { file, states, $nested } = nested;
+        const { component, states, $nested } = nested;
 
         const haveAnyStatesChanged = states.some(
           (state) => state.init !== readAtom(state)
@@ -65,9 +65,10 @@ export const ServerComponent = memo(
           $nested.dataset.loaded = "true";
 
           // TODO: More robust relative import path?
-          const Comp = await import(`../components/${file}`).then(
-            (mod) => mod[file]
-          );
+          const Comp = await import(
+            /* webpackChunkName: "client-components/[request]" */
+            `../components/${component}`
+          ).then((mod) => mod[component]);
 
           // TODO: Remove children more performantly (e.g., `removeChild` loop)
           $nested.innerHTML = "";
@@ -81,16 +82,16 @@ export const ServerComponent = memo(
       if (!ref.current) return;
 
       const $nesteds =
-        ref.current.querySelectorAll<HTMLDivElement>("[data-file]");
+        ref.current.querySelectorAll<HTMLDivElement>("[data-component]");
 
       const newAllNesteds = Array.from($nesteds)
         .map(($nested) => {
           // TODO: Don't re-replace after hydration.
           // if (loaded) return;
 
-          const file = $nested.dataset.file;
+          const component = $nested.dataset.component;
 
-          if (!file) return;
+          if (!component) return;
 
           const stateNames = $nested.dataset.states?.split(",");
 
@@ -103,7 +104,7 @@ export const ServerComponent = memo(
 
           return {
             $nested,
-            file,
+            component,
             states,
           };
         })
@@ -115,11 +116,10 @@ export const ServerComponent = memo(
     // It will be passed on the server.
     if (Comp) {
       return (
-        <>
-          <div>
-            <Comp />
-          </div>
-        </>
+        // This `div` wrapper matches the suppress hydration `div` below to avoid hydration mismatch.
+        <div>
+          <Comp />
+        </div>
       );
     }
 

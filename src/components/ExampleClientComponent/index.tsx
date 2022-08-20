@@ -8,7 +8,10 @@ export const ExampleClientComponent = () => {
 
   return (
     // This state metadata could perhaps be injected in a wrapper by the compiler...
-    <div data-file="ExampleClientComponent" data-states="textState,text2State">
+    <div
+      data-component="ExampleClientComponent"
+      data-states="textState,text2State"
+    >
       <div>SERVER? {(typeof window !== "object").toString()}</div>
       <div>TEXT STATE: {text}</div>
       <div>TEXT 2 STATE: {text2}</div>
