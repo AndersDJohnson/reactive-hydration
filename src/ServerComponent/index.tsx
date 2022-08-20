@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { atom, useAtom } from "jotai";
 import { readAtom } from "jotai-nexus";
 import {
@@ -14,6 +14,7 @@ import { getRegisteredState, State } from "../state/registry";
 import { truthy } from "../utilities/truthy";
 
 const loadedNestedsMap = new WeakMap();
+const clicksMap = new WeakMap();
 
 export const ServerComponent = memo(
   ({ Comp }: { Comp: ComponentType<unknown> | undefined }) => {
@@ -21,10 +22,38 @@ export const ServerComponent = memo(
 
     const [portals, setPortals] = useState<ReactPortal[]>([]);
 
+    const hydrate = useCallback(
+      async ($element: HTMLDivElement, component: string, reason: any[]) => {
+        if (loadedNestedsMap.has($element)) return;
+
+        console.debug("Hydrating", $element, "due to:", ...reason);
+
+        loadedNestedsMap.set($element, true);
+
+        $element.dataset.loaded = "true";
+
+        // TODO: More robust relative import path?
+        const Comp = await import(
+          /* webpackChunkName: "client-components/[request]" */
+          `../components/${component}`
+        ).then((mod) => mod[component]);
+
+        const $portal = $element.parentElement;
+
+        if (!$portal) return;
+
+        // TODO: Remove children more performantly (e.g., `removeChild` loop)
+        $portal.innerHTML = "";
+
+        setPortals((ps) => [...ps, createPortal(<Comp />, $portal)]);
+      },
+      []
+    );
+
     const [allNesteds, setAllNesteds] = useState<
       {
         component: string;
-        states: State<unknown>[];
+        states?: State<unknown>[];
         $nested: HTMLDivElement;
       }[]
     >([]);
@@ -34,8 +63,9 @@ export const ServerComponent = memo(
         () =>
           atom((get) =>
             allNesteds
-              .map((nested) =>
-                nested.states.map((state) => get(state)).join(",")
+              .map(
+                (nested) =>
+                  nested.states?.map((state) => get(state)).join(",") ?? ""
               )
               .join("|")
           ),
@@ -50,44 +80,21 @@ export const ServerComponent = memo(
         const { component, states, $nested } = nested;
 
         // TODO: When not debugging, this could be faster with `.some`.
-        const statesChanged = states.filter(
+        const statesChanged = states?.filter(
           (state) => state.init !== readAtom(state)
         );
 
-        if (!statesChanged.length) {
+        if (!statesChanged?.length) {
           return;
         }
 
-        (async () => {
-          if (loadedNestedsMap.has($nested)) return;
+        const reason = `state(s) changed: ${statesChanged
+          .map((state) => state.key)
+          .join(", ")}`;
 
-          console.debug(
-            "Hydrating due to state(s) changed:",
-            statesChanged.map((state) => state.key).join(", "),
-            $nested
-          );
-
-          loadedNestedsMap.set($nested, true);
-
-          $nested.dataset.loaded = "true";
-
-          // TODO: More robust relative import path?
-          const Comp = await import(
-            /* webpackChunkName: "client-components/[request]" */
-            `../components/${component}`
-          ).then((mod) => mod[component]);
-
-          const $portal = $nested.parentElement;
-
-          if (!$portal) return;
-
-          // TODO: Remove children more performantly (e.g., `removeChild` loop)
-          $portal.innerHTML = "";
-
-          setPortals((ps) => [...ps, createPortal(<Comp />, $portal)]);
-        })();
+        hydrate($nested, component, [reason]);
       });
-    }, [allNestedValuesAtom, allNesteds]);
+    }, [allNestedValuesAtom, allNesteds, hydrate]);
 
     useEffect(() => {
       if (!ref.current) return;
@@ -98,11 +105,13 @@ export const ServerComponent = memo(
       const parentsMap = new Map<
         HTMLDivElement,
         {
-          states: State<any>[];
+          states?: State<any>[];
         }
       >();
 
       $nesteds.forEach(($nested) => {
+        const id = $nested.dataset.id;
+
         const stateNames = $nested.dataset.states?.split(",");
 
         const states = stateNames
@@ -110,7 +119,25 @@ export const ServerComponent = memo(
           // TODO: Handle unresolved state references with error?
           .filter(truthy);
 
-        if (!states) return;
+        const $clicks = $nested.querySelectorAll(
+          `[data-id="${id}"][data-click]`
+        );
+
+        $clicks.forEach(($click) => {
+          if (clicksMap.has($click)) return;
+
+          clicksMap.set($click, true);
+
+          $click.addEventListener("click", () => {
+            const component = $nested.dataset.component;
+
+            if (!component) return;
+
+            hydrate($nested, component, ["clicked", $click]);
+          });
+        });
+
+        if (!states?.length) return;
 
         const containingParent = Array.from(parentsMap.keys()).find(($parent) =>
           $parent.contains($nested)
@@ -125,8 +152,10 @@ export const ServerComponent = memo(
 
           const parentValue = parentsMap.get(containingParent);
 
-          if (parentValue) {
-            parentValue.states = [...parentValue.states, ...states];
+          if (parentValue && states) {
+            parentValue.states = parentValue.states
+              ? [...parentValue.states, ...states]
+              : states;
           }
 
           return;

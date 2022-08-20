@@ -17,15 +17,13 @@ export const ClientComponent = (
   const id = props.id ?? defaultId;
 
   const inner = (
-    <div data-component={props.name} data-states={props.states}>
+    <div data-id={id} data-component={props.name} data-states={props.states}>
       {props.children}
     </div>
   );
 
   return typeof window !== "object" ? (
-    <div data-portal data-id={id}>
-      {inner}
-    </div>
+    <div data-portal>{inner}</div>
   ) : (
     <>{inner}</>
   );
