@@ -7,50 +7,68 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { UseNested } from "./types";
+import { getRegisteredState } from "../state/registry";
 
 export const ServerComponent = memo(
-  ({
-    Comp,
-    useNested,
-  }: {
-    Comp: ComponentType<unknown> | undefined;
-    useNested: UseNested;
-  }) => {
+  ({ Comp }: { Comp: ComponentType<unknown> | undefined }) => {
     const ref = useRef<HTMLDivElement>(null);
 
     const [portals, setPortals] = useState<ReactPortal[]>([]);
 
-    const nested = useNested();
-
     useEffect(() => {
-      for (const [componentName, componentData] of Object.entries(nested)) {
-        const { setLoaded, loaded, loader, states } = componentData;
+      if (!ref.current) return;
 
-        // Don't re-replace after hydration.
-        if (loaded) return;
+      const nesteds =
+        ref.current.querySelectorAll<HTMLDivElement>("[data-file]");
 
-        if (states.every((state) => state.value === state.state.default)) {
-          return;
-        }
+      console.log("*** nesteds", nesteds);
 
-        setLoaded();
+      nesteds.forEach((nested) => {
+        console.log("*** nested", nested);
 
-        (async () => {
-          // TODO: Find a better way to have unique IDs.
-          const $wrapper = document.getElementById(componentName);
+        console.log("*** nested.dataset.file", nested.dataset.file);
+        console.log("*** nested.dataset.states", nested.dataset.states);
 
-          if (!$wrapper) return;
+        const stateNames = nested.dataset.states?.split(",");
 
-          const Comp = await loader();
+        stateNames?.forEach((stateName: string) => {
+          const state = getRegisteredState(stateName);
 
-          // TODO: Remove children more performantly.
-          $wrapper.innerHTML = "";
+          console.log("*** state", state);
+        });
 
-          setPortals((ps) => [...ps, createPortal(<Comp />, $wrapper)]);
-        })();
-      }
-    }, [nested]);
+        // if (states?.every((state) => state.value === state.state.default)) {
+        //   return;
+        // }
+      });
+
+      // for (const [componentName, componentData] of Object.entries(nested)) {
+      //   const { setLoaded, loaded, loader, states } = componentData;
+
+      //   // Don't re-replace after hydration.
+      //   if (loaded) return;
+
+      //   if (states.every((state) => state.value === state.state.default)) {
+      //     return;
+      //   }
+
+      //   setLoaded();
+
+      //   (async () => {
+      //     // TODO: Find a better way to have unique IDs.
+      //     const $wrapper = document.getElementById(componentName);
+
+      //     if (!$wrapper) return;
+
+      //     const Comp = await loader();
+
+      //     // TODO: Remove children more performantly.
+      //     $wrapper.innerHTML = "";
+
+      //     setPortals((ps) => [...ps, createPortal(<Comp />, $wrapper)]);
+      //   })();
+      // }
+    }, []);
 
     // It will be passed on the server.
     if (Comp) {
