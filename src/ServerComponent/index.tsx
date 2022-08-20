@@ -86,9 +86,6 @@ export const ServerComponent = memo(
 
       const newAllNesteds = Array.from($nesteds)
         .map(($nested) => {
-          // TODO: Don't re-replace after hydration.
-          // if (loaded) return;
-
           const component = $nested.dataset.component;
 
           if (!component) return;
@@ -113,7 +110,7 @@ export const ServerComponent = memo(
       setAllNesteds((a) => [...a, ...newAllNesteds]);
     }, []);
 
-    // It will be passed on the server.
+    // The component will only be passed to us on server-side render.
     if (Comp) {
       return (
         // This `div` wrapper matches the suppress hydration `div` below to avoid hydration mismatch.
@@ -125,6 +122,7 @@ export const ServerComponent = memo(
 
     return (
       <>
+        {/* Suppress hydration since we won't be loading the component on client. */}
         <div
           dangerouslySetInnerHTML={{
             __html: "",
