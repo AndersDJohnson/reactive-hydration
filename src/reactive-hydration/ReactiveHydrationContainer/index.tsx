@@ -156,7 +156,7 @@ export const ReactiveHydrationContainer = memo(
       const $nesteds =
         ref.current.querySelectorAll<HTMLDivElement>("[data-component]");
 
-      const parentsMap = new Map<
+      const ancestorsMap = new Map<
         HTMLDivElement,
         {
           states?: State<any>[];
@@ -164,6 +164,18 @@ export const ReactiveHydrationContainer = memo(
       >();
 
       $nesteds.forEach(($nested) => {
+        const $containingAncestor = Array.from(ancestorsMap.keys()).find(
+          ($ancestor) => $ancestor.contains($nested)
+        );
+
+        if ($containingAncestor) {
+          console.debug(
+            "Including nested with ancestor component:",
+            $nested,
+            $containingAncestor
+          );
+        }
+
         const id = $nested.dataset.id;
 
         const stateNames = $nested.dataset.states?.split(",");
@@ -183,17 +195,33 @@ export const ReactiveHydrationContainer = memo(
           clicksMap.set($click, true);
 
           $click.addEventListener("click", () => {
-            const component = $nested.dataset.component;
+            const $nestedOrAncestor = $containingAncestor ?? $nested;
+            const componentOrAncestorComponent =
+              $nestedOrAncestor.dataset.component;
+            const idOrAncestorId = $nestedOrAncestor.dataset.id;
+
+            if (!componentOrAncestorComponent) return;
+
+            console.log("*** $nested", $nested);
+            console.log("*** $nestedOrAncestor", $nestedOrAncestor);
+            console.log(
+              "*** componentOrAncestorComponent",
+              componentOrAncestorComponent
+            );
+            console.log("*** idOrAncestorId", idOrAncestorId);
+
             const clickId = $click.dataset.click;
 
-            if (!component) return;
-
             hydrate({
-              $element: $nested,
-              component,
+              $element: $nestedOrAncestor,
+              component: componentOrAncestorComponent,
               reason: ["clicked", $click],
               callback: () => {
-                const $portal = document.querySelector(`[data-id="${id}"]`);
+                const $portal = document.querySelector(
+                  `[data-id="${idOrAncestorId}"]`
+                );
+
+                console.log("*** $portal", $portal);
 
                 if (!$portal) return;
 
@@ -201,6 +229,8 @@ export const ReactiveHydrationContainer = memo(
                   .id;
 
                 const postClickSelector = `[data-id="${newId}"][data-click="${clickId}"]`;
+
+                console.log("*** postClickSelector", postClickSelector);
 
                 const $postClick =
                   document.querySelector<HTMLElement>(postClickSelector);
@@ -213,32 +243,22 @@ export const ReactiveHydrationContainer = memo(
 
         if (!states?.length) return;
 
-        const containingParent = Array.from(parentsMap.keys()).find(($parent) =>
-          $parent.contains($nested)
-        );
+        if ($containingAncestor) {
+          const ancestorValue = ancestorsMap.get($containingAncestor);
 
-        if (containingParent) {
-          console.debug(
-            "Including nested with parent:",
-            $nested,
-            containingParent
-          );
-
-          const parentValue = parentsMap.get(containingParent);
-
-          if (parentValue && states) {
-            parentValue.states = parentValue.states
-              ? [...parentValue.states, ...states]
+          if (ancestorValue && states) {
+            ancestorValue.states = ancestorValue.states
+              ? [...ancestorValue.states, ...states]
               : states;
           }
 
           return;
         }
 
-        parentsMap.set($nested, { states });
+        ancestorsMap.set($nested, { states });
       });
 
-      const newAllNesteds = Array.from(parentsMap.entries()).map(
+      const newAllNesteds = Array.from(ancestorsMap.entries()).map(
         ([$nested, { states }]) => ({
           $nested,
           // TODO: Handle the component name data attribute not existing with error?
