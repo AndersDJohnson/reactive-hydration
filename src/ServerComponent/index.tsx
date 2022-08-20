@@ -22,11 +22,22 @@ export const ServerComponent = memo(
 
     const [portals, setPortals] = useState<ReactPortal[]>([]);
 
+    const [pendingCallbacks, setPendingCallbacks] = useState<(() => void)[]>(
+      []
+    );
+
     const hydrate = useCallback(
-      async ($element: HTMLDivElement, component: string, reason: any[]) => {
+      async (args: {
+        $element: HTMLDivElement;
+        component: string;
+        reason: any;
+        callback?: () => void;
+      }) => {
+        const { $element, component, reason, callback } = args;
+
         if (loadedNestedsMap.has($element)) return;
 
-        console.debug("Hydrating", $element, "due to:", ...reason);
+        console.debug("Hydrating", $element, "due to:", reason);
 
         loadedNestedsMap.set($element, true);
 
@@ -45,10 +56,22 @@ export const ServerComponent = memo(
         // TODO: Remove children more performantly (e.g., `removeChild` loop)
         $portal.innerHTML = "";
 
+        if (callback) {
+          setPendingCallbacks((p) => [...p, callback]);
+        }
+
         setPortals((ps) => [...ps, createPortal(<Comp />, $portal)]);
       },
       []
     );
+
+    useEffect(() => {
+      if (!pendingCallbacks.length) return;
+
+      pendingCallbacks.forEach((callback) => callback());
+
+      setPendingCallbacks([]);
+    }, [portals, pendingCallbacks]);
 
     const [allNesteds, setAllNesteds] = useState<
       {
@@ -92,7 +115,7 @@ export const ServerComponent = memo(
           .map((state) => state.key)
           .join(", ")}`;
 
-        hydrate($nested, component, [reason]);
+        hydrate({ $element: $nested, component, reason: [reason] });
       });
     }, [allNestedValuesAtom, allNesteds, hydrate]);
 
@@ -119,7 +142,7 @@ export const ServerComponent = memo(
           // TODO: Handle unresolved state references with error?
           .filter(truthy);
 
-        const $clicks = $nested.querySelectorAll(
+        const $clicks = $nested.querySelectorAll<HTMLElement>(
           `[data-id="${id}"][data-click]`
         );
 
@@ -130,10 +153,21 @@ export const ServerComponent = memo(
 
           $click.addEventListener("click", () => {
             const component = $nested.dataset.component;
+            const clickId = $click.dataset.click;
 
             if (!component) return;
 
-            hydrate($nested, component, ["clicked", $click]);
+            hydrate({
+              $element: $nested,
+              component,
+              reason: ["clicked", $click],
+              callback: () => {
+                console.log("*** callback");
+                document
+                  .querySelector<HTMLElement>(`[data-click="${clickId}"]`)
+                  ?.click();
+              },
+            });
           });
         });
 

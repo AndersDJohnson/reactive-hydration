@@ -10,7 +10,7 @@ export const ExampleClientComponent2 = () => {
 
   const handleClick = useCallback(() => setCount((c) => c + 1), []);
 
-  // TODO: If this isn't stable enough, we could just resolve the DOM children at runtime that aren't nested inside a deeper client component.
+  // TODO: If these IDs isn't stable enough, we could just resolve the DOM children at runtime that aren't nested inside a deeper client component.
   const id = useId();
 
   return (
@@ -19,7 +19,7 @@ export const ExampleClientComponent2 = () => {
       <div>SERVER? {(typeof window !== "object").toString()}</div>
       <div>TEXT 2 STATE: {text2}</div>
       <div>COUNT: {count}</div>
-      <button onClick={handleClick} data-id={id} data-click>
+      <button onClick={handleClick} data-id={id} data-click="1">
         count++
       </button>
     </ClientComponent>
