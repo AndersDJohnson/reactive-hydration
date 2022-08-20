@@ -162,7 +162,6 @@ export const ServerComponent = memo(
               component,
               reason: ["clicked", $click],
               callback: () => {
-                console.log("*** callback");
                 document
                   .querySelector<HTMLElement>(`[data-click="${clickId}"]`)
                   ?.click();
