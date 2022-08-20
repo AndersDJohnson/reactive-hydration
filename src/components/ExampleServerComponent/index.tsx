@@ -1,4 +1,5 @@
 import { ExampleClientComponent } from "../ExampleClientComponent";
+import { ExampleClientComponent2 } from "../ExampleClientComponent2";
 
 export const ExampleServerComponent = () => {
   console.log(
@@ -10,6 +11,7 @@ export const ExampleServerComponent = () => {
       <div>(Wrapper...)</div>
       <ExampleClientComponent />
       <ExampleClientComponent />
+      <ExampleClientComponent2 />
       <div>(...wrapper!)</div>
     </>
   );
