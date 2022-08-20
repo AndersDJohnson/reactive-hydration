@@ -6,7 +6,7 @@ import { PropsWithChildren, useId } from "react";
  *
  * TODO: This wrapper could perhaps be wrapped around all components by the compiler.
  */
-export const ClientComponent = (
+export const ReactiveHydrate = (
   props: PropsWithChildren<{
     id?: string;
     name: string;

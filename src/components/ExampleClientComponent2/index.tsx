@@ -1,7 +1,7 @@
 import { useCallback, useId, useState } from "react";
 import { useAtom } from "jotai";
+import { ReactiveHydrate } from "reactive-hydration";
 import { text2State } from "../../state/text2State";
-import { ClientComponent } from "../../ClientComponent";
 
 export const ExampleClientComponent2 = () => {
   const [text2] = useAtom(text2State);
@@ -14,7 +14,7 @@ export const ExampleClientComponent2 = () => {
   const id = useId();
 
   return (
-    <ClientComponent id={id} name="ExampleClientComponent2" states="text2State">
+    <ReactiveHydrate id={id} name="ExampleClientComponent2" states="text2State">
       <h4>ExampleClientComponent2</h4>
       <div>SERVER? {(typeof window !== "object").toString()}</div>
       <div>TEXT 2 STATE: {text2}</div>
@@ -22,7 +22,7 @@ export const ExampleClientComponent2 = () => {
       <button onClick={handleClick} data-id={id} data-click="1">
         count++
       </button>
-    </ClientComponent>
+    </ReactiveHydrate>
   );
 };
 

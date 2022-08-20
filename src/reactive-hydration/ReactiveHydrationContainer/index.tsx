@@ -10,13 +10,13 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { getRegisteredState, State } from "../state/registry";
-import { truthy } from "../utilities/truthy";
+import { getRegisteredState, State } from "../../state/registry";
+import { truthy } from "../../utilities/truthy";
 
 const loadedNestedsMap = new WeakMap();
 const clicksMap = new WeakMap();
 
-export const ReactiveHydration = memo(
+export const ReactiveHydrationContainer = memo(
   ({ Comp }: { Comp: ComponentType<unknown> | undefined }) => {
     const ref = useRef<HTMLDivElement>(null);
 
@@ -51,7 +51,7 @@ export const ReactiveHydration = memo(
         // TODO: More robust relative import path?
         const Comp = await import(
           /* webpackChunkName: "client-components/[request]" */
-          `../components/${component}`
+          `../../components/${component}`
         ).then((mod) => mod[component]);
 
         const $portal = $element.parentElement;
@@ -251,4 +251,4 @@ export const ReactiveHydration = memo(
   () => true
 );
 
-ReactiveHydration.displayName = "ReactiveHydration";
+ReactiveHydrationContainer.displayName = "ReactiveHydrationContainer";
