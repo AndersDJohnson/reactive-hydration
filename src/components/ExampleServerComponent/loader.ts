@@ -1,4 +1,7 @@
-export const ExampleServerComponentLoader = () =>
-  import(/* webpackChunkName: "ExampleServerComponent" */ ".").then(
-    (mod) => mod.ExampleServerComponent
-  );
+import { lazy } from "react";
+
+export const ExampleServerComponentLoader = lazy(() =>
+  import(/* webpackChunkName: "ExampleServerComponent" */ ".").then((mod) => ({
+    default: mod.ExampleServerComponent,
+  }))
+);

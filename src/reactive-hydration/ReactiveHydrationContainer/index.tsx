@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { lazy, useCallback, useMemo } from "react";
 import { atom, useAtom } from "jotai";
 import { readAtom } from "jotai-nexus";
 import {
@@ -17,13 +17,16 @@ const loadedNestedsMap = new WeakMap();
 
 const clicksMap = new WeakMap();
 
+let initialUrl = typeof window === "object" ? window.location.href : undefined;
+let isSoftRouting = false;
+
 export const ReactiveHydrationContainer = memo(
   ({
     Comp,
-    loader,
+    LazyComp,
   }: {
     Comp: ComponentType<unknown>;
-    loader: () => Promise<ComponentType<unknown>> | undefined;
+    LazyComp: ReturnType<typeof lazy>;
   }) => {
     const ref = useRef<HTMLDivElement>(null);
 
@@ -231,12 +234,24 @@ export const ReactiveHydrationContainer = memo(
       setAllNesteds((a) => [...a, ...newAllNesteds]);
     }, [hydrate]);
 
-    // The component will only be passed to us on server-side render.
-    if (Comp) {
+    if (typeof window !== "object") {
       return (
         // This `div` wrapper matches the suppress hydration `div` below to avoid hydration mismatch.
         <div>
           <Comp />
+        </div>
+      );
+    }
+
+    if (
+      typeof window === "object" &&
+      (window.location.href !== initialUrl || isSoftRouting)
+    ) {
+      isSoftRouting = true;
+
+      return (
+        <div>
+          <LazyComp />
         </div>
       );
     }
