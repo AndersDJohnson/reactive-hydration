@@ -11,10 +11,10 @@ export const ExampleServerComponent = () => {
   return (
     <>
       <div>(Wrapper...)</div>
-      {/* <ExampleClientComponent />
+      <ExampleClientComponent />
       <ExampleClientComponent />
       <ExampleClientComponent1 />
-      <ExampleClientComponent2 /> */}
+      <ExampleClientComponent2 />
       <ExampleClientComponentNesting />
       <div>(...wrapper!)</div>
     </>
