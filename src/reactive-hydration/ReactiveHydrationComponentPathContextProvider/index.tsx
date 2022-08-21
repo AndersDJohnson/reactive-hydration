@@ -8,6 +8,7 @@ import {
 } from "react";
 
 export const ReactiveHydrationComponentPathContext = createContext<{
+  reactiveHydratingId?: string;
   reactiveHydratePortalState?: Record<string, any>;
   parentComponentPath: (string | number)[];
   registerComponentPath?: (name: string) => number;
@@ -18,11 +19,13 @@ export const ReactiveHydrationComponentPathContext = createContext<{
 
 export const ReactiveHydrationComponentPathContextProvider = (
   props: PropsWithChildren<{
+    reactiveHydratingId?: string;
     reactiveHydratePortalState?: Record<string, any>;
   }>
 ) => {
   const {
     children,
+    reactiveHydratingId,
     reactiveHydratePortalState: reactiveHydratePortalStateProp,
   } = props;
 
@@ -55,12 +58,18 @@ export const ReactiveHydrationComponentPathContextProvider = (
 
   const reactiveHydrationComponentPathContextValue = useMemo(
     () => ({
+      reactiveHydratingId,
       reactiveHydratePortalState,
       parentComponentPath: [],
       registerComponentPath,
       unregisterComponentPath,
     }),
-    [reactiveHydratePortalState, registerComponentPath, unregisterComponentPath]
+    [
+      reactiveHydratingId,
+      reactiveHydratePortalState,
+      registerComponentPath,
+      unregisterComponentPath,
+    ]
   );
 
   return (

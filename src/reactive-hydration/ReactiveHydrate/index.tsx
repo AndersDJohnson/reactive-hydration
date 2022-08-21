@@ -28,6 +28,12 @@ const ReactiveHydrate = (
   const defaultId = useId();
   const id = props.id ?? defaultId;
 
+  const { reactiveHydratingId } = useContext(
+    ReactiveHydrationComponentPathContext
+  );
+
+  const isHydratingSelf = reactiveHydratingId === id;
+
   const inner = (
     <div data-id={id} data-component={props.name} data-states={props.states}>
       {props.children}
@@ -36,11 +42,12 @@ const ReactiveHydrate = (
 
   return (
     <>
-      {typeof window !== "object" ? (
+      {typeof window !== "object" || !isHydratingSelf ? (
         <div
           data-portal
           // This ID has to be here since it's the only one stable between server render and post client hydration.
           data-id={id}
+          data-loaded={typeof window === "object"}
         >
           {inner}
         </div>
@@ -136,6 +143,7 @@ export const reactiveHydrate = <
 
     return (
       <ReactiveHydrationComponentPathContextProvider
+        reactiveHydratingId={reactiveHydrateIdProp}
         reactiveHydratePortalState={reactiveHydratePortalState}
       >
         <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
