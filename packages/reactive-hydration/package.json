@@ -1,0 +1,25 @@
+{
+  "name": "reactive-hydration",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "dom-element-path": "^1.3.1",
+    "hoist-non-react-statics": "^3.3.2"
+  },
+  "peerDepenencies": {
+    "react": "18.2.0",
+    "recoil": "^0.7.5",
+    "recoil-nexus": "^0.4.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.0.17",
+    "eslint": "8.22.0",
+    "react": "18.2.0",
+    "recoil": "^0.7.5",
+    "recoil-nexus": "^0.4.0",
+    "typescript": "4.7.4"
+  }
+}
