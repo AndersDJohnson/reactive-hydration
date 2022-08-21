@@ -1143,16 +1143,6 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
-jotai-nexus@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/jotai-nexus/-/jotai-nexus-1.0.3.tgz#a57b2101dc8049af2968411ca996f1661b272323"
-  integrity sha512-zOWjlgu5hGXOVVnLkHZGB0mPyIDeu10ibvR2XPH5K0XIrI3wGxdSeaYtzdB+oiyAmTTpp2b0g8wKdutkgQCp6g==
-
-jotai@^1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/jotai/-/jotai-1.8.0.tgz#8c7f2bcaf94522b6d7786529e0658d42863d5a0a"
-  integrity sha512-B77a5hIDGCxePYrYBpHP6YePGyNwivA+vXO6QME+8+t3V0y+OHwwnHu4Wy/LWEChE/G8vI+K7P2tlToT8Zmjng==
-
 "js-tokens@^3.0.0 || ^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -1521,6 +1511,11 @@ react@18.2.0:
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
   dependencies:
     loose-envify "^1.1.0"
+
+recoil-nexus@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/recoil-nexus/-/recoil-nexus-0.4.0.tgz#3d69b197a6006d287ee4457dd774eb98950dc5be"
+  integrity sha512-4ZgTXy+e5WvO54qh6Oir4LAYNevuxVxldyCTovevMVjU7fM/UO9t7RzY26G3tKGlHbFaECL3l25Kezl9ZLos6g==
 
 recoil@^0.7.5:
   version "0.7.5"

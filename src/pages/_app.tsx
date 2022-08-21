@@ -1,17 +1,19 @@
-import { Provider as JotaiProvider } from "jotai";
-import JotaiNexus from "jotai-nexus";
 import type { AppProps } from "next/app";
+import { RecoilRoot } from "recoil";
+import RecoilNexus from "recoil-nexus";
 import { ReactiveHydrationComponentPathContextProvider } from "reactive-hydration";
 import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <JotaiProvider>
-      <JotaiNexus />
+    <RecoilRoot>
+      <RecoilNexus />
+
+      {/* TODO: Do we really need `ReactiveHydrationComponentPathContextProvider` at the root? */}
       <ReactiveHydrationComponentPathContextProvider>
         <Component {...pageProps} />
       </ReactiveHydrationComponentPathContextProvider>
-    </JotaiProvider>
+    </RecoilRoot>
   );
 }
 

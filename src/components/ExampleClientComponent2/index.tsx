@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useAtom } from "jotai";
+import { useRecoilState } from "recoil";
 import { reactiveHydrate, useStateSerialize } from "reactive-hydration";
 import { text2State } from "state/text2State";
 
@@ -11,7 +11,7 @@ export const ExampleClientComponent2 = reactiveHydrate(
     states: "text2State",
   },
   () => {
-    const [text2] = useAtom(text2State);
+    const [text2] = useRecoilState(text2State);
 
     const [count, setCount] = useState(0);
 

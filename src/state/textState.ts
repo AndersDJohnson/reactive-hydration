@@ -1,4 +1,13 @@
-import { atom } from "jotai";
+import { atom } from "recoil";
 import { registerState } from "./registry";
 
-export const textState = registerState("textState", atom("(initial value)"));
+const init = "(initial value)";
+
+export const textState = registerState(
+  "textState",
+  atom({
+    key: "textState",
+    default: init,
+  }),
+  init
+);

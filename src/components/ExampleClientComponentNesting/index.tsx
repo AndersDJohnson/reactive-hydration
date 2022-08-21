@@ -1,4 +1,4 @@
-import { useAtom } from "jotai";
+import { useRecoilState } from "recoil";
 import { reactiveHydrate } from "reactive-hydration";
 import { textState } from "state/textState";
 import { ExampleClientComponent } from "components/ExampleClientComponent";
@@ -11,7 +11,7 @@ export const ExampleClientComponentNesting = reactiveHydrate(
     states: "textState",
   },
   () => {
-    const [text] = useAtom(textState);
+    const [text] = useRecoilState(textState);
 
     return (
       <>

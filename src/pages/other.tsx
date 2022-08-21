@@ -1,20 +1,20 @@
 import type { NextPage } from "next";
 import Link from "next/link";
 import { useCallback } from "react";
-import { useAtom } from "jotai";
+import { useRecoilState } from "recoil";
 import { ReactiveHydrationContainer } from "reactive-hydration";
 import { textState } from "state/textState";
 import { text2State } from "state/text2State";
 import { ExampleServerComponentDynamic } from "components/ExampleServerComponent/dynamic";
 
 const Other: NextPage = () => {
-  const [, setText] = useAtom(textState);
+  const [, setText] = useRecoilState(textState);
 
   const handleClick = useCallback(() => {
     setText(`(client value: ${Math.random()}`);
   }, [setText]);
 
-  const [, setText2] = useAtom(text2State);
+  const [, setText2] = useRecoilState(text2State);
 
   const handleClick2 = useCallback(() => {
     setText2(`(client value: ${Math.random()}`);

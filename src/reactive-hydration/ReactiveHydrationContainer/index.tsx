@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
-import { atom, useAtom } from "jotai";
-import { readAtom } from "jotai-nexus";
+import { selector, useRecoilValue } from "recoil";
+import { getRecoil } from "recoil-nexus";
 import {
   ComponentType,
   memo,
@@ -187,17 +187,21 @@ export const ReactiveHydrationContainer = memo(
       }[]
     >([]);
 
-    const allNestedValuesAtom = useAtom(
+    // TODO: Handle async atoms/selectors/promises?
+
+    const allNestedValuesAtom = useRecoilValue(
       useMemo(
         () =>
-          atom((get) =>
-            allNesteds
-              .map(
-                (nested) =>
-                  nested.states?.map((state) => get(state)).join(",") ?? ""
-              )
-              .join("|")
-          ),
+          selector({
+            key: "allNestedValuesAtom" + Math.random(),
+            get: ({ get }) =>
+              allNesteds
+                .map(
+                  (nested) =>
+                    nested.states?.map((state) => get(state)).join(",") ?? ""
+                )
+                .join("|"),
+          }),
         [allNesteds]
       )
     );
@@ -210,7 +214,7 @@ export const ReactiveHydrationContainer = memo(
 
         // TODO: When not debugging, this could be faster with `.some`.
         const statesChanged = states?.filter(
-          (state) => state.init !== readAtom(state)
+          (state) => state.init !== getRecoil(state)
         );
 
         if (!statesChanged?.length) {
