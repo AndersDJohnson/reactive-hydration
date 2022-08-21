@@ -20,8 +20,10 @@ export const ExampleClientComponent2 = reactiveHydrate(
     return (
       <>
         <h4>ExampleClientComponent2</h4>
-        <div>TEXT 2 STATE: {text2}</div>
-        <div>COUNT: {count}</div>
+
+        <div>recoil text2State = {text2}</div>
+        <div>useState count = {count}</div>
+
         <button onClick={handleClick} data-click>
           count++
         </button>

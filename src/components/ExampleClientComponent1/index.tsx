@@ -13,7 +13,8 @@ export const ExampleClientComponent1 = reactiveHydrate(
     return (
       <>
         <h4>ExampleClientComponent1</h4>
-        <div>TEXT STATE: {text}</div>
+
+        <div>recoil textState = {text}</div>
       </>
     );
   }

@@ -16,13 +16,20 @@ export const ExampleClientComponentNesting = reactiveHydrate(
     return (
       <>
         <h4>ExampleClientComponentNesting</h4>
-        <div>TEXT STATE: {text}</div>
-        <div style={{ paddingLeft: 48 }}>
-          (Nested...)
+
+        <div>recoil textState = {text}</div>
+
+        <div
+          style={{
+            paddingLeft: 48,
+            paddingTop: 12,
+          }}
+        >
           <ExampleClientComponent />
+
           <ExampleClientComponent1 />
+
           <ExampleClientComponent2 />
-          (...nested!)
         </div>
       </>
     );

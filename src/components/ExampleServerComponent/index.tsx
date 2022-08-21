@@ -10,8 +10,6 @@ export const ExampleServerComponent = () => {
 
   return (
     <>
-      <div>(Wrapper...)</div>
-
       <ExampleClientComponent />
 
       <ExampleClientComponent />
@@ -21,8 +19,6 @@ export const ExampleServerComponent = () => {
       <ExampleClientComponent2 />
 
       <ExampleClientComponentNesting />
-
-      <div>(...wrapper!)</div>
     </>
   );
 };
