@@ -134,7 +134,7 @@ export const reactiveHydrate = <
             {serializedState?.length ? (
               <div
                 data-id={reactiveHydrateId}
-                data-serialized-state={JSON.stringify(serializedState)}
+                data-state={JSON.stringify(serializedState)}
               />
             ) : null}
 

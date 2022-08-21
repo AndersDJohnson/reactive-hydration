@@ -101,8 +101,8 @@ export const ReactiveHydrationContainer = memo(
 
           const currentSerializedState =
             $currentComponent?.querySelector<HTMLElement>(
-              `[data-id="${currentId}"][data-serialized-state]`
-            )?.dataset.serializedState;
+              `[data-id="${currentId}"][data-state]`
+            )?.dataset.state;
 
           const currentComponentIndex =
             (previousComponentIndexByName.get(currentComponent) ?? -1) + 1;
