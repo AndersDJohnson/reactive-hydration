@@ -272,7 +272,8 @@ export const ReactiveHydrationContainer = memo(
 
                   // console.log("*** postClickSelector", postClickSelector);
 
-                  // TODO: Would it be more stable to track by component path & index (like state) rather than by `domElementPath`?
+                  // TODO: To help avoid issues with hydration mismatch, would it be more stable
+                  // to track by component path & index (like state) rather than by `domElementPath`?
 
                   const $postClick =
                     document.querySelector<HTMLElement>(clickPath);
