@@ -1,29 +1,38 @@
-import { useCallback, useId, useState } from "react";
+import { useCallback } from "react";
 import { useAtom } from "jotai";
-import { ReactiveHydrate } from "reactive-hydration";
+import { reactiveHydrate, useStateSerialize } from "reactive-hydration";
 import { text2State } from "state/text2State";
 
-export const ExampleClientComponent2 = () => {
-  const [text2] = useAtom(text2State);
+const useState = useStateSerialize;
 
-  const [count, setCount] = useState(0);
+export const ExampleClientComponent2 = reactiveHydrate(
+  {
+    name: "ExampleClientComponent2",
+    states: "text2State",
+  },
+  ({ reactiveHydrateId }) => {
+    const [text2] = useAtom(text2State);
 
-  const handleClick = useCallback(() => setCount((c) => c + 1), []);
+    const [count, setCount] = useState(0);
 
-  // TODO: If these IDs isn't stable enough, we could just resolve the DOM children at runtime that aren't nested inside a deeper client component.
-  const id = useId();
+    const handleClick = useCallback(() => setCount((c) => c + 1), []);
 
-  return (
-    <ReactiveHydrate id={id} name="ExampleClientComponent2" states="text2State">
-      <h4>ExampleClientComponent2</h4>
-      <div>SERVER? {(typeof window !== "object").toString()}</div>
-      <div>TEXT 2 STATE: {text2}</div>
-      <div>COUNT: {count}</div>
-      <button onClick={handleClick} data-id={id} data-click="1">
-        count++
-      </button>
-    </ReactiveHydrate>
-  );
-};
+    return (
+      <>
+        <h4>ExampleClientComponent2</h4>
+        <div>SERVER? {(typeof window !== "object").toString()}</div>
+        <div>TEXT 2 STATE: {text2}</div>
+        <div>COUNT: {count}</div>
+        <button
+          onClick={handleClick}
+          data-id={reactiveHydrateId}
+          data-click="1"
+        >
+          count++
+        </button>
+      </>
+    );
+  }
+);
 
 ExampleClientComponent2.displayName = "ExampleClientComponent2";

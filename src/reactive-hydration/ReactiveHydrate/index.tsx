@@ -1,4 +1,19 @@
-import { createContext, PropsWithChildren, useContext, useId } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  memo,
+  useContext,
+  useEffect,
+  useId,
+  useMemo,
+  useState,
+} from "react";
+import hoistNonReactStatics from "hoist-non-react-statics";
+import {
+  ReactiveHydrationComponentPathContext,
+  ReactiveHydrationComponentPathContextProvider,
+  SerializedStateContext,
+} from "reactive-hydration";
 
 const ReactiveHydrateContext = createContext({
   isNested: false,
@@ -43,4 +58,86 @@ export const ReactiveHydrate = (
       )}
     </ReactiveHydrateContext.Provider>
   );
+};
+
+export const reactiveHydrate = <
+  P extends {
+    reactiveHydrateId?: string;
+    /**
+     * @deprecated May not need after `reactiveHydratePortalDOM`.
+     */
+    reactiveHydrateInit?: any;
+    reactiveHydratePortalDOM?: string;
+  }
+>(
+  args: {
+    name: string;
+    states?: string;
+  },
+  Comp: React.ComponentType<P>
+) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const NewComp = memo<P>((props) => {
+    const { name, states } = args;
+
+    const { reactiveHydrateInit, reactiveHydratePortalDOM } = props;
+
+    // TODO: If these IDs isn't stable enough, we could just resolve the DOM children at runtime that aren't nested inside a deeper client component.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const reactiveHydrateId = useId();
+
+    const {
+      previousComponentPath,
+      registerComponentPath,
+      unregisterComponentPath,
+    } = useContext(ReactiveHydrationComponentPathContext) ?? {};
+
+    const [componentIndex, setComponentIndex] = useState(0);
+
+    useEffect(() => {
+      setComponentIndex(registerComponentPath?.(name) ?? 0);
+
+      return () => unregisterComponentPath?.(name);
+    }, [registerComponentPath, unregisterComponentPath, name]);
+
+    const componentPath = useMemo(
+      () => [...previousComponentPath, name, componentIndex],
+      [name, previousComponentPath, componentIndex]
+    );
+
+    console.log("*** componentPath", componentPath);
+
+    const [serializedState, setSerializedState] = useState<
+      string[] | undefined
+    >(() => []);
+
+    const serializeStateContextValue = useMemo(
+      () => ({
+        serializedState,
+        setSerializedState,
+        reactiveHydrateInit,
+      }),
+      [serializedState, setSerializedState, reactiveHydrateInit]
+    );
+
+    console.log("*** reactiveHydratePortalDOM", reactiveHydratePortalDOM);
+
+    return (
+      <ReactiveHydrationComponentPathContextProvider>
+        <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
+          <SerializedStateContext.Provider value={serializeStateContextValue}>
+            <div data-serialized-state={JSON.stringify(serializedState)} />
+
+            <Comp {...props} reactiveHydrateId={reactiveHydrateId} />
+          </SerializedStateContext.Provider>
+        </ReactiveHydrate>
+      </ReactiveHydrationComponentPathContextProvider>
+    );
+  });
+
+  NewComp.displayName = Comp.displayName;
+
+  hoistNonReactStatics(NewComp, Comp);
+
+  return NewComp;
 };

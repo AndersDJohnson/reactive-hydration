@@ -92,7 +92,24 @@ export const ReactiveHydrationContainer = memo(
           setPendingCallbacks((p) => [...p, callback]);
         }
 
-        setPortals((ps) => [...ps, createPortal(<Comp />, $portal)]);
+        // TODO: Implement carrying forward from SSR HTML.
+        const reactiveHydrateId = undefined;
+        /**
+         * @deprecated May not need after `reactiveHydratePortalDOM`.
+         */
+        const reactiveHydrateInit = [99];
+
+        setPortals((ps) => [
+          ...ps,
+          createPortal(
+            <Comp
+              reactiveHydrateId={reactiveHydrateId}
+              reactiveHydrateInit={reactiveHydrateInit}
+              reactiveHydratePortalDOM={$portal}
+            />,
+            $portal
+          ),
+        ]);
       },
       []
     );
@@ -202,14 +219,6 @@ export const ReactiveHydrationContainer = memo(
             const idOrAncestorId = $nestedOrAncestor.dataset.id;
 
             if (!componentOrAncestorComponent) return;
-
-            console.log("*** $nested", $nested);
-            console.log("*** $nestedOrAncestor", $nestedOrAncestor);
-            console.log(
-              "*** componentOrAncestorComponent",
-              componentOrAncestorComponent
-            );
-            console.log("*** idOrAncestorId", idOrAncestorId);
 
             // const clickId = $click.dataset.click;
 
