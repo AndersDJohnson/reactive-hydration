@@ -7,7 +7,7 @@ export const SerializedStateContext = createContext<
         | (() => string[])
         | ((sf: (s: string[] | undefined) => string[] | undefined) => void);
       /**
-       * @deprecated May not need after `reactiveHydratePortalDOM`.
+       * @deprecated May not need after `reactiveHydratePortalState`.
        */
       reactiveHydrateInit?: any[];
     }

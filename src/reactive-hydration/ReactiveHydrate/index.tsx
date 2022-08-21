@@ -41,11 +41,12 @@ export const ReactiveHydrate = (
     </div>
   );
 
-  const { isNested } = useContext(ReactiveHydrateContext);
+  // const { isNested } = useContext(ReactiveHydrateContext);
 
   return (
     <ReactiveHydrateContext.Provider value={{ isNested: true }}>
-      {typeof window !== "object" && !isNested ? (
+      {typeof window !== "object" ? (
+        // && !isNested
         <div
           data-portal
           // This ID has to be here since it's the only one stable between server render and post client hydration.
@@ -64,10 +65,10 @@ export const reactiveHydrate = <
   P extends {
     reactiveHydrateId?: string;
     /**
-     * @deprecated May not need after `reactiveHydratePortalDOM`.
+     * @deprecated May not need after `reactiveHydratePortalState`.
      */
-    reactiveHydrateInit?: any;
-    reactiveHydratePortalDOM?: string;
+    // reactiveHydrateInit?: any;
+    reactiveHydratePortalState?: Record<string, any>;
   }
 >(
   args: {
@@ -80,17 +81,22 @@ export const reactiveHydrate = <
   const NewComp = memo<P>((props) => {
     const { name, states } = args;
 
-    const { reactiveHydrateInit, reactiveHydratePortalDOM } = props;
+    const { reactiveHydratePortalState: reactiveHydratePortalStateProp } =
+      props;
 
     // TODO: If these IDs isn't stable enough, we could just resolve the DOM children at runtime that aren't nested inside a deeper client component.
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const reactiveHydrateId = useId();
 
     const {
+      reactiveHydratePortalState: reactiveHydratePortalStateContext,
       previousComponentPath,
       registerComponentPath,
       unregisterComponentPath,
     } = useContext(ReactiveHydrationComponentPathContext) ?? {};
+
+    const reactiveHydratePortalState =
+      reactiveHydratePortalStateProp ?? reactiveHydratePortalStateContext;
 
     const [componentIndex, setComponentIndex] = useState(0);
 
@@ -105,7 +111,22 @@ export const reactiveHydrate = <
       [name, previousComponentPath, componentIndex]
     );
 
-    console.log("*** componentPath", componentPath);
+    const [reactiveHydrateInit] = useState(() => {
+      console.log("*** componentPath", componentPath);
+      console.log("*** reactiveHydratePortalState", reactiveHydratePortalState);
+
+      if (!reactiveHydratePortalState) return;
+
+      const portalKey = componentPath.join(".");
+
+      console.log("*** comp portalKey", portalKey);
+
+      const state = reactiveHydratePortalState[portalKey];
+
+      console.log("*** comp state", state);
+
+      return state;
+    });
 
     const [serializedState, setSerializedState] = useState<
       string[] | undefined
@@ -120,13 +141,18 @@ export const reactiveHydrate = <
       [serializedState, setSerializedState, reactiveHydrateInit]
     );
 
-    console.log("*** reactiveHydratePortalDOM", reactiveHydratePortalDOM);
-
     return (
-      <ReactiveHydrationComponentPathContextProvider>
+      <ReactiveHydrationComponentPathContextProvider
+        reactiveHydratePortalState={reactiveHydratePortalState}
+      >
         <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
           <SerializedStateContext.Provider value={serializeStateContextValue}>
-            <div data-serialized-state={JSON.stringify(serializedState)} />
+            {serializedState?.length ? (
+              <div
+                data-id={reactiveHydrateId}
+                data-serialized-state={JSON.stringify(serializedState)}
+              />
+            ) : null}
 
             <Comp {...props} reactiveHydrateId={reactiveHydrateId} />
           </SerializedStateContext.Provider>

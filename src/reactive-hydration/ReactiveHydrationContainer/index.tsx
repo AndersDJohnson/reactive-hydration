@@ -85,6 +85,55 @@ export const ReactiveHydrationContainer = memo(
 
         if (!$portal) return;
 
+        const portalState: Record<string, any> = {};
+
+        let handledIds: string[] = [];
+
+        let $currentComponent =
+          $portal.querySelector<HTMLElement>("[data-component]");
+        let currentComponentIndex = 0;
+
+        while ($currentComponent) {
+          const currentComponent = $currentComponent?.dataset.component;
+          if (!currentComponent) continue;
+          const currentId = $currentComponent?.dataset.id;
+          if (!currentId) continue;
+
+          const currentSerializedState =
+            $currentComponent?.querySelector<HTMLElement>(
+              `[data-id="${currentId}"][data-serialized-state]`
+            )?.dataset.serializedState;
+          console.log("*** currentSerializedState", currentSerializedState);
+
+          if (currentSerializedState) {
+            const currentStateKey = `${currentComponent}.${currentComponentIndex}`;
+
+            portalState[currentStateKey] = JSON.parse(currentSerializedState);
+          }
+
+          handledIds.push(currentId);
+
+          const nextComponentSelector = `[data-component][data-id]${handledIds
+            .map((hid) => `:not([data-id="${hid}"])`)
+            .join("")}`;
+
+          console.log("*** nextComponentSelector", nextComponentSelector);
+
+          const $nextComponent = $portal.querySelector<HTMLElement>(
+            nextComponentSelector
+          );
+
+          if ($currentComponent.contains($nextComponent)) {
+            currentComponentIndex = 0;
+          } else {
+            currentComponentIndex++;
+          }
+
+          $currentComponent = $nextComponent;
+        }
+
+        console.log("*** portalState", portalState);
+
         // TODO: Remove children more performantly (e.g., `removeChild` loop)
         $portal.innerHTML = "";
 
@@ -94,18 +143,18 @@ export const ReactiveHydrationContainer = memo(
 
         // TODO: Implement carrying forward from SSR HTML.
         const reactiveHydrateId = undefined;
-        /**
-         * @deprecated May not need after `reactiveHydratePortalDOM`.
-         */
-        const reactiveHydrateInit = [99];
+        // /**
+        //  * @deprecated May not need after `reactiveHydratePortalState`.
+        //  */
+        // const reactiveHydrateInit = [99];
 
         setPortals((ps) => [
           ...ps,
           createPortal(
             <Comp
               reactiveHydrateId={reactiveHydrateId}
-              reactiveHydrateInit={reactiveHydrateInit}
-              reactiveHydratePortalDOM={$portal}
+              // reactiveHydrateInit={reactiveHydrateInit}
+              reactiveHydratePortalState={portalState}
             />,
             $portal
           ),
@@ -182,26 +231,23 @@ export const ReactiveHydrationContainer = memo(
       >();
 
       $nesteds.forEach(($nested) => {
-        const $containingAncestor = Array.from(ancestorsMap.keys()).find(
-          ($ancestor) => $ancestor.contains($nested)
-        );
+        // const $containingAncestor = Array.from(ancestorsMap.keys()).find(
+        //   ($ancestor) => $ancestor.contains($nested)
+        // );
 
-        if ($containingAncestor) {
-          console.debug(
-            "Including nested with ancestor component:",
-            $nested,
-            $containingAncestor
-          );
-        }
+        // if ($containingAncestor) {
+        //   console.debug(
+        //     "Including nested with ancestor component:",
+        //     $nested,
+        //     $containingAncestor
+        //   );
+        // }
+
+        const $containingAncestor = $nested;
+
+        //
 
         const id = $nested.dataset.id;
-
-        const stateNames = $nested.dataset.states?.split(",");
-
-        const states = stateNames
-          ?.map((stateName: string) => getRegisteredState(stateName))
-          // TODO: Handle unresolved state references with error?
-          .filter(truthy);
 
         const clicksSelector = `[data-id="${id}"][data-click]`;
 
@@ -255,19 +301,26 @@ export const ReactiveHydrationContainer = memo(
           });
         });
 
+        const stateNames = $nested.dataset.states?.split(",");
+
+        const states = stateNames
+          ?.map((stateName: string) => getRegisteredState(stateName))
+          // TODO: Handle unresolved state references with error?
+          .filter(truthy);
+
         if (!states?.length) return;
 
-        if ($containingAncestor) {
-          const ancestorValue = ancestorsMap.get($containingAncestor);
+        // if ($containingAncestor) {
+        //   const ancestorValue = ancestorsMap.get($containingAncestor);
 
-          if (ancestorValue && states) {
-            ancestorValue.states = ancestorValue.states
-              ? [...ancestorValue.states, ...states]
-              : states;
-          }
+        //   if (ancestorValue && states) {
+        //     ancestorValue.states = ancestorValue.states
+        //       ? [...ancestorValue.states, ...states]
+        //       : states;
+        //   }
 
-          return;
-        }
+        //   return;
+        // }
 
         ancestorsMap.set($nested, { states });
       });
