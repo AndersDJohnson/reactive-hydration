@@ -2,6 +2,7 @@
   "name": "reactive-hydration",
   "version": "0.1.0",
   "private": true,
+  "main": "dist",
   "scripts": {
     "build": "tsc"
   },

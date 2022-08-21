@@ -5,6 +5,9 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "postinstall": "cd packages/reactive-hydration && yarn link && cd ../example-nextjs && yarn link reactive-hydration"
+  },
   "devDependencies": {
     "eslint": "8.22.0",
     "typescript": "4.7.4"
