@@ -6,8 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "cd packages/reactive-hydration && yarn build && cd ../example-nextjs && yarn build",
-    "_postinstall": "cd packages/reactive-hydration && yarn link && cd ../example-nextjs && yarn link reactive-hydration"
+    "build": "cd packages/reactive-hydration && yarn build && cd ../example-nextjs && yarn build"
   },
   "devDependencies": {
     "eslint": "8.22.0",
