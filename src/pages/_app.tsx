@@ -2,6 +2,7 @@ import { Provider as JotaiProvider } from "jotai";
 import JotaiNexus from "jotai-nexus";
 import type { AppProps } from "next/app";
 import { ReactiveHydrationComponentPathContextProvider } from "reactive-hydration";
+import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

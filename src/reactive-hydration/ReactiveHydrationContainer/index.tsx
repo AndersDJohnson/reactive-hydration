@@ -73,17 +73,17 @@ export const ReactiveHydrationContainer = memo(
 
         loadedNestedsMap.set($element, true);
 
-        $element.dataset.loaded = "true";
+        const $portal = $element.parentElement;
+
+        if (!$portal) return;
+
+        $portal.dataset.loading = "true";
 
         // TODO: More robust relative import path?
         const Comp = await import(
           /* webpackChunkName: "client-components/[request]" */
           `../../components/${component}`
         ).then((mod) => mod[component]);
-
-        const $portal = $element.parentElement;
-
-        if (!$portal) return;
 
         const reactiveHydrateId = $portal.dataset.id;
 
