@@ -149,8 +149,6 @@ export const ReactiveHydrationContainer = memo(
 
         const reactiveHydrateId = $portal.dataset.id;
 
-        console.log("*** portalState", portalState);
-
         setPortals((ps) => [
           ...ps,
           createPortal(
@@ -240,6 +238,7 @@ export const ReactiveHydrationContainer = memo(
 
             $click.addEventListener("click", () => {
               const componentOrAncestorComponent = $nested.dataset.component;
+
               // const id = $nested.dataset.id;
 
               if (!componentOrAncestorComponent) return;
