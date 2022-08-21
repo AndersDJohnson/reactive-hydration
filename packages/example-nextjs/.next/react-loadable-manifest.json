@@ -1,0 +1,20 @@
+{
+  "../components/ExampleServerComponent/dynamic.ts -> .": {
+    "id": "../components/ExampleServerComponent/dynamic.ts -> .",
+    "files": [
+      "static/chunks/ExampleServerComponentLoader.js"
+    ]
+  },
+  "../components/ExampleServerComponent/loader.ts -> .": {
+    "id": "../components/ExampleServerComponent/loader.ts -> .",
+    "files": [
+      "static/chunks/ExampleServerComponentLoader.js"
+    ]
+  },
+  "../components/RecoilStateSetterButtons/dynamic.ts -> .": {
+    "id": "../components/RecoilStateSetterButtons/dynamic.ts -> .",
+    "files": [
+      "static/chunks/RecoilStateSetterButtonsDynamic.js"
+    ]
+  }
+}

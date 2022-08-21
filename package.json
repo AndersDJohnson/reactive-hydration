@@ -1,30 +1,8 @@
 {
-  "name": "reactive-hydration",
+  "name": "reactive-hydration-root",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "dom-element-path": "^1.3.1",
-    "hoist-non-react-statics": "^3.3.2",
-    "next": "12.2.5",
-    "null-loader": "^4.0.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "recoil": "^0.7.5",
-    "recoil-nexus": "^0.4.0"
-  },
-  "devDependencies": {
-    "@types/hoist-non-react-statics": "^3.3.1",
-    "@types/node": "18.7.6",
-    "@types/react": "18.0.17",
-    "@types/react-dom": "18.0.6",
-    "eslint": "8.22.0",
-    "eslint-config-next": "12.2.5",
-    "typescript": "4.7.4"
-  }
+  "workspaces": [
+    "packages/*"
+  ]
 }
