@@ -4,7 +4,9 @@ import { ExampleClientComponent2 } from "components/ExampleClientComponent2";
 import { ExampleClientComponentNesting } from "components/ExampleClientComponentNesting";
 
 export const ExampleServerComponent = () => {
-  console.debug("Rendering ExampleServerComponent (should be on server only)");
+  console.debug(
+    "Rendering ExampleServerComponent (should be on server only on initial page load, but may be loaded on client after routing)"
+  );
 
   return (
     <>
