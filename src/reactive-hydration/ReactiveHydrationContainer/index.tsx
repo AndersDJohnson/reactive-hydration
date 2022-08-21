@@ -158,6 +158,7 @@ export const ReactiveHydrationContainer = memo(
 
         // TODO: Move into separate effect so it's guaranteed to run only after portals are rendered into component tree?
         // This would avoid any flickering of empty DOM.
+        // And ensure click callbacks fire after new portal is inserted into DOM.
         setTimeout(() => {
           $portal.replaceWith($newPortal);
         });
@@ -168,9 +169,14 @@ export const ReactiveHydrationContainer = memo(
     useEffect(() => {
       if (!pendingCallbacks.length) return;
 
-      pendingCallbacks.forEach((callback) => callback());
+      const callbacks = pendingCallbacks;
 
       setPendingCallbacks([]);
+
+      // TODO: This may be a bit of a race condition and cause clicks to not register?
+      setTimeout(() => {
+        callbacks.forEach((callback) => callback());
+      });
     }, [portals, pendingCallbacks]);
 
     const [allNesteds, setAllNesteds] = useState<
@@ -279,6 +285,13 @@ export const ReactiveHydrationContainer = memo(
 
                   const $postClick =
                     document.querySelector<HTMLElement>(clickPath);
+
+                  if (!$postClick) {
+                    console.error(
+                      "Could not find element to click by path:",
+                      clickPath
+                    );
+                  }
 
                   // TODO: Handle missing element target? Maybe something else in DOM changed during load.
 
