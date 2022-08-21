@@ -1,6 +1,8 @@
 import { useAtom } from "jotai";
 import { reactiveHydrate } from "reactive-hydration";
 import { textState } from "state/textState";
+import { ExampleClientComponent } from "components/ExampleClientComponent";
+import { ExampleClientComponent1 } from "components/ExampleClientComponent1";
 import { ExampleClientComponent2 } from "components/ExampleClientComponent2";
 
 export const ExampleClientComponentNesting = reactiveHydrate(
@@ -18,6 +20,8 @@ export const ExampleClientComponentNesting = reactiveHydrate(
         <div>TEXT STATE: {text}</div>
         <div style={{ paddingLeft: 48 }}>
           (Nested...)
+          <ExampleClientComponent />
+          <ExampleClientComponent1 />
           <ExampleClientComponent2 />
           (...nested!)
         </div>

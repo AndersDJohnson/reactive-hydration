@@ -91,7 +91,7 @@ export const ReactiveHydrationContainer = memo(
 
         let $currentComponent =
           $portal.querySelector<HTMLElement>("[data-component]");
-        let currentComponentIndex = 0;
+        let previousComponentIndexByName = new Map();
 
         while ($currentComponent) {
           const currentComponent = $currentComponent?.dataset.component;
@@ -103,6 +103,14 @@ export const ReactiveHydrationContainer = memo(
             $currentComponent?.querySelector<HTMLElement>(
               `[data-id="${currentId}"][data-serialized-state]`
             )?.dataset.serializedState;
+
+          const currentComponentIndex =
+            (previousComponentIndexByName.get(currentComponent) ?? -1) + 1;
+
+          previousComponentIndexByName.set(
+            currentComponent,
+            currentComponentIndex
+          );
 
           if (currentSerializedState) {
             const currentStateKey = `${currentComponent}.${currentComponentIndex}`;
@@ -121,9 +129,7 @@ export const ReactiveHydrationContainer = memo(
           );
 
           if ($currentComponent.contains($nextComponent)) {
-            currentComponentIndex = 0;
-          } else {
-            currentComponentIndex++;
+            previousComponentIndexByName = new Map();
           }
 
           $currentComponent = $nextComponent;
@@ -142,6 +148,8 @@ export const ReactiveHydrationContainer = memo(
         }
 
         const reactiveHydrateId = $portal.dataset.id;
+
+        console.log("*** portalState", portalState);
 
         setPortals((ps) => [
           ...ps,
