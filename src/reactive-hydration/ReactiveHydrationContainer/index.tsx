@@ -135,13 +135,9 @@ export const ReactiveHydrationContainer = memo(
           $currentComponent = $nextComponent;
         }
 
-        if (typeof $portal.replaceChildren === "function") {
-          // This may not be supported in all browsers we want to support.
-          $portal.replaceChildren();
-        } else {
-          // Less efficient, but works in all browsers.
-          $portal.innerHTML = "";
-        }
+        const $newPortal = document.createElement("div");
+        $newPortal.dataset.portal = "true";
+        $newPortal.dataset.id = $portal.dataset.id;
 
         if (callback) {
           setPendingCallbacks((p) => [...p, callback]);
@@ -156,9 +152,15 @@ export const ReactiveHydrationContainer = memo(
               reactiveHydrateId={reactiveHydrateId}
               reactiveHydratePortalState={portalState}
             />,
-            $portal
+            $newPortal
           ),
         ]);
+
+        // TODO: Move into separate effect so it's guaranteed to run only after portals are rendered into component tree?
+        // This would avoid any flickering of empty DOM.
+        setTimeout(() => {
+          $portal.replaceWith($newPortal);
+        });
       },
       []
     );
