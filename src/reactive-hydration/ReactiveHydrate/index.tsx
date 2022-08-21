@@ -138,7 +138,7 @@ export const reactiveHydrate = <
               />
             ) : null}
 
-            <Comp {...props} reactiveHydrateId={reactiveHydrateId} />
+            <Comp {...props} />
           </SerializedStateContext.Provider>
         </ReactiveHydrate>
       </ReactiveHydrationComponentPathContextProvider>

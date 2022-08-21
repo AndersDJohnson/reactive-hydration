@@ -10,7 +10,7 @@ export const ExampleClientComponent2 = reactiveHydrate(
     name: "ExampleClientComponent2",
     states: "text2State",
   },
-  ({ reactiveHydrateId }) => {
+  () => {
     const [text2] = useAtom(text2State);
 
     const [count, setCount] = useState(0);
@@ -23,14 +23,7 @@ export const ExampleClientComponent2 = reactiveHydrate(
         <div>SERVER? {(typeof window !== "object").toString()}</div>
         <div>TEXT 2 STATE: {text2}</div>
         <div>COUNT: {count}</div>
-        <button
-          onClick={handleClick}
-          // TODO: I'm not sure if we should rely on this ID - it makes the `reactiveHydrate` API more complicated,
-          // and it's not even stable between SSR and deferred hydration.
-          // In `ReactiveHydrationContainer` we are handling clicks by element path anyway.
-          data-id={reactiveHydrateId}
-          data-click="1"
-        >
+        <button onClick={handleClick} data-click>
           count++
         </button>
       </>
