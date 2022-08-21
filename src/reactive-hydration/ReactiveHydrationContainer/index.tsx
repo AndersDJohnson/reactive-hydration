@@ -85,6 +85,8 @@ export const ReactiveHydrationContainer = memo(
 
         if (!$portal) return;
 
+        const reactiveHydrateId = $portal.dataset.id;
+
         const portalState: Record<string, any> = {};
 
         let handledIds: string[] = [];
@@ -137,13 +139,11 @@ export const ReactiveHydrationContainer = memo(
 
         const $newPortal = document.createElement("div");
         $newPortal.dataset.portal = "true";
-        $newPortal.dataset.id = $portal.dataset.id;
+        $newPortal.dataset.id = reactiveHydrateId;
 
         if (callback) {
           setPendingCallbacks((p) => [...p, callback]);
         }
-
-        const reactiveHydrateId = $portal.dataset.id;
 
         setPortals((ps) => [
           ...ps,
