@@ -112,17 +112,25 @@ export const reactiveHydrate = <
       return state;
     });
 
-    const [serializedState, setSerializedState] = useState<any[] | undefined>(
+    const [serializableState, setSerializedState] = useState<any[] | undefined>(
       () => []
     );
 
     const serializeStateContextValue = useMemo(
       () => ({
-        serializedState,
+        serializableState,
         setSerializedState,
         reactiveHydrateState,
       }),
-      [serializedState, setSerializedState, reactiveHydrateState]
+      [serializableState, setSerializedState, reactiveHydrateState]
+    );
+
+    const serializedState = useMemo(
+      () =>
+        serializableState?.length
+          ? JSON.stringify(serializableState)
+          : undefined,
+      [serializableState]
     );
 
     return (
@@ -131,11 +139,8 @@ export const reactiveHydrate = <
       >
         <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
           <SerializedStateContext.Provider value={serializeStateContextValue}>
-            {serializedState?.length ? (
-              <div
-                data-id={reactiveHydrateId}
-                data-state={JSON.stringify(serializedState)}
-              />
+            {serializedState ? (
+              <div data-id={reactiveHydrateId} data-state={serializedState} />
             ) : null}
 
             <Comp {...props} />

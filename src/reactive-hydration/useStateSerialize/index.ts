@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 export const SerializedStateContext = createContext<
   | {
-      serializedState: string[] | undefined;
+      serializableState: string[] | undefined;
       setSerializedState:
         | (() => string[])
         | ((sf: (s: any[] | undefined) => any[] | undefined) => void);
@@ -12,11 +12,11 @@ export const SerializedStateContext = createContext<
 >(undefined);
 
 export const useStateSerialize = <S>(init: S | (() => S)) => {
-  const { serializedState, setSerializedState, reactiveHydrateState } =
+  const { serializableState, setSerializedState, reactiveHydrateState } =
     useContext(SerializedStateContext) ?? {};
 
   const ref = useRef<number>(
-    serializedState?.length ??
+    serializableState?.length ??
       // In practice this fallback will never happen.
       0
   );
