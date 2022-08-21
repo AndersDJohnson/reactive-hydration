@@ -1,14 +1,13 @@
-const { PHASE_EXPORT } = require("next/constants");
+const BUILD_EXPORT = process.env.BUILD_EXPORT;
 
-module.exports = (phase) => {
+module.exports = () => {
   /**
    * @type {import('next').NextConfig}
    */
   const nextConfig = {
-    basePath:
-      phase === PHASE_EXPORT
-        ? "/reactive-hydration/packages/example-nextjs/out"
-        : "",
+    basePath: BUILD_EXPORT
+      ? "/reactive-hydration/packages/example-nextjs/out"
+      : "",
 
     reactStrictMode: true,
 
