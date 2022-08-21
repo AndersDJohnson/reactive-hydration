@@ -20,7 +20,6 @@ export const ExampleClientComponent2 = reactiveHydrate(
     return (
       <>
         <h4>ExampleClientComponent2</h4>
-        <div>SERVER? {(typeof window !== "object").toString()}</div>
         <div>TEXT 2 STATE: {text2}</div>
         <div>COUNT: {count}</div>
         <button onClick={handleClick} data-click>

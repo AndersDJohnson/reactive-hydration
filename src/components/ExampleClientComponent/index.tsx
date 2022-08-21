@@ -15,7 +15,6 @@ export const ExampleClientComponent = reactiveHydrate(
     return (
       <>
         <h4>ExampleClientComponent</h4>
-        <div>SERVER? {(typeof window !== "object").toString()}</div>
         <div>TEXT STATE: {text}</div>
         <div>TEXT 2 STATE: {text2}</div>
       </>

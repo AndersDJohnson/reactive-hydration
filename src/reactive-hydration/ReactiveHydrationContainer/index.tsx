@@ -140,6 +140,7 @@ export const ReactiveHydrationContainer = memo(
         const $newPortal = document.createElement("div");
         $newPortal.dataset.portal = "true";
         $newPortal.dataset.id = reactiveHydrateId;
+        $newPortal.dataset.loaded = "true";
 
         if (callback) {
           setPendingCallbacks((p) => [...p, callback]);

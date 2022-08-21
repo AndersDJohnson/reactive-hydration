@@ -16,7 +16,6 @@ export const ExampleClientComponentNesting = reactiveHydrate(
     return (
       <>
         <h4>ExampleClientComponentNesting</h4>
-        <div>SERVER? {(typeof window !== "object").toString()}</div>
         <div>TEXT STATE: {text}</div>
         <div style={{ paddingLeft: 48 }}>
           (Nested...)
