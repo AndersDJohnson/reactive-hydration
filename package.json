@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "cd packages/reactive-hydration && yarn build && cd ../example-nextjs && yarn build"
+    "build": "yarn workspaces foreach run build"
   },
   "devDependencies": {
     "eslint": "8.22.0",
