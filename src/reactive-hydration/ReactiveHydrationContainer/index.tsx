@@ -244,11 +244,11 @@ export const ReactiveHydrationContainer = memo(
             clicksMap.set($click, true);
 
             $click.addEventListener("click", () => {
-              const componentOrAncestorComponent = $nested.dataset.component;
+              const component = $nested.dataset.component;
 
               // const id = $nested.dataset.id;
 
-              if (!componentOrAncestorComponent) return;
+              if (!component) return;
 
               // const clickId = $click.dataset.click;
 
@@ -256,7 +256,7 @@ export const ReactiveHydrationContainer = memo(
 
               hydrate({
                 $element: $nested,
-                component: componentOrAncestorComponent,
+                component,
                 reason: ["clicked", $click],
                 callback: () => {
                   // const $portal = document.querySelector(
