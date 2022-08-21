@@ -17,10 +17,8 @@ import {
 /**
  * On server we'll create a wrapper `div` as a portal host to mount into,
  * but on the client we don't want that wrapper or else we'll get extra nesting.
- *
- * TODO: This wrapper could perhaps be wrapped around all components by the compiler.
  */
-export const ReactiveHydrate = (
+const ReactiveHydrate = (
   props: PropsWithChildren<{
     id?: string;
     name: string;
@@ -53,6 +51,9 @@ export const ReactiveHydrate = (
   );
 };
 
+/**
+ * TODO: This wrapper could perhaps be wrapped around all components by the compiler.
+ */
 export const reactiveHydrate = <
   P extends {
     reactiveHydrateId?: string;
