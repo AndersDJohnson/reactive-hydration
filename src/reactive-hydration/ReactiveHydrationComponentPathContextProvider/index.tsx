@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import {
   createContext,
   PropsWithChildren,
@@ -8,11 +9,11 @@ import {
 
 export const ReactiveHydrationComponentPathContext = createContext<{
   reactiveHydratePortalState?: Record<string, any>;
-  previousComponentPath: (string | number)[];
+  parentComponentPath: (string | number)[];
   registerComponentPath?: (name: string) => number;
   unregisterComponentPath?: (name: string) => void;
 }>({
-  previousComponentPath: [],
+  parentComponentPath: [],
 });
 
 export const ReactiveHydrationComponentPathContextProvider = (
@@ -33,26 +34,33 @@ export const ReactiveHydrationComponentPathContextProvider = (
   const reactiveHydratePortalState =
     reactiveHydratePortalStateProp ?? reactiveHydratePortalStateContext;
 
+  const registerComponentPath = useCallback(() => {
+    const currentIndex = registry.get(name);
+
+    const newIndex = (currentIndex ?? -1) + 1;
+
+    registry.set(name, newIndex);
+
+    return newIndex;
+  }, [registry]);
+
+  const unregisterComponentPath = useCallback(
+    (name: string) => {
+      const currentIndex = registry.get(name);
+
+      registry.set(name, currentIndex - 1);
+    },
+    [registry]
+  );
+
   const reactiveHydrationComponentPathContextValue = useMemo(
     () => ({
       reactiveHydratePortalState,
-      previousComponentPath: [],
-      registerComponentPath: (name: string) => {
-        const currentIndex = registry.get(name);
-
-        const newIndex = (currentIndex ?? -1) + 1;
-
-        registry.set(name, newIndex);
-
-        return newIndex;
-      },
-      unregisterComponentPath: (name: string) => {
-        const currentIndex = registry.get(name);
-
-        registry.set(name, currentIndex - 1);
-      },
+      parentComponentPath: [],
+      registerComponentPath,
+      unregisterComponentPath,
     }),
-    [reactiveHydratePortalState, registry]
+    [reactiveHydratePortalState, registerComponentPath, unregisterComponentPath]
   );
 
   return (

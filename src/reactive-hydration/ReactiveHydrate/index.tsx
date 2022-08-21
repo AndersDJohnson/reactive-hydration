@@ -1,5 +1,4 @@
 import {
-  createContext,
   PropsWithChildren,
   memo,
   useContext,
@@ -14,10 +13,6 @@ import {
   ReactiveHydrationComponentPathContextProvider,
   SerializedStateContext,
 } from "reactive-hydration";
-
-const ReactiveHydrateContext = createContext({
-  isNested: false,
-});
 
 /**
  * On server we'll create a wrapper `div` as a portal host to mount into,
@@ -41,12 +36,9 @@ export const ReactiveHydrate = (
     </div>
   );
 
-  // const { isNested } = useContext(ReactiveHydrateContext);
-
   return (
-    <ReactiveHydrateContext.Provider value={{ isNested: true }}>
+    <>
       {typeof window !== "object" ? (
-        // && !isNested
         <div
           data-portal
           // This ID has to be here since it's the only one stable between server render and post client hydration.
@@ -57,17 +49,13 @@ export const ReactiveHydrate = (
       ) : (
         <>{inner}</>
       )}
-    </ReactiveHydrateContext.Provider>
+    </>
   );
 };
 
 export const reactiveHydrate = <
   P extends {
     reactiveHydrateId?: string;
-    /**
-     * @deprecated May not need after `reactiveHydratePortalState`.
-     */
-    // reactiveHydrateInit?: any;
     reactiveHydratePortalState?: Record<string, any>;
   }
 >(
@@ -90,7 +78,7 @@ export const reactiveHydrate = <
 
     const {
       reactiveHydratePortalState: reactiveHydratePortalStateContext,
-      previousComponentPath,
+      parentComponentPath,
       registerComponentPath,
       unregisterComponentPath,
     } = useContext(ReactiveHydrationComponentPathContext) ?? {};
@@ -107,38 +95,31 @@ export const reactiveHydrate = <
     }, [registerComponentPath, unregisterComponentPath, name]);
 
     const componentPath = useMemo(
-      () => [...previousComponentPath, name, componentIndex],
-      [name, previousComponentPath, componentIndex]
+      () => [...parentComponentPath, name, componentIndex],
+      [name, parentComponentPath, componentIndex]
     );
 
-    const [reactiveHydrateInit] = useState(() => {
-      console.log("*** componentPath", componentPath);
-      console.log("*** reactiveHydratePortalState", reactiveHydratePortalState);
-
+    const [reactiveHydrateState] = useState(() => {
       if (!reactiveHydratePortalState) return;
 
       const portalKey = componentPath.join(".");
 
-      console.log("*** comp portalKey", portalKey);
-
       const state = reactiveHydratePortalState[portalKey];
-
-      console.log("*** comp state", state);
 
       return state;
     });
 
-    const [serializedState, setSerializedState] = useState<
-      string[] | undefined
-    >(() => []);
+    const [serializedState, setSerializedState] = useState<any[] | undefined>(
+      () => []
+    );
 
     const serializeStateContextValue = useMemo(
       () => ({
         serializedState,
         setSerializedState,
-        reactiveHydrateInit,
+        reactiveHydrateState,
       }),
-      [serializedState, setSerializedState, reactiveHydrateInit]
+      [serializedState, setSerializedState, reactiveHydrateState]
     );
 
     return (

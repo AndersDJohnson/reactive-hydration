@@ -103,7 +103,6 @@ export const ReactiveHydrationContainer = memo(
             $currentComponent?.querySelector<HTMLElement>(
               `[data-id="${currentId}"][data-serialized-state]`
             )?.dataset.serializedState;
-          console.log("*** currentSerializedState", currentSerializedState);
 
           if (currentSerializedState) {
             const currentStateKey = `${currentComponent}.${currentComponentIndex}`;
@@ -116,8 +115,6 @@ export const ReactiveHydrationContainer = memo(
           const nextComponentSelector = `[data-component][data-id]${handledIds
             .map((hid) => `:not([data-id="${hid}"])`)
             .join("")}`;
-
-          console.log("*** nextComponentSelector", nextComponentSelector);
 
           const $nextComponent = $portal.querySelector<HTMLElement>(
             nextComponentSelector
@@ -132,8 +129,6 @@ export const ReactiveHydrationContainer = memo(
           $currentComponent = $nextComponent;
         }
 
-        console.log("*** portalState", portalState);
-
         // TODO: Remove children more performantly (e.g., `removeChild` loop)
         $portal.innerHTML = "";
 
@@ -143,17 +138,12 @@ export const ReactiveHydrationContainer = memo(
 
         // TODO: Implement carrying forward from SSR HTML.
         const reactiveHydrateId = undefined;
-        // /**
-        //  * @deprecated May not need after `reactiveHydratePortalState`.
-        //  */
-        // const reactiveHydrateInit = [99];
 
         setPortals((ps) => [
           ...ps,
           createPortal(
             <Comp
               reactiveHydrateId={reactiveHydrateId}
-              // reactiveHydrateInit={reactiveHydrateInit}
               reactiveHydratePortalState={portalState}
             />,
             $portal
@@ -223,116 +213,79 @@ export const ReactiveHydrationContainer = memo(
       const $nesteds =
         ref.current.querySelectorAll<HTMLDivElement>("[data-component]");
 
-      const ancestorsMap = new Map<
-        HTMLDivElement,
-        {
-          states?: State<any>[];
-        }
-      >();
+      const newAllNesteds = Array.from($nesteds)
+        .map(($nested) => {
+          const id = $nested.dataset.id;
 
-      $nesteds.forEach(($nested) => {
-        // const $containingAncestor = Array.from(ancestorsMap.keys()).find(
-        //   ($ancestor) => $ancestor.contains($nested)
-        // );
+          const clicksSelector = `[data-id="${id}"][data-click]`;
 
-        // if ($containingAncestor) {
-        //   console.debug(
-        //     "Including nested with ancestor component:",
-        //     $nested,
-        //     $containingAncestor
-        //   );
-        // }
+          const $clicks = $nested.querySelectorAll<HTMLElement>(clicksSelector);
 
-        const $containingAncestor = $nested;
+          $clicks.forEach(($click) => {
+            if (clicksMap.has($click)) return;
 
-        //
+            clicksMap.set($click, true);
 
-        const id = $nested.dataset.id;
+            $click.addEventListener("click", () => {
+              const componentOrAncestorComponent = $nested.dataset.component;
+              // const id = $nested.dataset.id;
 
-        const clicksSelector = `[data-id="${id}"][data-click]`;
+              if (!componentOrAncestorComponent) return;
 
-        const $clicks = $nested.querySelectorAll<HTMLElement>(clicksSelector);
+              // const clickId = $click.dataset.click;
 
-        $clicks.forEach(($click) => {
-          if (clicksMap.has($click)) return;
+              const clickPath = domElementPath($click);
 
-          clicksMap.set($click, true);
+              hydrate({
+                $element: $nested,
+                component: componentOrAncestorComponent,
+                reason: ["clicked", $click],
+                callback: () => {
+                  // const $portal = document.querySelector(
+                  //   `[data-id="${id}"]`
+                  // );
 
-          $click.addEventListener("click", () => {
-            const $nestedOrAncestor = $containingAncestor ?? $nested;
-            const componentOrAncestorComponent =
-              $nestedOrAncestor.dataset.component;
-            const idOrAncestorId = $nestedOrAncestor.dataset.id;
+                  // console.log("*** $portal", $portal);
 
-            if (!componentOrAncestorComponent) return;
+                  // if (!$portal) return;
 
-            // const clickId = $click.dataset.click;
+                  // const newId = ($portal.children[0] as HTMLDivElement).dataset
+                  //   .id;
 
-            const clickPath = domElementPath($click);
+                  // const postClickSelector = `[data-id="${newId}"][data-click="${clickId}"]`;
 
-            hydrate({
-              $element: $nestedOrAncestor,
-              component: componentOrAncestorComponent,
-              reason: ["clicked", $click],
-              callback: () => {
-                // const $portal = document.querySelector(
-                //   `[data-id="${idOrAncestorId}"]`
-                // );
+                  // console.log("*** postClickSelector", postClickSelector);
 
-                // console.log("*** $portal", $portal);
+                  // TODO: Would it be more stable to track by component path & index (like state) rather than by `domElementPath`?
 
-                // if (!$portal) return;
+                  const $postClick =
+                    document.querySelector<HTMLElement>(clickPath);
 
-                // const newId = ($portal.children[0] as HTMLDivElement).dataset
-                //   .id;
+                  // TODO: Handle missing element target? Maybe something else in DOM changed during load.
 
-                // const postClickSelector = `[data-id="${newId}"][data-click="${clickId}"]`;
-
-                // console.log("*** postClickSelector", postClickSelector);
-
-                const $postClick =
-                  document.querySelector<HTMLElement>(clickPath);
-
-                // TODO: Handle missing element target? Maybe something else in DOM changed during load.
-
-                $postClick?.click();
-              },
+                  $postClick?.click();
+                },
+              });
             });
           });
-        });
 
-        const stateNames = $nested.dataset.states?.split(",");
+          const stateNames = $nested.dataset.states?.split(",");
 
-        const states = stateNames
-          ?.map((stateName: string) => getRegisteredState(stateName))
-          // TODO: Handle unresolved state references with error?
-          .filter(truthy);
+          const states = stateNames
+            ?.map((stateName: string) => getRegisteredState(stateName))
+            // TODO: Handle unresolved state references with error?
+            .filter(truthy);
 
-        if (!states?.length) return;
+          if (!states?.length) return;
 
-        // if ($containingAncestor) {
-        //   const ancestorValue = ancestorsMap.get($containingAncestor);
-
-        //   if (ancestorValue && states) {
-        //     ancestorValue.states = ancestorValue.states
-        //       ? [...ancestorValue.states, ...states]
-        //       : states;
-        //   }
-
-        //   return;
-        // }
-
-        ancestorsMap.set($nested, { states });
-      });
-
-      const newAllNesteds = Array.from(ancestorsMap.entries()).map(
-        ([$nested, { states }]) => ({
-          $nested,
-          // TODO: Handle the component name data attribute not existing with error?
-          component: $nested.dataset.component ?? "",
-          states,
+          return {
+            $nested,
+            // TODO: Handle the component name data attribute not existing with error?
+            component: $nested.dataset.component ?? "",
+            states,
+          };
         })
-      );
+        .filter(truthy);
 
       setAllNesteds((a) => [...a, ...newAllNesteds]);
     }, [hydrate]);

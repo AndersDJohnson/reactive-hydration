@@ -5,17 +5,14 @@ export const SerializedStateContext = createContext<
       serializedState: string[] | undefined;
       setSerializedState:
         | (() => string[])
-        | ((sf: (s: string[] | undefined) => string[] | undefined) => void);
-      /**
-       * @deprecated May not need after `reactiveHydratePortalState`.
-       */
-      reactiveHydrateInit?: any[];
+        | ((sf: (s: any[] | undefined) => any[] | undefined) => void);
+      reactiveHydrateState?: any[];
     }
   | undefined
 >(undefined);
 
 export const useStateSerialize = <S>(init: S | (() => S)) => {
-  const { serializedState, setSerializedState, reactiveHydrateInit } =
+  const { serializedState, setSerializedState, reactiveHydrateState } =
     useContext(SerializedStateContext) ?? {};
 
   const ref = useRef<number>(
@@ -26,7 +23,7 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
 
   const stateIndex = ref.current;
 
-  const initOverride = reactiveHydrateInit?.[stateIndex] as S;
+  const initOverride = reactiveHydrateState?.[stateIndex] as S;
 
   const result = useState(
     () =>
@@ -41,13 +38,11 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
 
   useEffect(() => {
     setSerializedState?.((s) => {
-      const json = JSON.stringify(state);
-
       return stateIndex == null
         ? s
         : !s || stateIndex === 0
-        ? [json]
-        : [...s].splice(stateIndex, 0, json);
+        ? [state]
+        : [...s].splice(stateIndex, 0, state);
     });
   }, [setSerializedState, state, stateIndex]);
 
