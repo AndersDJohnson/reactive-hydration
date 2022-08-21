@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { registerState } from "./registry";
+import { registerState } from "reactive-hydration";
 
 const init = "(initial value)";
 

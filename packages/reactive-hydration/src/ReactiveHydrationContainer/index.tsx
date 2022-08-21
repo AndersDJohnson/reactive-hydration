@@ -25,6 +25,7 @@ export const ReactiveHydrationContainer = memo(
   ({
     Comp,
     LazyComp,
+    importComponent,
   }: {
     /**
      * Only for server-side render.
@@ -44,6 +45,15 @@ export const ReactiveHydrationContainer = memo(
      * In some frameworks, a `React.lazy` wrapped component may work.
      */
     LazyComp: ComponentType<unknown>;
+    /**
+     * A function to import components.
+     * You'll likely pass a dynamic import function here, like:
+     *
+     * ```ts
+     * (component: string) => import(`../../components/${component}`).then((mod) => mod[component])
+     * ```
+     */
+    importComponent: (component: string) => Promise<ComponentType<unknown>>;
   }) => {
     const ref = useRef<HTMLDivElement>(null);
 
@@ -79,11 +89,10 @@ export const ReactiveHydrationContainer = memo(
 
         $portal.dataset.loading = "true";
 
-        // TODO: More robust relative import path?
-        const Comp = await import(
-          /* webpackChunkName: "client-components/[request]" */
-          `../../components/${component}`
-        ).then((mod) => mod[component]);
+        const Comp: ComponentType<{
+          reactiveHydrateId?: string;
+          reactiveHydratePortalState?: Record<string, any>;
+        }> = await importComponent(component);
 
         const reactiveHydrateId = $portal.dataset.id;
 
