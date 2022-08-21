@@ -235,6 +235,8 @@ export const ReactiveHydrationContainer = memo(
         .map(($nested) => {
           const id = $nested.dataset.id;
 
+          // TODO: Also check a global variable tracking any clicks by ID that occur
+          // before full JS hydration, using inline onclick listeners in the SSR HTML.
           const clicksSelector = "[data-click]";
 
           const $clicks = $nested.querySelectorAll<HTMLElement>(clicksSelector);
