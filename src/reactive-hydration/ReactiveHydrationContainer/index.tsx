@@ -227,12 +227,17 @@ export const ReactiveHydrationContainer = memo(
         .map(($nested) => {
           const id = $nested.dataset.id;
 
-          const clicksSelector = `[data-id="${id}"][data-click]`;
+          const clicksSelector = "[data-click]";
 
           const $clicks = $nested.querySelectorAll<HTMLElement>(clicksSelector);
 
           $clicks.forEach(($click) => {
             if (clicksMap.has($click)) return;
+
+            const closestId =
+              $click.closest<HTMLElement>("[data-id]")?.dataset.id;
+
+            if (closestId !== id) return;
 
             clicksMap.set($click, true);
 
