@@ -25,6 +25,9 @@ export const ExampleClientComponent2 = reactiveHydrate(
         <div>COUNT: {count}</div>
         <button
           onClick={handleClick}
+          // TODO: I'm not sure if we should rely on this ID - it makes the `reactiveHydrate` API more complicated,
+          // and it's not even stable between SSR and deferred hydration.
+          // In `ReactiveHydrationContainer` we are handling clicks by element path anyway.
           data-id={reactiveHydrateId}
           data-click="1"
         >

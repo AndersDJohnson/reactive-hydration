@@ -69,12 +69,15 @@ export const reactiveHydrate = <
   const NewComp = memo<P>((props) => {
     const { name, states } = args;
 
-    const { reactiveHydratePortalState: reactiveHydratePortalStateProp } =
-      props;
+    const {
+      reactiveHydratePortalState: reactiveHydratePortalStateProp,
+      reactiveHydrateId: reactiveHydrateIdProp,
+    } = props;
 
     // TODO: If these IDs isn't stable enough, we could just resolve the DOM children at runtime that aren't nested inside a deeper client component.
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const reactiveHydrateId = useId();
+    const reactiveHydrateIdNew = useId();
+    const reactiveHydrateId = reactiveHydrateIdProp ?? reactiveHydrateIdNew;
 
     const {
       reactiveHydratePortalState: reactiveHydratePortalStateContext,

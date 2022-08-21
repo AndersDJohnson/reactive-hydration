@@ -129,15 +129,19 @@ export const ReactiveHydrationContainer = memo(
           $currentComponent = $nextComponent;
         }
 
-        // TODO: Remove children more performantly (e.g., `removeChild` loop)
-        $portal.innerHTML = "";
+        if (typeof $portal.replaceChildren === "function") {
+          // This may not be supported in all browsers we want to support.
+          $portal.replaceChildren();
+        } else {
+          // Less efficient, but works in all browsers.
+          $portal.innerHTML = "";
+        }
 
         if (callback) {
           setPendingCallbacks((p) => [...p, callback]);
         }
 
-        // TODO: Implement carrying forward from SSR HTML.
-        const reactiveHydrateId = undefined;
+        const reactiveHydrateId = $portal.dataset.id;
 
         setPortals((ps) => [
           ...ps,
