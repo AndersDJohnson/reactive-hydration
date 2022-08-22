@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useRecoilState } from "recoil";
 import { reactiveHydrate, useStateSerialize } from "reactive-hydration";
-import { text2State } from "state/text2State";
+import { text2State } from "../../state/text2State";
 
 const useState = useStateSerialize;
 

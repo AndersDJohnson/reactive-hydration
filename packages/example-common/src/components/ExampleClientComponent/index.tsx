@@ -1,7 +1,7 @@
 import { useRecoilState } from "recoil";
 import { reactiveHydrate } from "reactive-hydration";
-import { textState } from "state/textState";
-import { text2State } from "state/text2State";
+import { textState } from "../../state/textState";
+import { text2State } from "../../state/text2State";
 
 export const ExampleClientComponent = reactiveHydrate(
   {
