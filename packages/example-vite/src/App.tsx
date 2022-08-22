@@ -1,17 +1,16 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import "./App.css";
+import { RecoilStateSetterButtonsLoader } from "reactive-hydration-example-common";
+import { MyReactiveHydrationContainer } from "./MyReactiveHydrationContainer";
 
-function App() {
-  const [count, setCount] = useState(0);
-
+const App = () => {
   return (
-    <div className="App">
-      <RecoilStateSetterButtonsDynamic />
+    <div>
+      <h1>Home Page</h1>
+
+      <RecoilStateSetterButtonsLoader />
 
       <MyReactiveHydrationContainer />
     </div>
   );
-}
+};
 
 export default App;
