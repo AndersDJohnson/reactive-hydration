@@ -21,3 +21,5 @@ const defaultValue = {
 };
 
 export const MyContext = createContextWithDefaultValue(defaultValue);
+
+MyContext.displayName = "MyContext";

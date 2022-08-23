@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { Context, useCallback, useMemo } from "react";
 import { selector, useRecoilValue } from "recoil";
 import { getRecoil } from "recoil-nexus";
 import {
@@ -26,6 +26,7 @@ export const ReactiveHydrationContainer = memo(
     Comp,
     LazyComp,
     importComponent,
+    importContext,
   }: {
     /**
      * Only for server-side render.
@@ -54,6 +55,15 @@ export const ReactiveHydrationContainer = memo(
      * ```
      */
     importComponent: (component: string) => Promise<ComponentType<unknown>>;
+    /**
+     * A function to import contexts.
+     * You'll likely pass a dynamic import function here, like:
+     *
+     * ```ts
+     * (context: string) => import(`../../contexts/${context}`).then((mod) => mod[context])
+     * ```
+     */
+    importContext: (context: string) => Promise<Context<unknown>>;
   }) => {
     const ref = useRef<HTMLDivElement>(null);
 
@@ -155,16 +165,62 @@ export const ReactiveHydrationContainer = memo(
           setPendingCallbacks((p) => [...p, callback]);
         }
 
-        setPortals((ps) => [
-          ...ps,
-          createPortal(
-            <Comp
-              reactiveHydrateId={reactiveHydrateId}
-              reactiveHydratePortalState={portalState}
-            />,
-            $newPortal
-          ),
-        ]);
+        const $contexts = [];
+        let $context: HTMLElement | null | undefined = $portal;
+
+        while (true) {
+          const $previous: HTMLElement | null | undefined = $context;
+
+          $context = $context?.closest<HTMLElement>("[data-context-value]");
+
+          if ($context === $previous) {
+            $context = $context.parentElement;
+          }
+
+          if (!$context) break;
+
+          $contexts.push($context);
+        }
+
+        let componentry = (
+          <Comp
+            reactiveHydrateId={reactiveHydrateId}
+            reactiveHydratePortalState={portalState}
+          />
+        );
+
+        if ($contexts.length) {
+          console.log("*** $contexts", $contexts);
+
+          const contexts = (
+            await Promise.all(
+              $contexts.map(async ($context) => {
+                const contextName = $context?.dataset.contextName;
+                const contextValue = $context?.dataset.contextValue;
+
+                if (!contextName) return;
+                if (!contextValue) return;
+
+                return {
+                  value: JSON.parse(contextValue),
+                  context: await importContext(contextName),
+                };
+              })
+            )
+          ).filter(truthy);
+
+          console.log("*** contexts", contexts);
+
+          contexts.forEach((context) => {
+            componentry = (
+              <context.context.Provider value={context.value}>
+                {componentry}
+              </context.context.Provider>
+            );
+          });
+        }
+
+        setPortals((ps) => [...ps, createPortal(componentry, $newPortal)]);
 
         // TODO: Move into separate effect so it's guaranteed to run only after portals are rendered into component tree?
         // This would avoid any flickering of empty DOM.
