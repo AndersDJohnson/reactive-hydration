@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { RefObject, useCallback } from "react";
 import {
   createContext,
   PropsWithChildren,
@@ -13,6 +13,7 @@ export const ReactiveHydrateContext = createContext<{
   parentComponentPath: (string | number)[];
   registerComponentPath?: (name: string) => number;
   unregisterComponentPath?: (name: string) => void;
+  portalRef?: RefObject<HTMLDivElement>;
 }>({
   parentComponentPath: [],
 });
@@ -21,12 +22,14 @@ export const ReactiveHydrateContextProvider = (
   props: PropsWithChildren<{
     reactiveHydratingId?: string;
     reactiveHydratePortalState?: Record<string, any>;
+    portalRef?: RefObject<HTMLDivElement>;
   }>
 ) => {
   const {
     children,
     reactiveHydratingId,
     reactiveHydratePortalState: reactiveHydratePortalStateProp,
+    portalRef,
   } = props;
 
   const [registry] = useState(() => new Map());
@@ -63,12 +66,14 @@ export const ReactiveHydrateContextProvider = (
       parentComponentPath: [],
       registerComponentPath,
       unregisterComponentPath,
+      portalRef,
     }),
     [
       reactiveHydratingId,
       reactiveHydratePortalState,
       registerComponentPath,
       unregisterComponentPath,
+      portalRef,
     ]
   );
 

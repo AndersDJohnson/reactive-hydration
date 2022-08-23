@@ -6,6 +6,9 @@ import {
   useId,
   useMemo,
   useState,
+  forwardRef,
+  useRef,
+  RefObject,
 } from "react";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import {
@@ -23,10 +26,14 @@ const ReactiveHydrate = (
     id?: string;
     name: string;
     states?: string;
+    portalRef: RefObject<HTMLDivElement>;
   }>
 ) => {
+  const { id: idProp, portalRef } = props;
+
   const defaultId = useId();
-  const id = props.id ?? defaultId;
+
+  const id = idProp ?? defaultId;
 
   const { reactiveHydratingId } = useContext(ReactiveHydrateContext);
 
@@ -46,6 +53,7 @@ const ReactiveHydrate = (
           // This ID has to be here since it's the only one stable between server render and post client hydration.
           data-id={id}
           data-loaded={typeof window === "object"}
+          ref={portalRef}
         >
           {inner}
         </div>
@@ -139,12 +147,20 @@ export const reactiveHydrate = <
       [serializableState]
     );
 
+    const portalRef = useRef<HTMLDivElement>(null);
+
     return (
       <ReactiveHydrateContextProvider
         reactiveHydratingId={reactiveHydrateIdProp}
         reactiveHydratePortalState={reactiveHydratePortalState}
+        portalRef={portalRef}
       >
-        <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
+        <ReactiveHydrate
+          id={reactiveHydrateId}
+          name={name}
+          states={states}
+          portalRef={portalRef}
+        >
           <SerializedStateContext.Provider value={serializeStateContextValue}>
             {serializedState ? (
               <div data-id={reactiveHydrateId} data-state={serializedState} />

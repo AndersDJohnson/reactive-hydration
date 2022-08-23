@@ -1,6 +1,23 @@
-import { createContext } from "react";
+import { Context, createContext } from "react";
 
-export const MyContext = createContext({
+export type ContextWithDefaultValue<T> = Context<T> & {
+  readonly defaultValue: T;
+};
+
+const createContextWithDefaultValue = <T>(defaultValue: T) => {
+  const RawContext = createContext<T>(
+    defaultValue
+  ) as ContextWithDefaultValue<T>;
+
+  // @ts-expect-error We only initialize once.
+  RawContext.defaultValue = defaultValue;
+
+  return RawContext;
+};
+
+const defaultValue = {
   message: "default",
-  setMessage: (m: string) => {},
-});
+  setMessage: (_: string) => {},
+};
+
+export const MyContext = createContextWithDefaultValue(defaultValue);

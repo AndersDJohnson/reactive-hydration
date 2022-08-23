@@ -22,7 +22,11 @@ export const ExampleServerComponent = () => {
   );
 
   return (
-    <ContextSerialized context={MyContext} value={myContextValue}>
+    <ContextSerialized
+      context={MyContext}
+      name="MyContext"
+      value={myContextValue}
+    >
       <ExampleClientComponent />
 
       <ExampleClientComponent />
