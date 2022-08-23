@@ -11,6 +11,7 @@ export const ExampleClientComponent1 = reactiveHydrate(
   {
     name: "ExampleClientComponent1",
     states: "textState",
+    contexts: "MyContext",
   },
   () => {
     const [text] = useRecoilState(textState);

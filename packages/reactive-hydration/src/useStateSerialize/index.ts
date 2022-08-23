@@ -11,6 +11,8 @@ export const SerializedStateContext = createContext<
   | undefined
 >(undefined);
 
+SerializedStateContext.displayName = "SerializedStateContext";
+
 export const useStateSerialize = <S>(init: S | (() => S)) => {
   const { serializableState, setSerializedState, reactiveHydrateState } =
     useContext(SerializedStateContext) ?? {};

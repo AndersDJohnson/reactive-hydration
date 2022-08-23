@@ -23,6 +23,8 @@ export const ReactiveHydrateContext = createContext<{
   parentComponentPath: [],
 });
 
+ReactiveHydrateContext.displayName = "ReactiveHydrateContext";
+
 export const ReactiveHydrateContextProvider = (
   props: PropsWithChildren<{
     reactiveHydratingId?: string;

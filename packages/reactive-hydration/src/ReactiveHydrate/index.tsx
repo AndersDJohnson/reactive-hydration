@@ -89,6 +89,7 @@ export const reactiveHydrate = <
   args: {
     name: string;
     states?: string;
+    contexts?: string;
   },
   Comp: React.ComponentType<P>
 ) => {
@@ -191,7 +192,9 @@ export const reactiveHydrate = <
     );
   });
 
-  NewComp.displayName = Comp.displayName;
+  if (!Comp.displayName) {
+    Comp.displayName = args.name;
+  }
 
   hoistNonReactStatics(NewComp, Comp);
 
