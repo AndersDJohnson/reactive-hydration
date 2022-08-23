@@ -1,5 +1,41 @@
-import { Context, useContext, useState } from "react";
+import {
+  ComponentType,
+  Context,
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useState,
+} from "react";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
+
+export type ContextDefaultProvider<T> = ComponentType<
+  PropsWithChildren<{
+    Context: ContextWithDefaultValues<T>;
+    serializedValue?: T;
+  }>
+>;
+
+export interface ContextDefaultValues<T> {
+  defaultValue: T;
+  DefaultProvider: ContextDefaultProvider<T>;
+}
+
+export type ContextWithDefaultValues<T> = Context<T> & ContextDefaultValues<T>;
+
+export function createContextWithDefaultValue<T>(
+  defaultValue: T,
+  DefaultProvider: ContextDefaultProvider<T>
+) {
+  const RawContext = createContext<T>(
+    defaultValue
+  ) as ContextWithDefaultValues<T>;
+
+  RawContext.defaultValue = defaultValue;
+
+  RawContext.DefaultProvider = DefaultProvider;
+
+  return RawContext;
+}
 
 export const useContextReactiveHydration = <T>(context: Context<T>) => {
   const contextValue = useContext(context);

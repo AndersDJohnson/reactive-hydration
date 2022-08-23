@@ -31,7 +31,7 @@ export const ExampleClientComponent1 = reactiveHydrate(
         <div>context message = {message}</div>
 
         <button data-click onClick={handleClickContextSetMessage}>
-          context setMessage (error)
+          context setMessage
         </button>
 
         <button data-click>hydrate</button>

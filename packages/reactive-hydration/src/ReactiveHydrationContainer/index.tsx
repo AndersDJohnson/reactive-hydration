@@ -13,6 +13,7 @@ import { createPortal } from "react-dom";
 import domElementPath from "dom-element-path";
 import { getRegisteredState, State } from "../stateRegistry";
 import { truthy } from "../utilities/truthy";
+import { ContextWithDefaultValues } from "../useContextReactiveHydration";
 
 const loadedNestedsMap = new WeakMap();
 
@@ -63,7 +64,9 @@ export const ReactiveHydrationContainer = memo(
      * (context: string) => import(`../../contexts/${context}`).then((mod) => mod[context])
      * ```
      */
-    importContext: (context: string) => Promise<Context<unknown>>;
+    importContext: (
+      context: string
+    ) => Promise<ContextWithDefaultValues<unknown>>;
   }) => {
     const ref = useRef<HTMLDivElement>(null);
 
@@ -211,9 +214,12 @@ export const ReactiveHydrationContainer = memo(
 
           contexts.forEach((context) => {
             componentry = (
-              <context.context.Provider value={context.value}>
+              <context.context.DefaultProvider
+                Context={context.context}
+                serializedValue={context.value}
+              >
                 {componentry}
-              </context.context.Provider>
+              </context.context.DefaultProvider>
             );
           });
         }
