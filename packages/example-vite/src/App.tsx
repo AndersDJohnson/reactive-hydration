@@ -8,7 +8,7 @@ export const App = () => {
     <RecoilRoot>
       <RecoilNexus />
 
-      {/* TODO: Do we need `ReactiveHydrationComponentPathContextProvider` here? */}
+      {/* TODO: Do we need `ReactiveHydrateContextProvider` here? */}
 
       <h1>Home Page</h1>
 

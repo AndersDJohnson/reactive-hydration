@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 
-export const ReactiveHydrationComponentPathContext = createContext<{
+export const ReactiveHydrateContext = createContext<{
   reactiveHydratingId?: string;
   reactiveHydratePortalState?: Record<string, any>;
   parentComponentPath: (string | number)[];
@@ -17,7 +17,7 @@ export const ReactiveHydrationComponentPathContext = createContext<{
   parentComponentPath: [],
 });
 
-export const ReactiveHydrationComponentPathContextProvider = (
+export const ReactiveHydrateContextProvider = (
   props: PropsWithChildren<{
     reactiveHydratingId?: string;
     reactiveHydratePortalState?: Record<string, any>;
@@ -32,7 +32,7 @@ export const ReactiveHydrationComponentPathContextProvider = (
   const [registry] = useState(() => new Map());
 
   const { reactiveHydratePortalState: reactiveHydratePortalStateContext } =
-    useContext(ReactiveHydrationComponentPathContext);
+    useContext(ReactiveHydrateContext);
 
   const reactiveHydratePortalState =
     reactiveHydratePortalStateProp ?? reactiveHydratePortalStateContext;
@@ -73,10 +73,10 @@ export const ReactiveHydrationComponentPathContextProvider = (
   );
 
   return (
-    <ReactiveHydrationComponentPathContext.Provider
+    <ReactiveHydrateContext.Provider
       value={reactiveHydrationComponentPathContextValue}
     >
       {children}
-    </ReactiveHydrationComponentPathContext.Provider>
+    </ReactiveHydrateContext.Provider>
   );
 };

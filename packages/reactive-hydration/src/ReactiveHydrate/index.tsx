@@ -9,10 +9,10 @@ import {
 } from "react";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import {
-  ReactiveHydrationComponentPathContext,
-  ReactiveHydrationComponentPathContextProvider,
+  ReactiveHydrateContext,
+  ReactiveHydrateContextProvider,
   SerializedStateContext,
-} from ".."
+} from "..";
 
 /**
  * On server we'll create a wrapper `div` as a portal host to mount into,
@@ -28,9 +28,7 @@ const ReactiveHydrate = (
   const defaultId = useId();
   const id = props.id ?? defaultId;
 
-  const { reactiveHydratingId } = useContext(
-    ReactiveHydrationComponentPathContext
-  );
+  const { reactiveHydratingId } = useContext(ReactiveHydrateContext);
 
   const isHydratingSelf = reactiveHydratingId === id;
 
@@ -92,7 +90,7 @@ export const reactiveHydrate = <
       parentComponentPath,
       registerComponentPath,
       unregisterComponentPath,
-    } = useContext(ReactiveHydrationComponentPathContext) ?? {};
+    } = useContext(ReactiveHydrateContext) ?? {};
 
     const reactiveHydratePortalState =
       reactiveHydratePortalStateProp ?? reactiveHydratePortalStateContext;
@@ -142,7 +140,7 @@ export const reactiveHydrate = <
     );
 
     return (
-      <ReactiveHydrationComponentPathContextProvider
+      <ReactiveHydrateContextProvider
         reactiveHydratingId={reactiveHydrateIdProp}
         reactiveHydratePortalState={reactiveHydratePortalState}
       >
@@ -155,7 +153,7 @@ export const reactiveHydrate = <
             <Comp {...props} />
           </SerializedStateContext.Provider>
         </ReactiveHydrate>
-      </ReactiveHydrationComponentPathContextProvider>
+      </ReactiveHydrateContextProvider>
     );
   });
 

@@ -1,7 +1,7 @@
 import type { AppProps } from "next/app";
 import { RecoilRoot } from "recoil";
 import RecoilNexus from "recoil-nexus";
-import { ReactiveHydrationComponentPathContextProvider } from "reactive-hydration";
+import { ReactiveHydrateContextProvider } from "reactive-hydration";
 import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -9,10 +9,10 @@ function MyApp({ Component, pageProps }: AppProps) {
     <RecoilRoot>
       <RecoilNexus />
 
-      {/* TODO: Do we really need `ReactiveHydrationComponentPathContextProvider` at the root? */}
-      <ReactiveHydrationComponentPathContextProvider>
+      {/* TODO: Do we really need `ReactiveHydrateContextProvider` at the root? */}
+      <ReactiveHydrateContextProvider>
         <Component {...pageProps} />
-      </ReactiveHydrationComponentPathContextProvider>
+      </ReactiveHydrateContextProvider>
     </RecoilRoot>
   );
 }
