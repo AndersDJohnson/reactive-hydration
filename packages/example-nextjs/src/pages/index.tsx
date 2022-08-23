@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import { RecoilStateSetterButtonsDynamic } from "components/RecoilStateSetterButtons/dynamic";
+import { ExampleClientSetterButtonsDynamic } from "components/ExampleClientSetterButtons/dynamic";
 import { MyReactiveHydrationContainer } from "components/MyReactiveHydrationContainer";
 
 const Home: NextPage = () => {
@@ -12,7 +12,7 @@ const Home: NextPage = () => {
         <Link href="/other">Other Page</Link>
       </nav>
 
-      <RecoilStateSetterButtonsDynamic />
+      <ExampleClientSetterButtonsDynamic />
 
       <MyReactiveHydrationContainer />
     </div>
