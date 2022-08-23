@@ -1,4 +1,10 @@
-import { useCallback, useContext, useMemo, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useRecoilState } from "recoil";
 import { reactiveHydrate } from "reactive-hydration";
 import { textState } from "../../state/textState";
@@ -15,6 +21,8 @@ function useContextSerialized<T>(
   const [deserializedValue, setDeserializedValue] = useState<T>();
 
   const contextBeaconRef = useCallback((el: HTMLDivElement) => {
+    if (!el) return;
+
     console.log("*** el", el);
 
     const selector = `[data-context-name="${contextName}"]`;
@@ -22,16 +30,29 @@ function useContextSerialized<T>(
     console.log("*** selector", selector);
 
     const closestContextElementByName = el.closest<HTMLElement>(selector);
+    console.log(
+      "*** pre closestContextElementByName",
+      closestContextElementByName
+    );
 
-    console.log("*** closestContextElementByName", closestContextElementByName);
+    setTimeout(() => {
+      const closestContextElementByName = el.closest<HTMLElement>(selector);
 
-    const serializedValue = closestContextElementByName?.dataset.contextValue;
+      console.log(
+        "*** closestContextElementByName",
+        closestContextElementByName
+      );
 
-    console.log("*** serializedValue", serializedValue);
+      if (!closestContextElementByName) return;
 
-    if (!serializedValue) return;
+      const serializedValue = closestContextElementByName?.dataset.contextValue;
 
-    setDeserializedValue(JSON.parse(serializedValue));
+      console.log("*** serializedValue", serializedValue);
+
+      if (!serializedValue) return;
+
+      setDeserializedValue(JSON.parse(serializedValue));
+    });
   }, []);
 
   const liveValue = useContext(context);
@@ -63,19 +84,21 @@ export const ExampleClientComponent1 = reactiveHydrate(
     const [text] = useRecoilState(textState);
 
     const {
-      contextBeaconRef: myContextBeaconRef,
+      contextBeaconRef,
       value: { message },
     } = useContextSerialized("MyContext", MyContext);
 
     return (
       <>
-        <div data-context-beacon="MyContext" ref={myContextBeaconRef} />
+        <div data-context-beacon ref={contextBeaconRef} />
 
         <h4>ExampleClientComponent1</h4>
 
         <div>recoil textState = {text}</div>
 
         <div>context message = {message}</div>
+
+        <button data-click>hydrate</button>
       </>
     );
   }
