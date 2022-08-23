@@ -3,6 +3,7 @@ import { useRecoilState } from "recoil";
 import { reactiveHydrate, useStateSerialize } from "reactive-hydration";
 import { text2State } from "../../state/text2State";
 
+// TODO: Replace this with runtime monkeypatch of React module.
 const useState = useStateSerialize;
 
 export const ExampleClientComponent2 = reactiveHydrate(

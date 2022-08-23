@@ -7,6 +7,10 @@ import {
   useState,
 } from "react";
 
+export interface HooksRef {
+  contexts: Set<string>;
+}
+
 export const ReactiveHydrateContext = createContext<{
   reactiveHydratingId?: string;
   reactiveHydratePortalState?: Record<string, any>;
@@ -14,6 +18,7 @@ export const ReactiveHydrateContext = createContext<{
   registerComponentPath?: (name: string) => number;
   unregisterComponentPath?: (name: string) => void;
   portalRef?: RefObject<HTMLDivElement>;
+  hooksRef?: RefObject<HooksRef>;
 }>({
   parentComponentPath: [],
 });
@@ -23,6 +28,7 @@ export const ReactiveHydrateContextProvider = (
     reactiveHydratingId?: string;
     reactiveHydratePortalState?: Record<string, any>;
     portalRef?: RefObject<HTMLDivElement>;
+    hooksRef?: RefObject<HooksRef>;
   }>
 ) => {
   const {
@@ -30,6 +36,7 @@ export const ReactiveHydrateContextProvider = (
     reactiveHydratingId,
     reactiveHydratePortalState: reactiveHydratePortalStateProp,
     portalRef,
+    hooksRef,
   } = props;
 
   const [registry] = useState(() => new Map());
@@ -67,6 +74,7 @@ export const ReactiveHydrateContextProvider = (
       registerComponentPath,
       unregisterComponentPath,
       portalRef,
+      hooksRef,
     }),
     [
       reactiveHydratingId,
@@ -74,6 +82,7 @@ export const ReactiveHydrateContextProvider = (
       registerComponentPath,
       unregisterComponentPath,
       portalRef,
+      hooksRef,
     ]
   );
 

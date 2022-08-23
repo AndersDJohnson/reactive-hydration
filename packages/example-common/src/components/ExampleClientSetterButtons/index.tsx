@@ -2,7 +2,7 @@ import { useCallback, useContext } from "react";
 import { useRecoilState } from "recoil";
 import { textState } from "../../state/textState";
 import { text2State } from "../../state/text2State";
-import { MyContext } from "../MyContext";
+// import { MyContext } from "../MyContext";
 
 export const ExampleClientSetterButtons = () => {
   const [, setText] = useRecoilState(textState);

@@ -22,6 +22,7 @@ export const ExampleServerComponent = () => {
   );
 
   return (
+    // TODO: Replace this with runtime monkeypatch of React module.
     <ContextSerialized
       context={MyContext}
       name="MyContext"

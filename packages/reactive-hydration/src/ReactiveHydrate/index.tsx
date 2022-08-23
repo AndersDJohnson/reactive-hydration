@@ -12,10 +12,11 @@ import {
 } from "react";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import {
+  HooksRef,
   ReactiveHydrateContext,
   ReactiveHydrateContextProvider,
-  SerializedStateContext,
-} from "..";
+} from "../ReactiveHydrateContext";
+import { SerializedStateContext } from "../useStateSerialize";
 
 /**
  * On server we'll create a wrapper `div` as a portal host to mount into,
@@ -57,6 +58,22 @@ const ReactiveHydrate = (
         <>{props.children}</>
       )}
     </>
+  );
+};
+
+const WriteContextsConsumed = () => {
+  const { hooksRef } = useContext(ReactiveHydrateContext);
+
+  const setValues = hooksRef?.current?.contexts.values();
+
+  const contexts = setValues ? [...setValues] : undefined;
+
+  if (!contexts?.length) return null;
+
+  return (
+    <div data-contexts={contexts.join(",")}>
+      contexts = {contexts.join(",")}
+    </div>
   );
 };
 
@@ -144,12 +161,16 @@ export const reactiveHydrate = <
     );
 
     const portalRef = useRef<HTMLDivElement>(null);
+    const hooksRef = useRef<HooksRef>({
+      contexts: new Set(),
+    });
 
     return (
       <ReactiveHydrateContextProvider
         reactiveHydratingId={reactiveHydrateIdProp}
         reactiveHydratePortalState={reactiveHydratePortalState}
         portalRef={portalRef}
+        hooksRef={hooksRef}
       >
         <ReactiveHydrate
           id={reactiveHydrateId}
@@ -161,9 +182,10 @@ export const reactiveHydrate = <
             {serializedState ? (
               <div data-id={reactiveHydrateId} data-state={serializedState} />
             ) : null}
-
             <Comp {...props} />
           </SerializedStateContext.Provider>
+
+          <WriteContextsConsumed />
         </ReactiveHydrate>
       </ReactiveHydrateContextProvider>
     );
