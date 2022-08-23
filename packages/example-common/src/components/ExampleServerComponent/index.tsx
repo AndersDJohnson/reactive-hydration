@@ -11,7 +11,7 @@ export const ExampleServerComponent = () => {
     "Rendering ExampleServerComponent (should be on server only on initial page load, but may be loaded on client after routing)"
   );
 
-  const [message, setMessage] = useState("initial");
+  const [message, setMessage] = useState(`initial ${Math.random()}`);
 
   const myContextValue = useMemo(
     () => ({
