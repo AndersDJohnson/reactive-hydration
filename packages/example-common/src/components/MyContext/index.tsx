@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useMemo, useState } from "react";
 import { createContextWithDefaultValue } from "reactive-hydration";
 
@@ -7,10 +8,9 @@ export const MyContext = createContextWithDefaultValue(
     setMessage: (_: string) => {},
   },
   (props) => {
-    // TODO: Read default context value from state.
-    const [message, setMessage] = useState<string>(
-      props.serializedValue?.message ?? props.Context.defaultValue.message
-    );
+    const { children, serializedValue, Context, serializedElement } = props;
+
+    const [message, setMessage] = useState<string>(serializedValue.message);
 
     const value = useMemo(
       () => ({
@@ -20,11 +20,11 @@ export const MyContext = createContextWithDefaultValue(
       [message, setMessage]
     );
 
-    return (
-      <props.Context.Provider value={value}>
-        {props.children}
-      </props.Context.Provider>
-    );
+    useEffect(() => {
+      serializedElement.dataset.contextValue = JSON.stringify(value);
+    }, [value]);
+
+    return <Context.Provider value={value}>{children}</Context.Provider>;
   }
 );
 

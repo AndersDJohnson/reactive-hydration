@@ -11,7 +11,8 @@ import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 export type ContextDefaultProvider<T> = ComponentType<
   PropsWithChildren<{
     Context: ContextWithDefaultValues<T>;
-    serializedValue?: T;
+    serializedElement: HTMLElement;
+    serializedValue: T;
   }>
 >;
 

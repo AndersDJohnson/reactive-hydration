@@ -207,6 +207,7 @@ export const ReactiveHydrationContainer = memo(
                 return {
                   value: JSON.parse(contextValue),
                   context: await importContext(contextName),
+                  $context,
                 };
               })
             )
@@ -217,6 +218,7 @@ export const ReactiveHydrationContainer = memo(
               <context.context.DefaultProvider
                 Context={context.context}
                 serializedValue={context.value}
+                serializedElement={context.$context}
               >
                 {componentry}
               </context.context.DefaultProvider>
