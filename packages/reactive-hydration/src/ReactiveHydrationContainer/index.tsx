@@ -190,8 +190,6 @@ export const ReactiveHydrationContainer = memo(
         );
 
         if ($contexts.length) {
-          console.log("*** $contexts", $contexts);
-
           const contexts = (
             await Promise.all(
               $contexts.map(async ($context) => {
@@ -208,8 +206,6 @@ export const ReactiveHydrationContainer = memo(
               })
             )
           ).filter(truthy);
-
-          console.log("*** contexts", contexts);
 
           contexts.forEach((context) => {
             componentry = (
