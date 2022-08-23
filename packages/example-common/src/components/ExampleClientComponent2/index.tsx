@@ -27,6 +27,8 @@ export const ExampleClientComponent2 = reactiveHydrate(
         <button onClick={handleClick} data-click>
           count++
         </button>
+
+        <button data-click>hydrate</button>
       </>
     );
   }

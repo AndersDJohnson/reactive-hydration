@@ -19,6 +19,8 @@ export const ExampleClientComponentNesting = reactiveHydrate(
 
         <div>recoil textState = {text}</div>
 
+        <button data-click>hydrate</button>
+
         <div
           style={{
             paddingLeft: 48,

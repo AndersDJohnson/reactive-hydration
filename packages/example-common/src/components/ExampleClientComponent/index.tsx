@@ -18,6 +18,8 @@ export const ExampleClientComponent = reactiveHydrate(
 
         <div>recoil textState = {text}</div>
         <div>recoil text2State = {text2}</div>
+
+        <button data-click>hydrate</button>
       </>
     );
   }
