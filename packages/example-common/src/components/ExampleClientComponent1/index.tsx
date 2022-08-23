@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { useRecoilState } from "recoil";
 import { reactiveHydrate } from "reactive-hydration";
 import { textState } from "../../state/textState";
@@ -12,7 +12,11 @@ export const ExampleClientComponent1 = reactiveHydrate(
   () => {
     const [text] = useRecoilState(textState);
 
-    const { message } = useContext(MyContext);
+    const { message, setMessage } = useContext(MyContext);
+
+    const handleClickContextSetMessage = useCallback(() => {
+      setMessage(`message: ${Math.random()}`);
+    }, [setMessage]);
 
     return (
       <>
@@ -21,6 +25,10 @@ export const ExampleClientComponent1 = reactiveHydrate(
         <div>recoil textState = {text}</div>
 
         <div>context message = {message}</div>
+
+        <button data-click onClick={handleClickContextSetMessage}>
+          context setMessage (error)
+        </button>
 
         <button data-click>hydrate</button>
       </>
