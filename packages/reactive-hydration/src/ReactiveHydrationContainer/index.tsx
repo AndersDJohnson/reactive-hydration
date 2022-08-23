@@ -93,25 +93,20 @@ export const ReactiveHydrationContainer = memo(
 
         loadedNestedsMap.set($element, true);
 
-        const $portal = $element.parentElement;
-
-        if (!$portal) return;
-
-        $portal.dataset.loading = "true";
+        $element.dataset.loading = "true";
 
         const Comp: ComponentType<{
           reactiveHydrateId?: string;
           reactiveHydratePortalState?: Record<string, any>;
         }> = await importComponent(component);
 
-        const reactiveHydrateId = $portal.dataset.id;
+        const reactiveHydrateId = $element.dataset.id;
 
         const portalState: Record<string, any> = {};
 
         let handledIds: string[] = [];
 
-        let $currentComponent =
-          $portal.querySelector<HTMLElement>("[data-component]");
+        let $currentComponent: HTMLElement | null = $element;
         let previousComponentIndexByName = new Map();
 
         while ($currentComponent) {
@@ -145,7 +140,7 @@ export const ReactiveHydrationContainer = memo(
             .map((hid) => `:not([data-id="${hid}"])`)
             .join("")}`;
 
-          const $nextComponent = $portal.querySelector<HTMLElement>(
+          const $nextComponent = $element.querySelector<HTMLElement>(
             nextComponentSelector
           );
 
@@ -156,17 +151,24 @@ export const ReactiveHydrationContainer = memo(
           $currentComponent = $nextComponent;
         }
 
-        const $newPortal = document.createElement("div");
-        $newPortal.dataset.portal = "true";
-        $newPortal.dataset.id = reactiveHydrateId;
-        $newPortal.dataset.loaded = "true";
+        const $newElement = document.createElement("div");
+
+        const dataset = { ...$element.dataset };
+
+        console.log("*** dataset", dataset);
+        for (const [key, value] of Object.entries(dataset)) {
+          $newElement.dataset[key] = value;
+        }
+        $newElement.dataset.id = reactiveHydrateId;
+        $newElement.dataset.loading = "false";
+        $newElement.dataset.loaded = "true";
 
         if (callback) {
           setPendingCallbacks((p) => [...p, callback]);
         }
 
         const $contexts = [];
-        let $context: HTMLElement | null | undefined = $portal;
+        let $context: HTMLElement | null | undefined = $element;
 
         while (true) {
           const $previous: HTMLElement | null | undefined = $context;
@@ -216,13 +218,13 @@ export const ReactiveHydrationContainer = memo(
           });
         }
 
-        setPortals((ps) => [...ps, createPortal(componentry, $newPortal)]);
+        setPortals((ps) => [...ps, createPortal(componentry, $newElement)]);
 
         // TODO: Move into separate effect so it's guaranteed to run only after portals are rendered into component tree?
         // This would avoid any flickering of empty DOM.
         // And ensure click callbacks fire after new portal is inserted into DOM.
         setTimeout(() => {
-          $portal.replaceWith($newPortal);
+          $element.replaceWith($newElement);
         });
       },
       []

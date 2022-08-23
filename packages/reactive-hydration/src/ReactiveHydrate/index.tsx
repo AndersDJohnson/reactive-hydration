@@ -39,26 +39,22 @@ const ReactiveHydrate = (
 
   const isHydratingSelf = reactiveHydratingId === id;
 
-  const inner = (
-    <div data-id={id} data-component={props.name} data-states={props.states}>
-      {props.children}
-    </div>
-  );
-
   return (
     <>
       {typeof window !== "object" || !isHydratingSelf ? (
         <div
-          data-portal
+          data-component={props.name}
+          data-states={props.states}
           // This ID has to be here since it's the only one stable between server render and post client hydration.
           data-id={id}
+          // For soft route loading on client-side, check for `window`.
           data-loaded={typeof window === "object"}
           ref={portalRef}
         >
-          {inner}
+          {props.children}
         </div>
       ) : (
-        <>{inner}</>
+        <>{props.children}</>
       )}
     </>
   );

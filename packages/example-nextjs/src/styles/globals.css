@@ -7,22 +7,22 @@
   }
 }
 
-[data-loading] {
+[data-loading="true"] {
   pointer-events: none;
   animation: loading-pulse 0.5s infinite;
   animation-direction: alternate;
 }
 
-[data-portal] {
+[data-component] {
   padding: 4px;
   margin: 4px 0;
 }
 
-[data-portal]:not([data-loaded="true"]) {
+[data-component]:not([data-loaded="true"]) {
   background: rgb(255, 236, 201);
 }
 
-[data-portal][data-loaded="true"] {
+[data-component][data-loaded="true"] {
   background: rgb(223, 255, 223);
 }
 
