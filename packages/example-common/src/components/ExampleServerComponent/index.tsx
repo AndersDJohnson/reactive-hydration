@@ -22,22 +22,40 @@ export const ExampleServerComponent = () => {
   );
 
   return (
-    // TODO: Replace this with runtime monkeypatch of React module.
-    <ContextSerialized
-      context={MyContext}
-      name="MyContext"
-      value={myContextValue}
-    >
-      <ExampleClientComponent />
+    <div>
+      <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
+        <div>Inside of MyContext:</div>
 
-      <ExampleClientComponent />
+        {/* TODO: Replace this with runtime monkeypatch of React module. */}
+        <ContextSerialized
+          context={MyContext}
+          name="MyContext"
+          value={myContextValue}
+        >
+          <ExampleClientComponent />
 
-      <ExampleClientComponent1 />
+          <ExampleClientComponent />
 
-      <ExampleClientComponent2 />
+          <ExampleClientComponent1 />
 
-      <ExampleClientComponentNesting />
-    </ContextSerialized>
+          <ExampleClientComponent2 />
+
+          <ExampleClientComponentNesting />
+        </ContextSerialized>
+      </div>
+
+      <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
+        <div>Separate MyContext:</div>
+
+        <ContextSerialized
+          context={MyContext}
+          name="MyContext"
+          value={myContextValue}
+        >
+          <ExampleClientComponent1 />
+        </ContextSerialized>
+      </div>
+    </div>
   );
 };
 

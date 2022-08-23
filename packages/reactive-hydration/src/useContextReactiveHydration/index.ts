@@ -8,11 +8,15 @@ import {
 } from "react";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 
+export type ContextUpdater<T> = (value: T) => void;
+
 export type ContextDefaultProvider<T> = ComponentType<
   PropsWithChildren<{
     Context: ContextWithDefaultValues<T>;
     serializedElement: HTMLElement;
     serializedValue: T;
+    registerContextUpdater: (contextUpdater: ContextUpdater<T>) => void;
+    setContextValue: ContextUpdater<T>;
   }>
 >;
 

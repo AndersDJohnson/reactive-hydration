@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 @keyframes loading-pulse {
   0% {
     opacity: 1;

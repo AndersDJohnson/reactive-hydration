@@ -13,7 +13,10 @@ import { createPortal } from "react-dom";
 import domElementPath from "dom-element-path";
 import { getRegisteredState, State } from "../stateRegistry";
 import { truthy } from "../utilities/truthy";
-import { ContextWithDefaultValues } from "../useContextReactiveHydration";
+import {
+  ContextUpdater,
+  ContextWithDefaultValues,
+} from "../useContextReactiveHydration";
 
 const loadedNestedsMap = new WeakMap();
 
@@ -74,6 +77,38 @@ export const ReactiveHydrationContainer = memo(
 
     const [pendingCallbacks, setPendingCallbacks] = useState<(() => void)[]>(
       []
+    );
+
+    const [contextUpdatersByContextElement] = useState(
+      new Map<HTMLElement, Set<ContextUpdater<unknown>>>()
+    );
+
+    const getRegisterContextUpdaterByContextElement = useCallback(
+      ($context: HTMLElement) => (contextUpdater: (value: unknown) => void) => {
+        let contextUpdaters = contextUpdatersByContextElement.get($context);
+
+        if (!contextUpdaters) {
+          contextUpdaters = new Set();
+
+          contextUpdatersByContextElement.set($context, contextUpdaters);
+        }
+
+        contextUpdaters.add(contextUpdater);
+
+        return () => {
+          contextUpdaters?.delete(contextUpdater);
+        };
+      },
+      [contextUpdatersByContextElement]
+    );
+
+    const getSetContextValueByContextElement = useCallback(
+      ($context: HTMLElement) => (value: unknown) => {
+        let contextUpdaters = contextUpdatersByContextElement.get($context);
+
+        contextUpdaters?.forEach((contextUpdater) => contextUpdater(value));
+      },
+      [contextUpdatersByContextElement]
     );
 
     const hydrate = useCallback(
@@ -214,11 +249,20 @@ export const ReactiveHydrationContainer = memo(
           ).filter(truthy);
 
           contexts.forEach((context) => {
+            const registerContextUpdater =
+              getRegisterContextUpdaterByContextElement(context.$context);
+
+            const setContextValue = getSetContextValueByContextElement(
+              context.$context
+            );
+
             componentry = (
               <context.context.DefaultProvider
                 Context={context.context}
                 serializedValue={context.value}
                 serializedElement={context.$context}
+                registerContextUpdater={registerContextUpdater}
+                setContextValue={setContextValue}
               >
                 {componentry}
               </context.context.DefaultProvider>
