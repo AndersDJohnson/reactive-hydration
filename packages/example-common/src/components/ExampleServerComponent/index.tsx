@@ -62,7 +62,7 @@ export const ExampleServerComponent = () => {
             context={DummyContext}
             name="DummyContext"
             value={myContextValue}
-          ></ContextSerialized>
+          />
         </ContextSerialized>
 
         {/* Just to test context tree walk order. */}
@@ -70,7 +70,7 @@ export const ExampleServerComponent = () => {
           context={DummyContext}
           name="DummyContext"
           value={myContextValue}
-        ></ContextSerialized>
+        />
       </div>
 
       <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>

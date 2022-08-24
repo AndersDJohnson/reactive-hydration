@@ -78,6 +78,10 @@ export const ReactiveHydrationContainer = memo(
       context: string
     ) => Promise<ContextWithDefaultValues<unknown>>;
   }) => {
+    const isClientSideSoftRouteAwayFromInitialUrl =
+      typeof window === "object" &&
+      (window.location.href !== initialUrl || isSoftRouting);
+
     const ref = useRef<HTMLDivElement>(null);
 
     const hasInitializedRef = useRef(false);
@@ -421,6 +425,8 @@ export const ReactiveHydrationContainer = memo(
     useEffect(() => {
       if (!ref.current) return;
 
+      if (isClientSideSoftRouteAwayFromInitialUrl) return;
+
       // Prevent 2x runs in development.
       if (hasInitializedRef.current) return;
       hasInitializedRef.current = true;
@@ -554,7 +560,7 @@ export const ReactiveHydrationContainer = memo(
         .filter(truthy);
 
       setAllNesteds((a) => [...a, ...newAllNesteds]);
-    }, [hydrate]);
+    }, [hydrate, isClientSideSoftRouteAwayFromInitialUrl]);
 
     if (typeof window !== "object" && Comp) {
       return (
@@ -565,10 +571,7 @@ export const ReactiveHydrationContainer = memo(
       );
     }
 
-    if (
-      typeof window === "object" &&
-      (window.location.href !== initialUrl || isSoftRouting)
-    ) {
+    if (isClientSideSoftRouteAwayFromInitialUrl) {
       isSoftRouting = true;
 
       return (
