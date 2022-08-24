@@ -357,6 +357,8 @@ export const ReactiveHydrationContainerInner = memo(
       }[]
     >([]);
 
+    // usePluginRecoil();
+
     // TODO: Handle async atoms/selectors/promises?
 
     // TODO: We may be able to detect initial value dynamically,
@@ -402,66 +404,83 @@ export const ReactiveHydrationContainerInner = memo(
     }, [allNestedValuesAtom, allNesteds, hydrate]);
 
     useEffect(() => {
-      if (!ref.current) return;
-
-      // Prevent 2x runs in development.
-      if (hasInitializedRef.current) return;
-      hasInitializedRef.current = true;
-
       const $nesteds =
-        ref.current.querySelectorAll<HTMLElement>("[data-component]");
+        ref.current?.querySelectorAll<HTMLElement>("[data-component]");
+
+      if (!$nesteds) return;
+
+      $nesteds.forEach(($nested) => {
+        const init = $nested.dataset?.init;
+        if (init === "true") return;
+        $nested.dataset.init = "true";
+
+        const id = $nested.dataset.id;
+        const component = $nested.dataset.component;
+
+        if (!id) return;
+        if (!component) return;
+
+        pluginClick({
+          $component: $nested,
+          name: component,
+          id,
+          hydrate,
+        });
+
+        const contextNames = $nested
+          .querySelector<HTMLElement>(
+            // TODO: Check browser support for `:scope` selector.
+            ":scope > [data-contexts]"
+          )
+          ?.dataset.contexts?.split(",");
+
+        contextNames?.forEach((contextName) => {
+          const $context = $nested.closest<HTMLElement>(
+            `[data-context-name="${contextName}"]`
+          );
+
+          if (!$context) return;
+
+          let contextHydratorsByContextElement =
+            contextHydratorsByContextElementThenComponentElement.get($context);
+
+          if (!contextHydratorsByContextElement) {
+            contextHydratorsByContextElement = new Map();
+
+            contextHydratorsByContextElementThenComponentElement.set(
+              $context,
+              contextHydratorsByContextElement
+            );
+          }
+
+          contextHydratorsByContextElement?.set($nested, () => {
+            hydrate({
+              $component: $nested,
+              name: component,
+              reason: ["context", contextName],
+            });
+          });
+        });
+      });
+    }, [hydrate]);
+
+    useEffect(() => {
+      const $nesteds =
+        ref.current?.querySelectorAll<HTMLElement>("[data-component]");
+
+      if (!$nesteds) return;
 
       const newAllNesteds = Array.from($nesteds)
         .map(($nested) => {
+          const initRecoil = $nested.dataset?.initRecoil;
+          if (initRecoil === "true") return;
+          $nested.dataset.initRecoil = "true";
+
           const id = $nested.dataset.id;
           const component = $nested.dataset.component;
 
           if (!id) return;
           if (!component) return;
-
-          pluginClick({
-            $component: $nested,
-            name: component,
-            id,
-            hydrate,
-          });
-
-          const contextNames = $nested
-            .querySelector<HTMLElement>(
-              // TODO: Check browser support for `:scope` selector.
-              ":scope > [data-contexts]"
-            )
-            ?.dataset.contexts?.split(",");
-
-          contextNames?.forEach((contextName) => {
-            const $context = $nested.closest<HTMLElement>(
-              `[data-context-name="${contextName}"]`
-            );
-
-            if (!$context) return;
-
-            let contextHydratorsByContextElement =
-              contextHydratorsByContextElementThenComponentElement.get(
-                $context
-              );
-
-            if (!contextHydratorsByContextElement) {
-              contextHydratorsByContextElement = new Map();
-
-              contextHydratorsByContextElementThenComponentElement.set(
-                $context,
-                contextHydratorsByContextElement
-              );
-            }
-
-            contextHydratorsByContextElement?.set($nested, () => {
-              hydrate({
-                $component: $nested,
-                name: component,
-                reason: ["context", contextName],
-              });
-            });
-          });
 
           const stateNames = $nested.dataset.states?.split(",");
 
@@ -474,8 +493,7 @@ export const ReactiveHydrationContainerInner = memo(
 
           return {
             $nested,
-            // TODO: Handle the component name data attribute not existing with error?
-            component: $nested.dataset.component ?? "",
+            component,
             states,
           };
         })
