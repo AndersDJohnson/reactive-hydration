@@ -8,13 +8,6 @@ import {
 let initialUrl = typeof window === "object" ? window.location.href : undefined;
 let isSoftRouting = false;
 
-interface PortalContextTreeEntry {
-  key: string;
-  ContextWrapper?: ComponentType<PropsWithChildren<unknown>>;
-  childPortalTreeEntries: PortalContextTreeEntry[];
-  leafPortals: ReactPortal[];
-}
-
 export const ReactiveHydrationContainer = memo(
   (props: ReactiveHydrationContainerProps) => {
     const { Comp, LazyComp, importComponent, importContext } = props;
