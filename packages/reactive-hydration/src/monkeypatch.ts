@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks -- Okay to disable here. In any given hook call, we won't change number of hook calls between renders. */
 import React from "react";
 import { ReactiveHydrateContext } from "./ReactiveHydrateContext";
-import { useContextReactiveHydration } from "./useContextReactiveHydration";
+import { useContextUsageTracker } from "./useContextUsageTracker";
 import { useStateSerialize } from "./useStateSerialize";
 
 const { useContext, useState } = React;
@@ -37,5 +37,5 @@ React.useContext = (context: Context<unknown>, bypassMonkeypatch) => {
     return useContext(context);
   }
 
-  return useContextReactiveHydration(context);
+  return useContextUsageTracker(context);
 };

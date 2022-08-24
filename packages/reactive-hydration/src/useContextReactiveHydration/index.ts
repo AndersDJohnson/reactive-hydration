@@ -2,7 +2,7 @@ import { Context } from "react";
 import { useContext, useState } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 
-export const useContextReactiveHydration = <T>(context: Context<T>) => {
+export const useContextUsageTracker = <T>(context: Context<T>) => {
   const contextValue = useContext(context);
 
   const { hooksRef } = useContext(ReactiveHydrateContext);
