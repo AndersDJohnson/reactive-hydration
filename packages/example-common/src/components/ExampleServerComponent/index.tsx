@@ -84,6 +84,12 @@ export const ExampleServerComponent = () => {
           <ExampleClientComponent1 />
         </ContextSerialized>
       </div>
+
+      <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
+        <div>No MyContext:</div>
+
+        <ExampleClientComponent1 />
+      </div>
     </div>
   );
 };

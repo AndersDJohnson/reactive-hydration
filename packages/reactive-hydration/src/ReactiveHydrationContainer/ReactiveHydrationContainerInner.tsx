@@ -9,6 +9,8 @@ import {
   ContextPortalTreeRenderer,
 } from "./ContextPortalTreeRenderer";
 import { usePluginRecoil } from "./plugins/recoil";
+import { ContextHydratorsByContextElementThenComponentElement } from "./types";
+import { pluginContext } from "./plugins/context";
 
 const hydratedComponentsMap = new WeakMap();
 
@@ -59,9 +61,8 @@ export const ReactiveHydrationContainerInner = memo(
       []
     );
 
-    const [contextHydratorsByContextElementThenComponentElement] = useState(
-      new Map<HTMLElement, Map<HTMLElement, () => void>>()
-    );
+    const [contextHydratorsByContextElementThenComponentElement] =
+      useState<ContextHydratorsByContextElementThenComponentElement>(new Map());
 
     const getSetContextValueByContextElement = useCallback(
       ($context: HTMLElement) => (value: unknown) => {
@@ -344,45 +345,17 @@ export const ReactiveHydrationContainerInner = memo(
         if (!component) return;
 
         pluginClick({
-          $component: $component,
+          $component,
           name: component,
           id,
           hydrate,
         });
 
-        const contextNames = $component
-          .querySelector<HTMLElement>(
-            // TODO: Check browser support for `:scope` selector.
-            ":scope > [data-contexts]"
-          )
-          ?.dataset.contexts?.split(",");
-
-        contextNames?.forEach((contextName) => {
-          const $context = $component.closest<HTMLElement>(
-            `[data-context-name="${contextName}"]`
-          );
-
-          if (!$context) return;
-
-          let contextHydratorsByContextElement =
-            contextHydratorsByContextElementThenComponentElement.get($context);
-
-          if (!contextHydratorsByContextElement) {
-            contextHydratorsByContextElement = new Map();
-
-            contextHydratorsByContextElementThenComponentElement.set(
-              $context,
-              contextHydratorsByContextElement
-            );
-          }
-
-          contextHydratorsByContextElement?.set($component, () => {
-            hydrate({
-              $component: $component,
-              name: component,
-              reason: ["context", contextName],
-            });
-          });
+        pluginContext({
+          $component,
+          name: component,
+          hydrate,
+          contextHydratorsByContextElementThenComponentElement,
         });
       });
     }, [hydrate]);
