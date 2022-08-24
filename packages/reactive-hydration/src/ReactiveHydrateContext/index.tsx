@@ -12,6 +12,7 @@ export interface HooksRef {
 }
 
 export const ReactiveHydrateContext = createContext<{
+  isActive: boolean;
   reactiveHydratingId?: string;
   reactiveHydratePortalState?: Record<string, any>;
   parentComponentPath: (string | number)[];
@@ -20,6 +21,7 @@ export const ReactiveHydrateContext = createContext<{
   portalRef?: RefObject<HTMLElement>;
   hooksRef?: RefObject<HooksRef>;
 }>({
+  isActive: false,
   parentComponentPath: [],
 });
 
@@ -70,6 +72,7 @@ export const ReactiveHydrateContextProvider = (
 
   const reactiveHydrationComponentPathContextValue = useMemo(
     () => ({
+      isActive: true,
       reactiveHydratingId,
       reactiveHydratePortalState,
       parentComponentPath: [],
