@@ -1,8 +1,9 @@
-import { Context, PropsWithChildren, useMemo } from "react";
+import { PropsWithChildren, useMemo } from "react";
+import { ContextWithDefaultValues } from "../useContextReactiveHydration";
 
 export function ContextSerialized<T>(
   props: PropsWithChildren<{
-    context: Context<T>;
+    context: ContextWithDefaultValues<T>;
     name: string;
     value: T;
   }>

@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { createContextWithDefaultValue } from "reactive-hydration";
 
 export const MyContext = createContextWithDefaultValue(
+  "MyContext",
   {
     message: "default",
     setMessage: (_: string) => {},
@@ -42,5 +43,3 @@ export const MyContext = createContextWithDefaultValue(
     return <Context.Provider value={value}>{children}</Context.Provider>;
   }
 );
-
-MyContext.displayName = "MyContext";

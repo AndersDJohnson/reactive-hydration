@@ -73,6 +73,8 @@ export const ReactiveHydrationContainer = memo(
   }) => {
     const ref = useRef<HTMLDivElement>(null);
 
+    const hasInitializedRef = useRef(false);
+
     const [portals, setPortals] = useState<ReactPortal[]>([]);
 
     const [pendingCallbacks, setPendingCallbacks] = useState<(() => void)[]>(
@@ -360,8 +362,6 @@ export const ReactiveHydrationContainer = memo(
         hydrate({ $element: $nested, component, reason: [reason] });
       });
     }, [allNestedValuesAtom, allNesteds, hydrate]);
-
-    const hasInitializedRef = useRef(false);
 
     useEffect(() => {
       if (!ref.current) return;

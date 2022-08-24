@@ -28,6 +28,7 @@ export interface ContextDefaultValues<T> {
 export type ContextWithDefaultValues<T> = Context<T> & ContextDefaultValues<T>;
 
 export function createContextWithDefaultValue<T>(
+  displayName: string,
   defaultValue: T,
   DefaultProvider: ContextDefaultProvider<T>
 ) {
@@ -38,6 +39,8 @@ export function createContextWithDefaultValue<T>(
   RawContext.defaultValue = defaultValue;
 
   RawContext.DefaultProvider = DefaultProvider;
+
+  RawContext.displayName = displayName;
 
   return RawContext;
 }
