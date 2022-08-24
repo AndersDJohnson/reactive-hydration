@@ -38,10 +38,10 @@ export const ExampleServerComponent = () => {
 
   return (
     <div>
-      {/* <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
+      <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
         <div>Inside of MyContext:</div>
 
-        {/* TODO: Replace this with runtime monkeypatch of React module. * /}
+        {/* TODO: Replace this with runtime monkeypatch of React module. */}
         <ContextSerialized
           context={MyContext}
           name="MyContext"
@@ -57,7 +57,7 @@ export const ExampleServerComponent = () => {
 
           <ExampleClientComponentNesting />
 
-          {/* Just to test context tree walk order. * /}
+          {/* Just to test context tree walk order. */}
           <ContextSerialized
             context={DummyContext}
             name="DummyContext"
@@ -65,7 +65,7 @@ export const ExampleServerComponent = () => {
           />
         </ContextSerialized>
 
-        {/* Just to test context tree walk order. * /}
+        {/* Just to test context tree walk order. */}
         <ContextSerialized
           context={DummyContext}
           name="DummyContext"
@@ -83,10 +83,10 @@ export const ExampleServerComponent = () => {
         >
           <ExampleClientComponent1 />
         </ContextSerialized>
-      </div> */}
+      </div>
 
       <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
-        <div>No MyContext:</div>
+        <div>No MyContext (setting message is a no-op here):</div>
 
         <ExampleClientComponent1 />
       </div>

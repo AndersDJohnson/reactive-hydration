@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode, useCallback } from "react";
+import { Fragment, PropsWithChildren, ReactNode, useCallback } from "react";
 import { ComponentType, memo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { truthy } from "../utilities/truthy";
@@ -415,7 +415,9 @@ export const ReactiveHydrationContainerInner = memo(
           )
         )}
 
-        {contextFreePortals}
+        {contextFreePortals.map((portal) => (
+          <Fragment key={portal.key}>{portal.portal}</Fragment>
+        ))}
       </>
     );
   },
