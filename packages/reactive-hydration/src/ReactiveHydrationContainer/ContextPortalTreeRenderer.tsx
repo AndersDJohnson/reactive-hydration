@@ -10,10 +10,6 @@ export interface ContextPortalTreeEntry {
   }[];
 }
 
-const Stable = (props: PropsWithChildren<unknown>) => <>{props.children}</>;
-
-Stable.displayName = "Stable";
-
 export const ContextPortalTreeRenderer = (props: {
   contextPortalTreeEntry: ContextPortalTreeEntry;
 }) => {
@@ -24,7 +20,7 @@ export const ContextPortalTreeRenderer = (props: {
 
   if (leafPortals?.length) {
     const leafPortalsWithKeys = leafPortals.map((leafPortal) => (
-      <Stable key={leafPortal.key}>{leafPortal.portal}</Stable>
+      <>{leafPortal.portal}</>
     ));
 
     if (ContextWrapper) {
