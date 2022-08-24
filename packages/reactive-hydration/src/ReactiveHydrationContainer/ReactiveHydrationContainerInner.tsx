@@ -1,9 +1,6 @@
 import { PropsWithChildren, ReactNode, useCallback, useMemo } from "react";
-import { selector, useRecoilValue } from "recoil";
-import { getRecoil } from "recoil-nexus";
 import { ComponentType, memo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { getRegisteredState, State } from "../stateRegistry";
 import { truthy } from "../utilities/truthy";
 import { ContextWithDefaultValues } from "../useContextReactiveHydration";
 import { pluginClick } from "./plugins/click";
@@ -11,20 +8,11 @@ import {
   ContextPortalTreeEntry,
   ContextPortalTreeRenderer,
 } from "./ContextPortalTreeRenderer";
+import { usePluginRecoil } from "./plugins/recoil";
 
 const hydratedComponentsMap = new WeakMap();
 
 export interface ReactiveHydrationContainerInnerProps {
-  /**
-   * Only for server-side render.
-   *
-   * In Next.js, it may work best to pass a `next/dynamic` wrapper component here.
-   *
-   * In some frameworks, it's enough to pass something like:
-   *   `typeof window === 'undefined' ? Comp : undefined`
-   * to tree-shake a reference to the real component out of client bundles.
-   */
-  Comp?: ComponentType<unknown>;
   /**
    * A function to import components.
    * You'll likely pass a dynamic import function here, like:
@@ -34,6 +22,7 @@ export interface ReactiveHydrationContainerInnerProps {
    * ```
    */
   importComponent: (component: string) => Promise<ComponentType<unknown>>;
+
   /**
    * A function to import contexts.
    * You'll likely pass a dynamic import function here, like:
@@ -49,9 +38,9 @@ export interface ReactiveHydrationContainerInnerProps {
 
 export const ReactiveHydrationContainerInner = memo(
   (props: ReactiveHydrationContainerInnerProps) => {
-    const { Comp, importComponent, importContext } = props;
+    const { importComponent, importContext } = props;
 
-    const ref = useRef<HTMLDivElement>(null);
+    const componentRef = useRef<HTMLDivElement>(null);
 
     const [contextPortalTree] = useState(
       () => new Map<HTMLElement, ContextPortalTreeEntry>()
@@ -115,7 +104,7 @@ export const ReactiveHydrationContainerInner = memo(
 
         $component.dataset.loading = "true";
 
-        const Comp: ComponentType<{
+        const ImportedComponent: ComponentType<{
           reactiveHydrateId?: string;
           reactiveHydratePortalState?: Record<string, any>;
         }> = await importComponent(name);
@@ -295,7 +284,7 @@ export const ReactiveHydrationContainerInner = memo(
         }
 
         const portal = createPortal(
-          <Comp
+          <ImportedComponent
             reactiveHydrateId={reactiveHydrateId}
             reactiveHydratePortalState={portalState}
           />,
@@ -339,7 +328,7 @@ export const ReactiveHydrationContainerInner = memo(
 
     useEffect(() => {
       const $components =
-        ref.current?.querySelectorAll<HTMLElement>("[data-component]");
+        componentRef.current?.querySelectorAll<HTMLElement>("[data-component]");
 
       if (!$components) return;
 
@@ -398,97 +387,10 @@ export const ReactiveHydrationContainerInner = memo(
       });
     }, [hydrate]);
 
-    const [allNesteds, setAllNesteds] = useState<
-      {
-        component: string;
-        states?: State<unknown>[];
-        $component: HTMLElement;
-      }[]
-    >([]);
-
-    // usePluginRecoil();
-
-    // TODO: Handle async atoms/selectors/promises?
-
-    // TODO: We may be able to detect initial value dynamically,
-    // and then not require `init` values on the atoms in the registry.
-    const allNestedValuesAtom = useRecoilValue(
-      useMemo(
-        () =>
-          selector({
-            key: "allNestedValuesAtom" + Math.random(),
-            get: ({ get }) =>
-              allNesteds
-                .map(
-                  (nested) =>
-                    nested.states?.map((state) => get(state)).join(",") ?? ""
-                )
-                .join("|"),
-          }),
-        [allNesteds]
-      )
-    );
-
-    useEffect(() => {
-      // State has changed - we must load!
-
-      allNesteds.forEach((nested) => {
-        const { component, states, $component } = nested;
-
-        // TODO: When not debugging, this could be faster with `.some`.
-        const statesChanged = states?.filter(
-          (state) => state.init !== getRecoil(state)
-        );
-
-        if (!statesChanged?.length) {
-          return;
-        }
-
-        const reason = `state(s) changed: ${statesChanged
-          .map((state) => state.key)
-          .join(", ")}`;
-
-        hydrate({ $component: $component, name: component, reason: [reason] });
-      });
-    }, [allNestedValuesAtom, allNesteds, hydrate]);
-
-    useEffect(() => {
-      const $components =
-        ref.current?.querySelectorAll<HTMLElement>("[data-component]");
-
-      if (!$components) return;
-
-      const newAllNesteds = Array.from($components)
-        .map(($component) => {
-          const initRecoil = $component.dataset?.initRecoil;
-          if (initRecoil === "true") return;
-          $component.dataset.initRecoil = "true";
-
-          const id = $component.dataset.id;
-          const component = $component.dataset.component;
-
-          if (!id) return;
-          if (!component) return;
-
-          const stateNames = $component.dataset.states?.split(",");
-
-          const states = stateNames
-            ?.map((stateName: string) => getRegisteredState(stateName))
-            // TODO: Handle unresolved state references with error?
-            .filter(truthy);
-
-          if (!states?.length) return;
-
-          return {
-            $component,
-            component,
-            states,
-          };
-        })
-        .filter(truthy);
-
-      setAllNesteds((a) => [...a, ...newAllNesteds]);
-    }, [hydrate]);
+    usePluginRecoil({
+      hydrate,
+      componentRef,
+    });
 
     return (
       <>
@@ -497,7 +399,7 @@ export const ReactiveHydrationContainerInner = memo(
           dangerouslySetInnerHTML={{
             __html: "",
           }}
-          ref={ref}
+          ref={componentRef}
           suppressHydrationWarning
         />
 
