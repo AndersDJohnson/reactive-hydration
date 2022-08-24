@@ -26,6 +26,7 @@ let initialUrl = typeof window === "object" ? window.location.href : undefined;
 let isSoftRouting = false;
 
 interface PortalContextTreeEntry {
+  key: string;
   ContextWrapper?: ComponentType<PropsWithChildren<unknown>>;
   childPortalTreeEntries: PortalContextTreeEntry[];
   leafPortals: ReactPortal[];
@@ -244,6 +245,8 @@ export const ReactiveHydrationContainer = memo(
 
           if (!portalContextTreeEntry) {
             portalContextTreeEntry = {
+              // TODO: Better key?
+              key: Math.random().toString(),
               childPortalTreeEntries: [],
               leafPortals: [],
             };
@@ -585,10 +588,9 @@ export const ReactiveHydrationContainer = memo(
         />
 
         {[...(topmostPortalContextTreeEntries?.values() ?? [])].map(
-          (topmostPortalContextTreeEntry, index) => (
+          (topmostPortalContextTreeEntry) => (
             <PortalContextTreeRenderer
-              // TODO: Better key?
-              key={index}
+              key={topmostPortalContextTreeEntry.key}
               portalContextTreeEntry={topmostPortalContextTreeEntry}
             />
           )
@@ -620,10 +622,9 @@ const PortalContextTreeRenderer = (props: {
 
   return (
     <ContextWrapper>
-      {childPortalTreeEntries.map((childPortalTreeEntry, index) => (
+      {childPortalTreeEntries.map((childPortalTreeEntry) => (
         <PortalContextTreeRenderer
-          // TODO: Better key?
-          key={index}
+          key={childPortalTreeEntry.key}
           portalContextTreeEntry={childPortalTreeEntry}
         />
       ))}
