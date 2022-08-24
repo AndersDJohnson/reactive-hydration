@@ -1,4 +1,4 @@
-import { Context, useCallback, useMemo } from "react";
+import { PropsWithChildren, ReactNode, useCallback, useMemo } from "react";
 import { selector, useRecoilValue } from "recoil";
 import { getRecoil } from "recoil-nexus";
 import {
@@ -24,6 +24,12 @@ const clicksMap = new WeakMap();
 
 let initialUrl = typeof window === "object" ? window.location.href : undefined;
 let isSoftRouting = false;
+
+interface PortalContextTreeEntry {
+  ContextWrapper?: ComponentType<PropsWithChildren<unknown>>;
+  childPortalTreeEntries: PortalContextTreeEntry[];
+  leafPortals: ReactPortal[];
+}
 
 export const ReactiveHydrationContainer = memo(
   ({
@@ -75,37 +81,25 @@ export const ReactiveHydrationContainer = memo(
 
     const hasInitializedRef = useRef(false);
 
-    const [portals, setPortals] = useState<ReactPortal[]>([]);
+    const [portalContextTree] = useState(
+      () => new Map<HTMLElement, PortalContextTreeEntry>()
+    );
+
+    const [topmostPortalContextTreeEntries] = useState(
+      () => new Set<PortalContextTreeEntry>()
+    );
+
+    const [contextFreeComponents] = useState<ReactNode[]>(() => []);
+
+    const [forcedRender, setForcedRender] = useState({});
+    const forceRender = useCallback(() => setForcedRender({}), []);
 
     const [pendingCallbacks, setPendingCallbacks] = useState<(() => void)[]>(
       []
     );
 
-    const [contextUpdatersByContextElement] = useState(
-      new Map<HTMLElement, Set<ContextUpdater<unknown>>>()
-    );
-
     const [contextHydratorsByContextElementThenComponentElement] = useState(
       new Map<HTMLElement, Map<HTMLElement, () => void>>()
-    );
-
-    const getRegisterContextUpdaterByContextElement = useCallback(
-      ($context: HTMLElement) => (contextUpdater: (value: unknown) => void) => {
-        let contextUpdaters = contextUpdatersByContextElement.get($context);
-
-        if (!contextUpdaters) {
-          contextUpdaters = new Set();
-
-          contextUpdatersByContextElement.set($context, contextUpdaters);
-        }
-
-        contextUpdaters.add(contextUpdater);
-
-        return () => {
-          contextUpdaters?.delete(contextUpdater);
-        };
-      },
-      [contextUpdatersByContextElement]
     );
 
     const getSetContextValueByContextElement = useCallback(
@@ -118,17 +112,13 @@ export const ReactiveHydrationContainer = memo(
 
         $context.dataset.contextValue = newValue;
 
-        let contextUpdaters = contextUpdatersByContextElement.get($context);
-
-        contextUpdaters?.forEach((contextUpdater) => contextUpdater(value));
-
         [
           ...(contextHydratorsByContextElementThenComponentElement
             .get($context)
             ?.values() ?? []),
         ].forEach((hydrator) => hydrator());
       },
-      [contextUpdatersByContextElement]
+      []
     );
 
     const hydrate = useCallback(
@@ -225,6 +215,10 @@ export const ReactiveHydrationContainer = memo(
         }
 
         const $contexts = [];
+
+        let $closestContext: HTMLElement | null | undefined;
+        let $topmostContext: HTMLElement | null | undefined;
+
         let $context: HTMLElement | null | undefined = $element;
 
         while (true) {
@@ -232,63 +226,119 @@ export const ReactiveHydrationContainer = memo(
 
           $context = $context?.closest<HTMLElement>("[data-context-value]");
 
+          if ($context) {
+            $topmostContext = $context;
+          }
+
           if ($context === $previous) {
             $context = $context.parentElement;
           }
 
           if (!$context) break;
 
+          if (!$closestContext) {
+            $closestContext = $context;
+          }
+
+          let portalContextTreeEntry = portalContextTree.get($context);
+
+          if (!portalContextTreeEntry) {
+            portalContextTreeEntry = {
+              childPortalTreeEntries: [],
+              leafPortals: [],
+            };
+
+            portalContextTree.set($context, portalContextTreeEntry);
+          }
+
+          const previousPortalContextTreeEntry =
+            portalContextTree.get($previous);
+
+          if (previousPortalContextTreeEntry) {
+            portalContextTreeEntry.childPortalTreeEntries.push(
+              previousPortalContextTreeEntry
+            );
+          }
+
           $contexts.push($context);
         }
 
-        let componentry = (
-          <Comp
-            reactiveHydrateId={reactiveHydrateId}
-            reactiveHydratePortalState={portalState}
-          />
-        );
+        if ($topmostContext) {
+          const topmostPortalContextTreeEntry =
+            portalContextTree.get($topmostContext);
+
+          if (topmostPortalContextTreeEntry) {
+            topmostPortalContextTreeEntries.add(topmostPortalContextTreeEntry);
+          }
+        }
 
         if ($contexts.length) {
           const contexts = (
             await Promise.all(
               $contexts.map(async ($context) => {
                 const contextName = $context?.dataset.contextName;
-                const contextValue = $context?.dataset.contextValue;
+                const serializedValue = $context?.dataset.contextValue;
 
                 if (!contextName) return;
-                if (!contextValue) return;
+                if (!serializedValue) return;
+
+                const context = await importContext(contextName);
+
+                const value = JSON.parse(serializedValue);
 
                 return {
-                  value: JSON.parse(contextValue),
-                  context: await importContext(contextName),
                   $context,
+                  context,
+                  value,
                 };
               })
             )
           ).filter(truthy);
 
           contexts.forEach((context) => {
-            const registerContextUpdater =
-              getRegisterContextUpdaterByContextElement(context.$context);
+            const portalContextTreeEntry = portalContextTree.get(
+              context.$context
+            );
 
             const setContextValue = getSetContextValueByContextElement(
               context.$context
             );
 
-            componentry = (
-              <context.context.DefaultProvider
-                Context={context.context}
-                serializedValue={context.value}
-                registerContextUpdater={registerContextUpdater}
-                setContextValue={setContextValue}
-              >
-                {componentry}
-              </context.context.DefaultProvider>
-            );
+            if (portalContextTreeEntry) {
+              portalContextTreeEntry.ContextWrapper = (
+                props: PropsWithChildren<unknown>
+              ) => (
+                <context.context.DefaultProvider
+                  Context={context.context}
+                  serializedValue={context.value}
+                  setContextValue={setContextValue}
+                >
+                  {props.children}
+                </context.context.DefaultProvider>
+              );
+            }
           });
         }
 
-        setPortals((ps) => [...ps, createPortal(componentry, $newElement)]);
+        const portal = createPortal(
+          <Comp
+            reactiveHydrateId={reactiveHydrateId}
+            reactiveHydratePortalState={portalState}
+          />,
+          $newElement
+        );
+
+        const closestPortalContextTreeEntry = $closestContext
+          ? portalContextTree.get($closestContext)
+          : undefined;
+
+        if (closestPortalContextTreeEntry) {
+          closestPortalContextTreeEntry.leafPortals.push(portal);
+        } else {
+          contextFreeComponents.push(portal);
+        }
+
+        forceRender();
 
         // TODO: Move into separate effect so it's guaranteed to run only after portals are rendered into component tree?
         // This would avoid any flickering of empty DOM.
@@ -311,7 +361,7 @@ export const ReactiveHydrationContainer = memo(
       setTimeout(() => {
         callbacks.forEach((callback) => callback());
       });
-    }, [portals, pendingCallbacks]);
+    }, [forcedRender, pendingCallbacks]);
 
     const [allNesteds, setAllNesteds] = useState<
       {
@@ -450,10 +500,6 @@ export const ReactiveHydrationContainer = memo(
             )
             ?.dataset.contexts?.split(",");
 
-          if (contextNames) {
-            console.log("*** contextNames", contextNames, $nested);
-          }
-
           contextNames?.forEach((contextName) => {
             const $context = $nested.closest<HTMLElement>(
               `[data-context-name="${contextName}"]`
@@ -538,11 +584,51 @@ export const ReactiveHydrationContainer = memo(
           suppressHydrationWarning
         />
 
-        {portals}
+        {[...(topmostPortalContextTreeEntries?.values() ?? [])].map(
+          (topmostPortalContextTreeEntry, index) => (
+            <PortalContextTreeRenderer
+              // TODO: Better key?
+              key={index}
+              portalContextTreeEntry={topmostPortalContextTreeEntry}
+            />
+          )
+        )}
+
+        {contextFreeComponents}
       </>
     );
   },
   () => true
 );
+
+const PortalContextTreeRenderer = (props: {
+  portalContextTreeEntry: PortalContextTreeEntry;
+}) => {
+  const { portalContextTreeEntry } = props;
+  const { ContextWrapper, childPortalTreeEntries, leafPortals } =
+    portalContextTreeEntry;
+
+  if (leafPortals?.length) {
+    if (ContextWrapper) {
+      return <ContextWrapper>{leafPortals}</ContextWrapper>;
+    }
+
+    return <>{leafPortals}</>;
+  }
+
+  if (!ContextWrapper) return null;
+
+  return (
+    <ContextWrapper>
+      {childPortalTreeEntries.map((childPortalTreeEntry, index) => (
+        <PortalContextTreeRenderer
+          // TODO: Better key?
+          key={index}
+          portalContextTreeEntry={childPortalTreeEntry}
+        />
+      ))}
+    </ContextWrapper>
+  );
+};
 
 ReactiveHydrationContainer.displayName = "ReactiveHydrationContainer";

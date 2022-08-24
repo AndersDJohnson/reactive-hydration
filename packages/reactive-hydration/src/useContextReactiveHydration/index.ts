@@ -14,7 +14,6 @@ export type ContextDefaultProvider<T> = ComponentType<
   PropsWithChildren<{
     Context: ContextWithDefaultValues<T>;
     serializedValue: T;
-    registerContextUpdater: (contextUpdater: ContextUpdater<T>) => void;
     setContextValue: (value: T) => void;
   }>
 >;

@@ -9,13 +9,7 @@ export const MyContext = createContextWithDefaultValue(
     setMessage: (_: string) => {},
   },
   (props) => {
-    const {
-      children,
-      serializedValue,
-      Context,
-      registerContextUpdater,
-      setContextValue,
-    } = props;
+    const { children, serializedValue, Context, setContextValue } = props;
 
     const [message, setMessage] = useState<string>(serializedValue.message);
 
@@ -25,15 +19,6 @@ export const MyContext = createContextWithDefaultValue(
         setMessage,
       }),
       [message, setMessage]
-    );
-
-    useEffect(
-      () =>
-        registerContextUpdater((newValue) => {
-          // TODO: Optimize not call setters if values are same?
-          setMessage(newValue.message);
-        }),
-      [registerContextUpdater]
     );
 
     useEffect(() => {
