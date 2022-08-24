@@ -27,12 +27,22 @@ export const ReactiveHydrationContainer = memo(
       typeof window === "object" &&
       (window.location.href !== initialUrl || isSoftRouting);
 
-    if (isClientSideSoftRouteAwayFromInitialUrl)
+    if (isClientSideSoftRouteAwayFromInitialUrl) {
       return (
         <div>
           <LazyComp />
         </div>
       );
+    }
+
+    if (typeof window !== "object" && Comp) {
+      return (
+        // This `div` wrapper matches the suppress hydration `div` below to avoid hydration mismatch.
+        <div>
+          <Comp />
+        </div>
+      );
+    }
 
     return (
       <ReactiveHydrationContainerInner

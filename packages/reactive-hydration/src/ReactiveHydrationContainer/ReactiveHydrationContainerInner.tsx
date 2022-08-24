@@ -12,7 +12,7 @@ import {
   ContextPortalTreeRenderer,
 } from "./ContextPortalTreeRenderer";
 
-const loadedNestedsMap = new WeakMap();
+const hydratedComponentsMap = new WeakMap();
 
 export interface ReactiveHydrationContainerInnerProps {
   /**
@@ -61,7 +61,7 @@ export const ReactiveHydrationContainerInner = memo(
       () => new Set<ContextPortalTreeEntry>()
     );
 
-    const [contextFreeComponents] = useState<ReactNode[]>(() => []);
+    const [contextFreePortals] = useState<ReactNode[]>(() => []);
 
     const [forcedRender, setForcedRender] = useState({});
     const forceRender = useCallback(() => setForcedRender({}), []);
@@ -102,7 +102,7 @@ export const ReactiveHydrationContainerInner = memo(
       }) => {
         const { $component, name, reason, callback } = args;
 
-        if (loadedNestedsMap.has($component)) return;
+        if (hydratedComponentsMap.has($component)) return;
 
         console.debug(
           "Hydrating",
@@ -111,7 +111,7 @@ export const ReactiveHydrationContainerInner = memo(
           ...(Array.isArray(reason) ? reason : [reason])
         );
 
-        loadedNestedsMap.set($component, true);
+        hydratedComponentsMap.set($component, true);
 
         $component.dataset.loading = "true";
 
@@ -309,7 +309,7 @@ export const ReactiveHydrationContainerInner = memo(
         if (closestContextPortalTreeEntry) {
           closestContextPortalTreeEntry.leafPortals.push(portal);
         } else {
-          contextFreeComponents.push(portal);
+          contextFreePortals.push(portal);
         }
 
         forceRender();
@@ -341,7 +341,7 @@ export const ReactiveHydrationContainerInner = memo(
       {
         component: string;
         states?: State<unknown>[];
-        $nested: HTMLElement;
+        $component: HTMLElement;
       }[]
     >([]);
 
@@ -372,7 +372,7 @@ export const ReactiveHydrationContainerInner = memo(
       // State has changed - we must load!
 
       allNesteds.forEach((nested) => {
-        const { component, states, $nested } = nested;
+        const { component, states, $component } = nested;
 
         // TODO: When not debugging, this could be faster with `.some`.
         const statesChanged = states?.filter(
@@ -387,35 +387,35 @@ export const ReactiveHydrationContainerInner = memo(
           .map((state) => state.key)
           .join(", ")}`;
 
-        hydrate({ $component: $nested, name: component, reason: [reason] });
+        hydrate({ $component: $component, name: component, reason: [reason] });
       });
     }, [allNestedValuesAtom, allNesteds, hydrate]);
 
     useEffect(() => {
-      const $nesteds =
+      const $components =
         ref.current?.querySelectorAll<HTMLElement>("[data-component]");
 
-      if (!$nesteds) return;
+      if (!$components) return;
 
-      $nesteds.forEach(($nested) => {
-        const init = $nested.dataset?.init;
+      $components.forEach(($component) => {
+        const init = $component.dataset?.init;
         if (init === "true") return;
-        $nested.dataset.init = "true";
+        $component.dataset.init = "true";
 
-        const id = $nested.dataset.id;
-        const component = $nested.dataset.component;
+        const id = $component.dataset.id;
+        const component = $component.dataset.component;
 
         if (!id) return;
         if (!component) return;
 
         pluginClick({
-          $component: $nested,
+          $component: $component,
           name: component,
           id,
           hydrate,
         });
 
-        const contextNames = $nested
+        const contextNames = $component
           .querySelector<HTMLElement>(
             // TODO: Check browser support for `:scope` selector.
             ":scope > [data-contexts]"
@@ -423,7 +423,7 @@ export const ReactiveHydrationContainerInner = memo(
           ?.dataset.contexts?.split(",");
 
         contextNames?.forEach((contextName) => {
-          const $context = $nested.closest<HTMLElement>(
+          const $context = $component.closest<HTMLElement>(
             `[data-context-name="${contextName}"]`
           );
 
@@ -441,9 +441,9 @@ export const ReactiveHydrationContainerInner = memo(
             );
           }
 
-          contextHydratorsByContextElement?.set($nested, () => {
+          contextHydratorsByContextElement?.set($component, () => {
             hydrate({
-              $component: $nested,
+              $component: $component,
               name: component,
               reason: ["context", contextName],
             });
@@ -453,24 +453,24 @@ export const ReactiveHydrationContainerInner = memo(
     }, [hydrate]);
 
     useEffect(() => {
-      const $nesteds =
+      const $components =
         ref.current?.querySelectorAll<HTMLElement>("[data-component]");
 
-      if (!$nesteds) return;
+      if (!$components) return;
 
-      const newAllNesteds = Array.from($nesteds)
-        .map(($nested) => {
-          const initRecoil = $nested.dataset?.initRecoil;
+      const newAllNesteds = Array.from($components)
+        .map(($component) => {
+          const initRecoil = $component.dataset?.initRecoil;
           if (initRecoil === "true") return;
-          $nested.dataset.initRecoil = "true";
+          $component.dataset.initRecoil = "true";
 
-          const id = $nested.dataset.id;
-          const component = $nested.dataset.component;
+          const id = $component.dataset.id;
+          const component = $component.dataset.component;
 
           if (!id) return;
           if (!component) return;
 
-          const stateNames = $nested.dataset.states?.split(",");
+          const stateNames = $component.dataset.states?.split(",");
 
           const states = stateNames
             ?.map((stateName: string) => getRegisteredState(stateName))
@@ -480,7 +480,7 @@ export const ReactiveHydrationContainerInner = memo(
           if (!states?.length) return;
 
           return {
-            $nested,
+            $component,
             component,
             states,
           };
@@ -489,15 +489,6 @@ export const ReactiveHydrationContainerInner = memo(
 
       setAllNesteds((a) => [...a, ...newAllNesteds]);
     }, [hydrate]);
-
-    if (typeof window !== "object" && Comp) {
-      return (
-        // This `div` wrapper matches the suppress hydration `div` below to avoid hydration mismatch.
-        <div>
-          <Comp />
-        </div>
-      );
-    }
 
     return (
       <>
@@ -510,6 +501,8 @@ export const ReactiveHydrationContainerInner = memo(
           suppressHydrationWarning
         />
 
+        {/* Render the portals, which won't themselves have any DOM output, so on initial load we'll still match SSR HTML. */}
+
         {[...(topmostContextPortalTreeEntries?.values() ?? [])].map(
           (topmostContextPortalTreeEntry) => (
             <ContextPortalTreeRenderer
@@ -519,7 +512,7 @@ export const ReactiveHydrationContainerInner = memo(
           )
         )}
 
-        {contextFreeComponents}
+        {contextFreePortals}
       </>
     );
   }
