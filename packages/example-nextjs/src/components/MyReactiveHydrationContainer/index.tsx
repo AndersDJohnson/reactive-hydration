@@ -1,5 +1,8 @@
-import { ComponentType, Context } from "react";
-import { ReactiveHydrationContainer } from "reactive-hydration";
+import { ComponentType } from "react";
+import {
+  ContextWithDefaultValues,
+  ReactiveHydrationContainer,
+} from "reactive-hydration";
 import { ExampleServerComponentDynamic } from "components/ExampleServerComponent/dynamic";
 
 const importComponent = (component: string) =>
@@ -9,7 +12,7 @@ const importComponent = (component: string) =>
 
 const importContext = (context: string) =>
   import("reactive-hydration-example-common").then(
-    (mod) => mod[context] as Context<unknown>
+    (mod) => mod[context] as ContextWithDefaultValues<unknown>
   );
 
 export const MyReactiveHydrationContainer = () => (
