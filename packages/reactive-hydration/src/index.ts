@@ -1,8 +1,5 @@
-export * from "./ContextSerialized";
-export * from "./ReactiveHydrate";
-export * from "./ReactiveHydrateContext";
-export * from "./ReactiveHydrationContainer";
-export * from "./createContextWithDefaultValue";
-export * from "./useContextUsageTracker";
-export * from "./useStateSerialize";
-export * from "./stateRegistry";
+// TODO: Don't export ContextSerialized in monkeypatch mode.
+export { ContextSerialized } from "./ContextSerialized";
+export { reactiveHydrate } from "./ReactiveHydrate";
+export { createContextWithDefaultValue } from "./createContextWithDefaultValue";
+export { registerState } from "./stateRegistry";
