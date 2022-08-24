@@ -1,4 +1,4 @@
-import { useContext, useEffect, useId, useMemo, useState, useRef } from "react";
+import { useEffect, useId, useMemo, useRef } from "react";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import {
   HooksRef,
@@ -8,6 +8,7 @@ import {
 import { SerializedStateContext } from "../useStateSerialize";
 import { WriteContextsConsumed } from "./WriteContextsConsumed";
 import { ReactiveHydrate } from "./ReactiveHydrate";
+import { useContext, useState } from "../react-actual";
 
 /**
  * TODO: This wrapper could perhaps be wrapped around all components by the compiler.

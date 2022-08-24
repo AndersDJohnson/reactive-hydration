@@ -1,9 +1,6 @@
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import { useRecoilState } from "recoil";
-import {
-  reactiveHydrate,
-  useContextReactiveHydration,
-} from "reactive-hydration";
+import { reactiveHydrate } from "reactive-hydration";
 import { textState } from "../../state/textState";
 import { MyContext } from "../MyContext";
 
@@ -17,7 +14,7 @@ export const ExampleClientComponent1 = reactiveHydrate(
     const [text] = useRecoilState(textState);
 
     // TODO: Replace this with runtime monkeypatch of React module.
-    const { message, setMessage } = useContextReactiveHydration(MyContext);
+    const { message, setMessage } = useContext(MyContext);
 
     const handleClickContextSetMessage = useCallback(() => {
       setMessage(`message: ${Math.random()}`);

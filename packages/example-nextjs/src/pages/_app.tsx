@@ -1,6 +1,7 @@
 import type { AppProps } from "next/app";
 import { RecoilRoot } from "recoil";
 import RecoilNexus from "recoil-nexus";
+import "reactive-hydration/monkeypatch";
 import { ReactiveHydrateContextProvider } from "reactive-hydration";
 import "../styles/globals.css";
 

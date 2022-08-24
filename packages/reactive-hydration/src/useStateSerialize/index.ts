@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef } from "react";
+import { useContext, useState } from "../react-actual";
 
 export const SerializedStateContext = createContext<
   | {
@@ -39,9 +40,7 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
       (typeof init === "function"
         ? // @ts-expect-error Not sure why it can't infer this type.
           (init() as S)
-        : init),
-    // @ts-expect-error Bypass monkeypatch.
-    true
+        : init)
   );
 
   const [state] = result;

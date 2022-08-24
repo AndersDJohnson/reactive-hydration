@@ -1,0 +1,18 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": ["plugin:react-hooks/recommended"],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "react",
+            "importNames": ["useState", "useContext"],
+            "message": "Please these imports from './src/react-actual.ts' to bypass monkeypatching."
+          }
+        ]
+      }
+    ]
+  }
+}

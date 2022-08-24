@@ -3,9 +3,8 @@ import {
   Context,
   createContext,
   PropsWithChildren,
-  useContext,
-  useState,
 } from "react";
+import { useContext, useState } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 
 export type ContextUpdater<T> = (value: T) => void;
