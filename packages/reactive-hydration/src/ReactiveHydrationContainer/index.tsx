@@ -83,8 +83,8 @@ export const ReactiveHydrationContainer = memo(
       new Map<HTMLElement, Set<ContextUpdater<unknown>>>()
     );
 
-    const [contextHydrationSubscribersByContextElement] = useState(
-      new Map<HTMLElement, () => void>()
+    const [contextHydratorsByContextElementThenComponentElement] = useState(
+      new Map<HTMLElement, Map<HTMLElement, () => void>>()
     );
 
     const getRegisterContextUpdaterByContextElement = useCallback(
@@ -120,7 +120,11 @@ export const ReactiveHydrationContainer = memo(
 
         contextUpdaters?.forEach((contextUpdater) => contextUpdater(value));
 
-        contextHydrationSubscribersByContextElement.get($context)?.();
+        [
+          ...(contextHydratorsByContextElementThenComponentElement
+            .get($context)
+            ?.values() ?? []),
+        ].forEach((hydrator) => hydrator());
       },
       [contextUpdatersByContextElement]
     );
@@ -357,8 +361,14 @@ export const ReactiveHydrationContainer = memo(
       });
     }, [allNestedValuesAtom, allNesteds, hydrate]);
 
+    const hasInitializedRef = useRef(false);
+
     useEffect(() => {
       if (!ref.current) return;
+
+      // Prevent 2x runs in development.
+      if (hasInitializedRef.current) return;
+      hasInitializedRef.current = true;
 
       const $nesteds =
         ref.current.querySelectorAll<HTMLDivElement>("[data-component]");
@@ -440,6 +450,10 @@ export const ReactiveHydrationContainer = memo(
             )
             ?.dataset.contexts?.split(",");
 
+          if (contextNames) {
+            console.log("*** contextNames", contextNames, $nested);
+          }
+
           contextNames?.forEach((contextName) => {
             const $context = $nested.closest<HTMLElement>(
               `[data-context-name="${contextName}"]`
@@ -447,7 +461,21 @@ export const ReactiveHydrationContainer = memo(
 
             if (!$context) return;
 
-            contextHydrationSubscribersByContextElement?.set($context, () => {
+            let contextHydratorsByContextElement =
+              contextHydratorsByContextElementThenComponentElement.get(
+                $context
+              );
+
+            if (!contextHydratorsByContextElement) {
+              contextHydratorsByContextElement = new Map();
+
+              contextHydratorsByContextElementThenComponentElement.set(
+                $context,
+                contextHydratorsByContextElement
+              );
+            }
+
+            contextHydratorsByContextElement?.set($nested, () => {
               hydrate({
                 $element: $nested,
                 component,
