@@ -1,28 +1,18 @@
 import { PropsWithChildren, ReactNode, useCallback, useMemo } from "react";
 import { selector, useRecoilValue } from "recoil";
 import { getRecoil } from "recoil-nexus";
-import {
-  ComponentType,
-  memo,
-  ReactPortal,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ComponentType, memo, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { getRegisteredState, State } from "../stateRegistry";
 import { truthy } from "../utilities/truthy";
 import { ContextWithDefaultValues } from "../useContextReactiveHydration";
 import { pluginClick } from "./plugins/click";
+import {
+  ContextPortalTreeEntry,
+  ContextPortalTreeRenderer,
+} from "./ContextPortalTreeRenderer";
 
 const loadedNestedsMap = new WeakMap();
-
-interface PortalContextTreeEntry {
-  key: string;
-  ContextWrapper?: ComponentType<PropsWithChildren<unknown>>;
-  childPortalTreeEntries: PortalContextTreeEntry[];
-  leafPortals: ReactPortal[];
-}
 
 export interface ReactiveHydrationContainerInnerProps {
   /**
@@ -63,14 +53,12 @@ export const ReactiveHydrationContainerInner = memo(
 
     const ref = useRef<HTMLDivElement>(null);
 
-    const hasInitializedRef = useRef(false);
-
-    const [portalContextTree] = useState(
-      () => new Map<HTMLElement, PortalContextTreeEntry>()
+    const [contextPortalTree] = useState(
+      () => new Map<HTMLElement, ContextPortalTreeEntry>()
     );
 
-    const [topmostPortalContextTreeEntries] = useState(
-      () => new Set<PortalContextTreeEntry>()
+    const [topmostContextPortalTreeEntries] = useState(
+      () => new Set<ContextPortalTreeEntry>()
     );
 
     const [contextFreeComponents] = useState<ReactNode[]>(() => []);
@@ -224,25 +212,25 @@ export const ReactiveHydrationContainerInner = memo(
             $closestContext = $context;
           }
 
-          let portalContextTreeEntry = portalContextTree.get($context);
+          let contextPortalTreeEntry = contextPortalTree.get($context);
 
-          if (!portalContextTreeEntry) {
-            portalContextTreeEntry = {
+          if (!contextPortalTreeEntry) {
+            contextPortalTreeEntry = {
               // TODO: Better key?
               key: Math.random().toString(),
               childPortalTreeEntries: [],
               leafPortals: [],
             };
 
-            portalContextTree.set($context, portalContextTreeEntry);
+            contextPortalTree.set($context, contextPortalTreeEntry);
           }
 
-          const previousPortalContextTreeEntry =
-            portalContextTree.get($previous);
+          const previousContextPortalTreeEntry =
+            contextPortalTree.get($previous);
 
-          if (previousPortalContextTreeEntry) {
-            portalContextTreeEntry.childPortalTreeEntries.push(
-              previousPortalContextTreeEntry
+          if (previousContextPortalTreeEntry) {
+            contextPortalTreeEntry.childPortalTreeEntries.push(
+              previousContextPortalTreeEntry
             );
           }
 
@@ -250,11 +238,11 @@ export const ReactiveHydrationContainerInner = memo(
         }
 
         if ($topmostContext) {
-          const topmostPortalContextTreeEntry =
-            portalContextTree.get($topmostContext);
+          const topmostContextPortalTreeEntry =
+            contextPortalTree.get($topmostContext);
 
-          if (topmostPortalContextTreeEntry) {
-            topmostPortalContextTreeEntries.add(topmostPortalContextTreeEntry);
+          if (topmostContextPortalTreeEntry) {
+            topmostContextPortalTreeEntries.add(topmostContextPortalTreeEntry);
           }
         }
 
@@ -282,7 +270,7 @@ export const ReactiveHydrationContainerInner = memo(
           ).filter(truthy);
 
           contexts.forEach((context) => {
-            const portalContextTreeEntry = portalContextTree.get(
+            const contextPortalTreeEntry = contextPortalTree.get(
               context.$context
             );
 
@@ -290,8 +278,8 @@ export const ReactiveHydrationContainerInner = memo(
               context.$context
             );
 
-            if (portalContextTreeEntry) {
-              portalContextTreeEntry.ContextWrapper = (
+            if (contextPortalTreeEntry) {
+              contextPortalTreeEntry.ContextWrapper = (
                 props: PropsWithChildren<unknown>
               ) => (
                 <context.context.DefaultProvider
@@ -314,12 +302,12 @@ export const ReactiveHydrationContainerInner = memo(
           $newElement
         );
 
-        const closestPortalContextTreeEntry = $closestContext
-          ? portalContextTree.get($closestContext)
+        const closestContextPortalTreeEntry = $closestContext
+          ? contextPortalTree.get($closestContext)
           : undefined;
 
-        if (closestPortalContextTreeEntry) {
-          closestPortalContextTreeEntry.leafPortals.push(portal);
+        if (closestContextPortalTreeEntry) {
+          closestContextPortalTreeEntry.leafPortals.push(portal);
         } else {
           contextFreeComponents.push(portal);
         }
@@ -522,11 +510,11 @@ export const ReactiveHydrationContainerInner = memo(
           suppressHydrationWarning
         />
 
-        {[...(topmostPortalContextTreeEntries?.values() ?? [])].map(
-          (topmostPortalContextTreeEntry) => (
-            <PortalContextTreeRenderer
-              key={topmostPortalContextTreeEntry.key}
-              portalContextTreeEntry={topmostPortalContextTreeEntry}
+        {[...(topmostContextPortalTreeEntries?.values() ?? [])].map(
+          (topmostContextPortalTreeEntry) => (
+            <ContextPortalTreeRenderer
+              key={topmostContextPortalTreeEntry.key}
+              contextPortalTreeEntry={topmostContextPortalTreeEntry}
             />
           )
         )}
@@ -534,37 +522,7 @@ export const ReactiveHydrationContainerInner = memo(
         {contextFreeComponents}
       </>
     );
-  },
-  () => true
-);
-
-const PortalContextTreeRenderer = (props: {
-  portalContextTreeEntry: PortalContextTreeEntry;
-}) => {
-  const { portalContextTreeEntry } = props;
-  const { ContextWrapper, childPortalTreeEntries, leafPortals } =
-    portalContextTreeEntry;
-
-  if (leafPortals?.length) {
-    if (ContextWrapper) {
-      return <ContextWrapper>{leafPortals}</ContextWrapper>;
-    }
-
-    return <>{leafPortals}</>;
   }
-
-  if (!ContextWrapper) return null;
-
-  return (
-    <ContextWrapper>
-      {childPortalTreeEntries.map((childPortalTreeEntry) => (
-        <PortalContextTreeRenderer
-          key={childPortalTreeEntry.key}
-          portalContextTreeEntry={childPortalTreeEntry}
-        />
-      ))}
-    </ContextWrapper>
-  );
-};
+);
 
 ReactiveHydrationContainerInner.displayName = "ReactiveHydrationContainerInner";
