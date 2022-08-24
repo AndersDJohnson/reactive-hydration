@@ -20,7 +20,7 @@ export const ContextPortalTreeRenderer = (props: {
 
   if (leafPortals?.length) {
     const leafPortalsWithKeys = leafPortals.map((leafPortal) => (
-      <>{leafPortal.portal}</>
+      <Fragment key={leafPortal.key}>{leafPortal.portal}</Fragment>
     ));
 
     if (ContextWrapper) {
