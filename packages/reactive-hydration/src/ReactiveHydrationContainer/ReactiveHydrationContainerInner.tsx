@@ -337,60 +337,6 @@ export const ReactiveHydrationContainerInner = memo(
       });
     }, [forcedRender, pendingCallbacks]);
 
-    const [allNesteds, setAllNesteds] = useState<
-      {
-        component: string;
-        states?: State<unknown>[];
-        $component: HTMLElement;
-      }[]
-    >([]);
-
-    // usePluginRecoil();
-
-    // TODO: Handle async atoms/selectors/promises?
-
-    // TODO: We may be able to detect initial value dynamically,
-    // and then not require `init` values on the atoms in the registry.
-    const allNestedValuesAtom = useRecoilValue(
-      useMemo(
-        () =>
-          selector({
-            key: "allNestedValuesAtom" + Math.random(),
-            get: ({ get }) =>
-              allNesteds
-                .map(
-                  (nested) =>
-                    nested.states?.map((state) => get(state)).join(",") ?? ""
-                )
-                .join("|"),
-          }),
-        [allNesteds]
-      )
-    );
-
-    useEffect(() => {
-      // State has changed - we must load!
-
-      allNesteds.forEach((nested) => {
-        const { component, states, $component } = nested;
-
-        // TODO: When not debugging, this could be faster with `.some`.
-        const statesChanged = states?.filter(
-          (state) => state.init !== getRecoil(state)
-        );
-
-        if (!statesChanged?.length) {
-          return;
-        }
-
-        const reason = `state(s) changed: ${statesChanged
-          .map((state) => state.key)
-          .join(", ")}`;
-
-        hydrate({ $component: $component, name: component, reason: [reason] });
-      });
-    }, [allNestedValuesAtom, allNesteds, hydrate]);
-
     useEffect(() => {
       const $components =
         ref.current?.querySelectorAll<HTMLElement>("[data-component]");
@@ -451,6 +397,60 @@ export const ReactiveHydrationContainerInner = memo(
         });
       });
     }, [hydrate]);
+
+    const [allNesteds, setAllNesteds] = useState<
+      {
+        component: string;
+        states?: State<unknown>[];
+        $component: HTMLElement;
+      }[]
+    >([]);
+
+    // usePluginRecoil();
+
+    // TODO: Handle async atoms/selectors/promises?
+
+    // TODO: We may be able to detect initial value dynamically,
+    // and then not require `init` values on the atoms in the registry.
+    const allNestedValuesAtom = useRecoilValue(
+      useMemo(
+        () =>
+          selector({
+            key: "allNestedValuesAtom" + Math.random(),
+            get: ({ get }) =>
+              allNesteds
+                .map(
+                  (nested) =>
+                    nested.states?.map((state) => get(state)).join(",") ?? ""
+                )
+                .join("|"),
+          }),
+        [allNesteds]
+      )
+    );
+
+    useEffect(() => {
+      // State has changed - we must load!
+
+      allNesteds.forEach((nested) => {
+        const { component, states, $component } = nested;
+
+        // TODO: When not debugging, this could be faster with `.some`.
+        const statesChanged = states?.filter(
+          (state) => state.init !== getRecoil(state)
+        );
+
+        if (!statesChanged?.length) {
+          return;
+        }
+
+        const reason = `state(s) changed: ${statesChanged
+          .map((state) => state.key)
+          .join(", ")}`;
+
+        hydrate({ $component: $component, name: component, reason: [reason] });
+      });
+    }, [allNestedValuesAtom, allNesteds, hydrate]);
 
     useEffect(() => {
       const $components =
