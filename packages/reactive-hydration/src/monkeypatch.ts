@@ -27,6 +27,3 @@ React.useState = (...args, bypassMonkeypatch) => {
     ...args
   );
 };
-
-// @ts-expect-error
-React.useStateActual = useState;
