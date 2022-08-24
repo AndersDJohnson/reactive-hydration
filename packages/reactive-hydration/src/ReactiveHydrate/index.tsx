@@ -1,5 +1,4 @@
 import {
-  PropsWithChildren,
   memo,
   useContext,
   useEffect,
@@ -7,7 +6,6 @@ import {
   useMemo,
   useState,
   useRef,
-  RefObject,
 } from "react";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import {
@@ -16,65 +14,8 @@ import {
   ReactiveHydrateContextProvider,
 } from "../ReactiveHydrateContext";
 import { SerializedStateContext } from "../useStateSerialize";
-
-/**
- * On server we'll create a wrapper `div` as a portal host to mount into,
- * but on the client we don't want that wrapper or else we'll get extra nesting.
- */
-const ReactiveHydrate = (
-  props: PropsWithChildren<{
-    id?: string;
-    name: string;
-    states?: string;
-    portalRef: RefObject<HTMLDivElement>;
-  }>
-) => {
-  const { id: idProp, portalRef } = props;
-
-  const defaultId = useId();
-
-  const id = idProp ?? defaultId;
-
-  const { reactiveHydratingId } = useContext(ReactiveHydrateContext);
-
-  const isHydratingSelf = reactiveHydratingId === id;
-
-  return (
-    <>
-      {typeof window !== "object" || !isHydratingSelf ? (
-        <div
-          data-component={props.name}
-          data-states={props.states}
-          // This ID has to be here since it's the only one stable between server render and post client hydration.
-          data-id={id}
-          // For soft route loading on client-side, check for `window`.
-          data-loaded={typeof window === "object"}
-          ref={portalRef}
-        >
-          {props.children}
-        </div>
-      ) : (
-        <>{props.children}</>
-      )}
-    </>
-  );
-};
-
-const WriteContextsConsumed = () => {
-  const { hooksRef } = useContext(ReactiveHydrateContext);
-
-  const setValues = hooksRef?.current?.contexts.values();
-
-  const contexts = setValues ? [...setValues] : undefined;
-
-  if (!contexts?.length) return null;
-
-  return (
-    <div data-contexts={contexts.join(",")}>
-      contexts = {contexts.join(",")}
-    </div>
-  );
-};
+import { WriteContextsConsumed } from "./WriteContextsConsumed";
+import { ReactiveHydrate } from "./ReactiveHydrate";
 
 /**
  * TODO: This wrapper could perhaps be wrapped around all components by the compiler.

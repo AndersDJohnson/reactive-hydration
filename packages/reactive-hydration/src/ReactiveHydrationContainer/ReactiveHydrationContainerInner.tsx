@@ -292,6 +292,9 @@ export const ReactiveHydrationContainerInner = memo(
           $newElement
         );
 
+        console.log("*** $closestContext", $closestContext);
+        console.log("*** portal", portal);
+
         const closestContextPortalTreeEntry = $closestContext
           ? contextPortalTree.get($closestContext)
           : undefined;
@@ -364,6 +367,13 @@ export const ReactiveHydrationContainerInner = memo(
       hydrate,
       componentRef,
     });
+
+    console.log(
+      "*** topmostContextPortalTreeEntries",
+      topmostContextPortalTreeEntries
+    );
+
+    console.log("*** contextFreePortals", contextFreePortals);
 
     return (
       <>
