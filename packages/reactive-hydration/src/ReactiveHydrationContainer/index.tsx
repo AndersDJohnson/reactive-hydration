@@ -83,6 +83,10 @@ export const ReactiveHydrationContainer = memo(
       new Map<HTMLElement, Set<ContextUpdater<unknown>>>()
     );
 
+    const [contextHydrationSubscribersByContextElement] = useState(
+      new Map<HTMLElement, () => void>()
+    );
+
     const getRegisterContextUpdaterByContextElement = useCallback(
       ($context: HTMLElement) => (contextUpdater: (value: unknown) => void) => {
         let contextUpdaters = contextUpdatersByContextElement.get($context);
@@ -104,9 +108,19 @@ export const ReactiveHydrationContainer = memo(
 
     const getSetContextValueByContextElement = useCallback(
       ($context: HTMLElement) => (value: unknown) => {
+        const currentValue = $context.dataset.contextValue;
+
+        const newValue = JSON.stringify(value);
+
+        if (newValue === currentValue) return;
+
+        $context.dataset.contextValue = newValue;
+
         let contextUpdaters = contextUpdatersByContextElement.get($context);
 
         contextUpdaters?.forEach((contextUpdater) => contextUpdater(value));
+
+        contextHydrationSubscribersByContextElement.get($context)?.();
       },
       [contextUpdatersByContextElement]
     );
@@ -193,7 +207,6 @@ export const ReactiveHydrationContainer = memo(
 
         const dataset = { ...$element.dataset };
 
-        console.log("*** dataset", dataset);
         for (const [key, value] of Object.entries(dataset)) {
           $newElement.dataset[key] = value;
         }
@@ -260,7 +273,6 @@ export const ReactiveHydrationContainer = memo(
               <context.context.DefaultProvider
                 Context={context.context}
                 serializedValue={context.value}
-                serializedElement={context.$context}
                 registerContextUpdater={registerContextUpdater}
                 setContextValue={setContextValue}
               >
@@ -355,6 +367,10 @@ export const ReactiveHydrationContainer = memo(
         .map(($nested) => {
           const id = $nested.dataset.id;
 
+          const component = $nested.dataset.component;
+
+          if (!component) return;
+
           // TODO: Also check a global variable tracking any clicks by ID that occur
           // before full JS hydration, using inline onclick listeners in the SSR HTML.
           const clicksSelector = "[data-click]";
@@ -372,12 +388,6 @@ export const ReactiveHydrationContainer = memo(
             clicksMap.set($click, true);
 
             $click.addEventListener("click", () => {
-              const component = $nested.dataset.component;
-
-              // const id = $nested.dataset.id;
-
-              if (!component) return;
-
               // const clickId = $click.dataset.click;
 
               const clickPath = domElementPath($click);
@@ -419,6 +429,29 @@ export const ReactiveHydrationContainer = memo(
 
                   $postClick?.click();
                 },
+              });
+            });
+          });
+
+          const contextNames = $nested
+            .querySelector<HTMLElement>(
+              // TODO: Check browser support for `:scope` selector.
+              ":scope > [data-contexts]"
+            )
+            ?.dataset.contexts?.split(",");
+
+          contextNames?.forEach((contextName) => {
+            const $context = $nested.closest<HTMLElement>(
+              `[data-context-name="${contextName}"]`
+            );
+
+            if (!$context) return;
+
+            contextHydrationSubscribersByContextElement?.set($context, () => {
+              hydrate({
+                $element: $nested,
+                component,
+                reason: ["context", contextName],
               });
             });
           });

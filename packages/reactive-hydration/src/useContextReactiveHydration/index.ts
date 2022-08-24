@@ -13,14 +13,14 @@ export type ContextUpdater<T> = (value: T) => void;
 export type ContextDefaultProvider<T> = ComponentType<
   PropsWithChildren<{
     Context: ContextWithDefaultValues<T>;
-    serializedElement: HTMLElement;
     serializedValue: T;
     registerContextUpdater: (contextUpdater: ContextUpdater<T>) => void;
-    setContextValue: ContextUpdater<T>;
+    setContextValue: (value: T) => void;
   }>
 >;
 
 export interface ContextDefaultValues<T> {
+  displayName: string;
   defaultValue: T;
   DefaultProvider: ContextDefaultProvider<T>;
 }

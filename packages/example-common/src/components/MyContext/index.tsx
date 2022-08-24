@@ -12,7 +12,6 @@ export const MyContext = createContextWithDefaultValue(
       children,
       serializedValue,
       Context,
-      serializedElement,
       registerContextUpdater,
       setContextValue,
     } = props;
@@ -39,10 +38,6 @@ export const MyContext = createContextWithDefaultValue(
     useEffect(() => {
       setContextValue(value);
     }, [setContextValue, value]);
-
-    useEffect(() => {
-      serializedElement.dataset.contextValue = JSON.stringify(value);
-    }, [value]);
 
     return <Context.Provider value={value}>{children}</Context.Provider>;
   }
