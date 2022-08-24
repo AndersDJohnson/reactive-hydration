@@ -376,6 +376,8 @@ export const ReactiveHydrationContainer = memo(
 
     // TODO: Handle async atoms/selectors/promises?
 
+    // TODO: We may be able to detect initial value dynamically,
+    // and then not require `init` values on the atoms in the registry.
     const allNestedValuesAtom = useRecoilValue(
       useMemo(
         () =>
