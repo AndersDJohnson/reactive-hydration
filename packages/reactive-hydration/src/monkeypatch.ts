@@ -5,14 +5,27 @@ import { useStateSerialize } from "./useStateSerialize";
 const { useContext, useState } = React;
 
 // @ts-expect-error
-React.useState = (...args) => {
+React.useState = (...args, bypassMonkeypatch) => {
+  if (bypassMonkeypatch) {
+    return useState(
+      // @ts-expect-error
+      ...args
+    );
+  }
+
   const reactiveHydrateContext = useContext(ReactiveHydrateContext);
 
   if (!reactiveHydrateContext.isActive) {
-    return useState(...args);
+    return useState(
+      // @ts-expect-error
+      ...args
+    );
   }
 
-  return useStateSerialize(...args);
+  return useStateSerialize(
+    // @ts-expect-error
+    ...args
+  );
 };
 
 // @ts-expect-error

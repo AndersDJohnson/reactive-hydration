@@ -39,7 +39,9 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
       (typeof init === "function"
         ? // @ts-expect-error Not sure why it can't infer this type.
           (init() as S)
-        : init)
+        : init),
+    // @ts-expect-error Bypass monkeypatch.
+    true
   );
 
   const [state] = result;
