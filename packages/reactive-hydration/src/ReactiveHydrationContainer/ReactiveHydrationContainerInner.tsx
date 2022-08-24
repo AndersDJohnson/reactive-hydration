@@ -2,7 +2,7 @@ import { Fragment, PropsWithChildren, ReactNode, useCallback } from "react";
 import { ComponentType, memo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { truthy } from "../utilities/truthy";
-import { ContextWithDefaultValues } from "../useContextReactiveHydration";
+import { ContextWithDefaultValues } from "../createContextWithDefaultValue";
 import { pluginClick } from "./plugins/click";
 import {
   ContextPortalTreeEntry,

@@ -1,5 +1,5 @@
 import { PropsWithChildren, useId, useMemo } from "react";
-import { ContextWithDefaultValues } from "../useContextReactiveHydration";
+import { ContextWithDefaultValues } from "../createContextWithDefaultValue";
 
 export function ContextSerialized<T>(
   props: PropsWithChildren<{
