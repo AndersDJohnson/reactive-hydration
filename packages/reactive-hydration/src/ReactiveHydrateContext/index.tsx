@@ -1,29 +1,15 @@
-import { RefObject, useCallback } from "react";
 import {
-  createContext,
   PropsWithChildren,
+  RefObject,
+  useCallback,
   useContext,
   useMemo,
   useState,
 } from "react";
+import { HooksRef, ReactiveHydrateContext } from "./ReactiveHydrateContext";
 
-export interface HooksRef {
-  contexts: Set<string>;
-}
-
-export const ReactiveHydrateContext = createContext<{
-  reactiveHydratingId?: string;
-  reactiveHydratePortalState?: Record<string, any>;
-  parentComponentPath: (string | number)[];
-  registerComponentPath?: (name: string) => number;
-  unregisterComponentPath?: (name: string) => void;
-  portalRef?: RefObject<HTMLElement>;
-  hooksRef?: RefObject<HooksRef>;
-}>({
-  parentComponentPath: [],
-});
-
-ReactiveHydrateContext.displayName = "ReactiveHydrateContext";
+export type { HooksRef };
+export { ReactiveHydrateContext };
 
 export const ReactiveHydrateContextProvider = (
   props: PropsWithChildren<{
