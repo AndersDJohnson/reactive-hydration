@@ -61,7 +61,7 @@ export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
         .map((state) => state.key)
         .join(", ")}`;
 
-      hydrate({ $component: $component, name: component, reason: [reason] });
+      hydrate({ $component: $component, reason: [reason] });
     });
   }, [allNestedValuesAtom, allNesteds, hydrate]);
 

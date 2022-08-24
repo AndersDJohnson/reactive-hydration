@@ -1,11 +1,18 @@
-import { ComponentType, PropsWithChildren, ReactPortal } from "react";
+import { ComponentType, Fragment, PropsWithChildren, ReactPortal } from "react";
 
 export interface ContextPortalTreeEntry {
   key: string;
   ContextWrapper?: ComponentType<PropsWithChildren<unknown>>;
   childPortalTreeEntries: ContextPortalTreeEntry[];
-  leafPortals: ReactPortal[];
+  leafPortals: {
+    key: string;
+    portal: ReactPortal;
+  }[];
 }
+
+const Stable = (props: PropsWithChildren<unknown>) => <>{props.children}</>;
+
+Stable.displayName = "Stable";
 
 export const ContextPortalTreeRenderer = (props: {
   contextPortalTreeEntry: ContextPortalTreeEntry;
@@ -16,11 +23,15 @@ export const ContextPortalTreeRenderer = (props: {
     contextPortalTreeEntry;
 
   if (leafPortals?.length) {
+    const leafPortalsWithKeys = leafPortals.map((leafPortal) => (
+      <Stable key={leafPortal.key}>{leafPortal.portal}</Stable>
+    ));
+
     if (ContextWrapper) {
-      return <ContextWrapper>{leafPortals}</ContextWrapper>;
+      return <ContextWrapper>{leafPortalsWithKeys}</ContextWrapper>;
     }
 
-    return <>{leafPortals}</>;
+    return <>{leafPortalsWithKeys}</>;
   }
 
   if (!ContextWrapper) return null;

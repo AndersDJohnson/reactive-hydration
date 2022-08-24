@@ -6,7 +6,6 @@ import {
 interface Args {
   $component: HTMLElement;
   hydrate: Hydrate;
-  name: string;
   contextHydratorsByContextElementThenComponentElement: ContextHydratorsByContextElementThenComponentElement;
 }
 
@@ -14,7 +13,6 @@ export const pluginContext = (args: Args) => {
   const {
     $component,
     hydrate,
-    name,
     contextHydratorsByContextElementThenComponentElement,
   } = args;
 
@@ -47,7 +45,6 @@ export const pluginContext = (args: Args) => {
     contextHydratorsByContextElement?.set($component, () => {
       hydrate({
         $component: $component,
-        name,
         reason: ["context", contextName],
       });
     });

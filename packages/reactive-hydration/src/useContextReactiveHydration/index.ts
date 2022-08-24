@@ -37,6 +37,8 @@ export function createContextWithDefaultValue<T>(
 
   RawContext.defaultValue = defaultValue;
 
+  DefaultProvider.displayName = "DefaultProvider";
+
   RawContext.DefaultProvider = DefaultProvider;
 
   RawContext.displayName = displayName;

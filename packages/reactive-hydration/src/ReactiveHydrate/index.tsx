@@ -1,12 +1,4 @@
-import {
-  memo,
-  useContext,
-  useEffect,
-  useId,
-  useMemo,
-  useState,
-  useRef,
-} from "react";
+import { useContext, useEffect, useId, useMemo, useState, useRef } from "react";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import {
   HooksRef,
@@ -33,8 +25,9 @@ export const reactiveHydrate = <
   },
   Comp: React.ComponentType<P>
 ) => {
+  // TODO: memo wrap? if so, fix display name
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const NewComp = memo<P>((props) => {
+  const ReactiveHydrateWrapper = (props: P) => {
     const { name, states } = args;
 
     const {
@@ -130,13 +123,16 @@ export const reactiveHydrate = <
         </ReactiveHydrate>
       </ReactiveHydrateContextProvider>
     );
-  });
+  };
 
   if (!Comp.displayName) {
     Comp.displayName = args.name;
   }
 
-  hoistNonReactStatics(NewComp, Comp);
+  // TODO: Do we really want/need to hoist these?
+  hoistNonReactStatics(ReactiveHydrateWrapper, Comp);
 
-  return NewComp;
+  ReactiveHydrateWrapper.displayName = `ReactiveHydrateWrapper(${Comp.displayName})`;
+
+  return ReactiveHydrateWrapper;
 };

@@ -34,5 +34,3 @@ export const ExampleClientComponent2 = reactiveHydrate(
     );
   }
 );
-
-ExampleClientComponent2.displayName = "ExampleClientComponent2";

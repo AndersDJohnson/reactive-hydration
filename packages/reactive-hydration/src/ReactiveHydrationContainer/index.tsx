@@ -61,7 +61,9 @@ export const ReactiveHydrationContainer = memo(
         importContext={importContext}
       />
     );
-  }
+  },
+  // Never re-render only due to parent re-renders.
+  () => true
 );
 
 ReactiveHydrationContainer.displayName = "ReactiveHydrationContainer";

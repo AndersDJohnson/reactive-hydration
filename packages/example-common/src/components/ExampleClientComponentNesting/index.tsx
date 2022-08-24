@@ -37,5 +37,3 @@ export const ExampleClientComponentNesting = reactiveHydrate(
     );
   }
 );
-
-ExampleClientComponentNesting.displayName = "ExampleClientComponentNesting";

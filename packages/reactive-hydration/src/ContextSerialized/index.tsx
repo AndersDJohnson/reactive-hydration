@@ -1,4 +1,4 @@
-import { PropsWithChildren, useMemo } from "react";
+import { PropsWithChildren, useId, useMemo } from "react";
 import { ContextWithDefaultValues } from "../useContextReactiveHydration";
 
 export function ContextSerialized<T>(
@@ -12,8 +12,14 @@ export function ContextSerialized<T>(
 
   const serializedValue = useMemo(() => JSON.stringify(value), [value]);
 
+  const id = useId();
+
   return (
-    <div data-context-name={name} data-context-value={serializedValue}>
+    <div
+      data-context-id={id}
+      data-context-name={name}
+      data-context-value={serializedValue}
+    >
       <context.Provider value={value}>{children}</context.Provider>
     </div>
   );

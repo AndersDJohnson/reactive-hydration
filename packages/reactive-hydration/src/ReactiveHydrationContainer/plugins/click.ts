@@ -6,12 +6,11 @@ const clicksMap = new WeakMap();
 interface Args {
   $component: HTMLElement;
   hydrate: Hydrate;
-  name: string;
   id: string;
 }
 
 export const pluginClick = (args: Args) => {
-  const { $component, hydrate, name, id } = args;
+  const { $component, hydrate, id } = args;
 
   // TODO: Also check a global variable tracking any clicks by ID that occur
   // before full JS hydration, using inline onclick listeners in the SSR HTML.
@@ -35,7 +34,6 @@ export const pluginClick = (args: Args) => {
 
       hydrate({
         $component,
-        name,
         reason: ["clicked", $click],
         callback: () => {
           // const $portal = document.querySelector(
