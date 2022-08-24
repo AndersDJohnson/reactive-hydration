@@ -3,3 +3,4 @@ export { ContextSerialized } from "./ContextSerialized";
 export { reactiveHydrate } from "./ReactiveHydrate";
 export { createContextWithDefaultValue } from "./createContextWithDefaultValue";
 export { registerState } from "./stateRegistry";
+export { ReactiveHydrationContainer } from "./ReactiveHydrationContainer";
