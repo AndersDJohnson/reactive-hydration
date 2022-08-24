@@ -1,12 +1,23 @@
-import { PropsWithChildren } from "react";
-import { ComponentType, memo, ReactPortal } from "react";
+import { ComponentType, memo } from "react";
 import {
   ReactiveHydrationContainerInner,
-  ReactiveHydrationContainerProps,
+  ReactiveHydrationContainerInnerProps,
 } from "./ReactiveHydrationContainerInner";
 
 let initialUrl = typeof window === "object" ? window.location.href : undefined;
 let isSoftRouting = false;
+
+export interface ReactiveHydrationContainerProps
+  extends ReactiveHydrationContainerInnerProps {
+  /**
+   * Only passed on server-side render.
+   *
+   * In Next.js, it may work best to pass a `next/dynamic` wrapper component here.
+   *
+   * In some frameworks, a `React.lazy` wrapped component may work.
+   */
+  LazyComp: ComponentType<unknown>;
+}
 
 export const ReactiveHydrationContainer = memo(
   (props: ReactiveHydrationContainerProps) => {
@@ -26,7 +37,6 @@ export const ReactiveHydrationContainer = memo(
     return (
       <ReactiveHydrationContainerInner
         Comp={Comp}
-        LazyComp={LazyComp}
         importComponent={importComponent}
         importContext={importContext}
       />

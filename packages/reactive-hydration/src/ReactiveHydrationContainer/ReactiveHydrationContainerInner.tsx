@@ -10,14 +10,12 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import domElementPath from "dom-element-path";
 import { getRegisteredState, State } from "../stateRegistry";
 import { truthy } from "../utilities/truthy";
 import { ContextWithDefaultValues } from "../useContextReactiveHydration";
+import { pluginClick } from "./plugins/click";
 
 const loadedNestedsMap = new WeakMap();
-
-const clicksMap = new WeakMap();
 
 interface PortalContextTreeEntry {
   key: string;
@@ -26,7 +24,7 @@ interface PortalContextTreeEntry {
   leafPortals: ReactPortal[];
 }
 
-export interface ReactiveHydrationContainerProps {
+export interface ReactiveHydrationContainerInnerProps {
   /**
    * Only for server-side render.
    *
@@ -37,14 +35,6 @@ export interface ReactiveHydrationContainerProps {
    * to tree-shake a reference to the real component out of client bundles.
    */
   Comp?: ComponentType<unknown>;
-  /**
-   * Only passed on server-side render.
-   *
-   * In Next.js, it may work best to pass a `next/dynamic` wrapper component here.
-   *
-   * In some frameworks, a `React.lazy` wrapped component may work.
-   */
-  LazyComp: ComponentType<unknown>;
   /**
    * A function to import components.
    * You'll likely pass a dynamic import function here, like:
@@ -68,8 +58,8 @@ export interface ReactiveHydrationContainerProps {
 }
 
 export const ReactiveHydrationContainerInner = memo(
-  (props: ReactiveHydrationContainerProps) => {
-    const { Comp, LazyComp, importComponent, importContext } = props;
+  (props: ReactiveHydrationContainerInnerProps) => {
+    const { Comp, importComponent, importContext } = props;
 
     const ref = useRef<HTMLDivElement>(null);
 
@@ -117,38 +107,38 @@ export const ReactiveHydrationContainerInner = memo(
 
     const hydrate = useCallback(
       async (args: {
-        $element: HTMLDivElement;
-        component: string;
+        $component: HTMLElement;
+        name: string;
         reason: any;
         callback?: () => void;
       }) => {
-        const { $element, component, reason, callback } = args;
+        const { $component, name, reason, callback } = args;
 
-        if (loadedNestedsMap.has($element)) return;
+        if (loadedNestedsMap.has($component)) return;
 
         console.debug(
           "Hydrating",
-          $element,
+          $component,
           "due to:",
           ...(Array.isArray(reason) ? reason : [reason])
         );
 
-        loadedNestedsMap.set($element, true);
+        loadedNestedsMap.set($component, true);
 
-        $element.dataset.loading = "true";
+        $component.dataset.loading = "true";
 
         const Comp: ComponentType<{
           reactiveHydrateId?: string;
           reactiveHydratePortalState?: Record<string, any>;
-        }> = await importComponent(component);
+        }> = await importComponent(name);
 
-        const reactiveHydrateId = $element.dataset.id;
+        const reactiveHydrateId = $component.dataset.id;
 
         const portalState: Record<string, any> = {};
 
         let handledIds: string[] = [];
 
-        let $currentComponent: HTMLElement | null = $element;
+        let $currentComponent: HTMLElement | null = $component;
         let previousComponentIndexByName = new Map();
 
         while ($currentComponent) {
@@ -182,7 +172,7 @@ export const ReactiveHydrationContainerInner = memo(
             .map((hid) => `:not([data-id="${hid}"])`)
             .join("")}`;
 
-          const $nextComponent = $element.querySelector<HTMLElement>(
+          const $nextComponent = $component.querySelector<HTMLElement>(
             nextComponentSelector
           );
 
@@ -195,7 +185,7 @@ export const ReactiveHydrationContainerInner = memo(
 
         const $newElement = document.createElement("div");
 
-        const dataset = { ...$element.dataset };
+        const dataset = { ...$component.dataset };
 
         for (const [key, value] of Object.entries(dataset)) {
           $newElement.dataset[key] = value;
@@ -213,7 +203,7 @@ export const ReactiveHydrationContainerInner = memo(
         let $closestContext: HTMLElement | null | undefined;
         let $topmostContext: HTMLElement | null | undefined;
 
-        let $context: HTMLElement | null | undefined = $element;
+        let $context: HTMLElement | null | undefined = $component;
 
         while (true) {
           const $previous: HTMLElement | null | undefined = $context;
@@ -340,7 +330,7 @@ export const ReactiveHydrationContainerInner = memo(
         // This would avoid any flickering of empty DOM.
         // And ensure click callbacks fire after new portal is inserted into DOM.
         setTimeout(() => {
-          $element.replaceWith($newElement);
+          $component.replaceWith($newElement);
         });
       },
       []
@@ -363,7 +353,7 @@ export const ReactiveHydrationContainerInner = memo(
       {
         component: string;
         states?: State<unknown>[];
-        $nested: HTMLDivElement;
+        $nested: HTMLElement;
       }[]
     >([]);
 
@@ -407,7 +397,7 @@ export const ReactiveHydrationContainerInner = memo(
           .map((state) => state.key)
           .join(", ")}`;
 
-        hydrate({ $element: $nested, component, reason: [reason] });
+        hydrate({ $component: $nested, name: component, reason: [reason] });
       });
     }, [allNestedValuesAtom, allNesteds, hydrate]);
 
@@ -419,76 +409,21 @@ export const ReactiveHydrationContainerInner = memo(
       hasInitializedRef.current = true;
 
       const $nesteds =
-        ref.current.querySelectorAll<HTMLDivElement>("[data-component]");
+        ref.current.querySelectorAll<HTMLElement>("[data-component]");
 
       const newAllNesteds = Array.from($nesteds)
         .map(($nested) => {
           const id = $nested.dataset.id;
-
           const component = $nested.dataset.component;
 
+          if (!id) return;
           if (!component) return;
 
-          // TODO: Also check a global variable tracking any clicks by ID that occur
-          // before full JS hydration, using inline onclick listeners in the SSR HTML.
-          const clicksSelector = "[data-click]";
-
-          const $clicks = $nested.querySelectorAll<HTMLElement>(clicksSelector);
-
-          $clicks.forEach(($click) => {
-            if (clicksMap.has($click)) return;
-
-            const closestId =
-              $click.closest<HTMLElement>("[data-id]")?.dataset.id;
-
-            if (closestId !== id) return;
-
-            clicksMap.set($click, true);
-
-            $click.addEventListener("click", () => {
-              // const clickId = $click.dataset.click;
-
-              const clickPath = domElementPath($click);
-
-              hydrate({
-                $element: $nested,
-                component,
-                reason: ["clicked", $click],
-                callback: () => {
-                  // const $portal = document.querySelector(
-                  //   `[data-id="${id}"]`
-                  // );
-
-                  // console.log("*** $portal", $portal);
-
-                  // if (!$portal) return;
-
-                  // const newId = ($portal.children[0] as HTMLDivElement).dataset
-                  //   .id;
-
-                  // const postClickSelector = `[data-id="${newId}"][data-click="${clickId}"]`;
-
-                  // console.log("*** postClickSelector", postClickSelector);
-
-                  // TODO: To help avoid issues with hydration mismatch, would it be more stable
-                  // to track by component path & index (like state) rather than by `domElementPath`?
-
-                  const $postClick =
-                    document.querySelector<HTMLElement>(clickPath);
-
-                  if (!$postClick) {
-                    console.error(
-                      "Could not find element to click by path:",
-                      clickPath
-                    );
-                  }
-
-                  // TODO: Handle missing element target? Maybe something else in DOM changed during load.
-
-                  $postClick?.click();
-                },
-              });
-            });
+          pluginClick({
+            $component: $nested,
+            name: component,
+            id,
+            hydrate,
           });
 
           const contextNames = $nested
@@ -521,8 +456,8 @@ export const ReactiveHydrationContainerInner = memo(
 
             contextHydratorsByContextElement?.set($nested, () => {
               hydrate({
-                $element: $nested,
-                component,
+                $component: $nested,
+                name: component,
                 reason: ["context", contextName],
               });
             });

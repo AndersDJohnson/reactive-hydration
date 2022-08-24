@@ -17,7 +17,7 @@ export const ReactiveHydrateContext = createContext<{
   parentComponentPath: (string | number)[];
   registerComponentPath?: (name: string) => number;
   unregisterComponentPath?: (name: string) => void;
-  portalRef?: RefObject<HTMLDivElement>;
+  portalRef?: RefObject<HTMLElement>;
   hooksRef?: RefObject<HooksRef>;
 }>({
   parentComponentPath: [],
@@ -29,7 +29,7 @@ export const ReactiveHydrateContextProvider = (
   props: PropsWithChildren<{
     reactiveHydratingId?: string;
     reactiveHydratePortalState?: Record<string, any>;
-    portalRef?: RefObject<HTMLDivElement>;
+    portalRef?: RefObject<HTMLElement>;
     hooksRef?: RefObject<HooksRef>;
   }>
 ) => {
