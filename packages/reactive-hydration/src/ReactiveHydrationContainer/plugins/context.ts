@@ -47,7 +47,7 @@ export const pluginContext = (args: Args) => {
 
       const hydrator = () => {
         hydrate({
-          $component: $component,
+          $component,
           reason: ["context (by SSR ID)", contextName],
         });
       };
@@ -72,7 +72,7 @@ export const pluginContext = (args: Args) => {
 
     const hydrator = () => {
       hydrate({
-        $component: $component,
+        $component,
         reason: ["context (by tree)", contextName],
       });
     };
