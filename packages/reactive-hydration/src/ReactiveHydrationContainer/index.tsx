@@ -32,7 +32,7 @@ export interface ReactiveHydrationContainerProps
 }
 
 const reactiveHydrationContainerContextHasNotSoftRouted = {
-  isActive: false,
+  isActive: true,
   hasSoftRouted: false,
 };
 const reactiveHydrationContainerContextHasSoftRouted = {
