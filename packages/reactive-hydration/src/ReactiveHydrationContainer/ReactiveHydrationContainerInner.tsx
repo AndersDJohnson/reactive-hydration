@@ -17,7 +17,8 @@ import {
 import { pluginContext } from "./plugins/context";
 import { useState } from "../react-actual";
 
-const hydratedComponentsMap = new WeakMap();
+const hydratedComponentsMap = new Map();
+const ContextDefaultProviderWrapperByContextElement = new Map();
 
 export interface ReactiveHydrationContainerInnerProps {
   /**
@@ -107,6 +108,7 @@ export const ReactiveHydrationContainerInner = memo(
 
         console.debug(
           "Hydrating",
+          name,
           $component,
           "due to:",
           ...(Array.isArray(reason) ? reason : [reason])
@@ -121,6 +123,20 @@ export const ReactiveHydrationContainerInner = memo(
           reactiveHydratePortalState?: Record<string, any>;
         }> = await importComponent(name);
 
+        const hasHydratedAncestor = [...hydratedComponentsMap.keys()].some(
+          ($hydratedComponent) =>
+            $hydratedComponent !== $component &&
+            $hydratedComponent.contains($component)
+        );
+
+        if (hasHydratedAncestor) {
+          if (callback) {
+            setPendingCallbacks((p) => [...p, callback]);
+          }
+
+          return;
+        }
+
         const reactiveHydrateId = $component.dataset.id;
 
         const portalState: Record<string, any> = {};
@@ -131,26 +147,28 @@ export const ReactiveHydrationContainerInner = memo(
         let previousComponentIndexByName = new Map();
 
         while ($currentComponent) {
-          const currentComponent = $currentComponent?.dataset.component;
-          if (!currentComponent) continue;
+          const currentName = $currentComponent?.dataset.component;
+          if (!currentName) continue;
           const currentId = $currentComponent?.dataset.id;
           if (!currentId) continue;
 
-          const currentSerializedState =
+          const currentSerializedStateSelector = `[data-id="${currentId}"][data-state]`;
+
+          const currentSerializedStateElement =
             $currentComponent?.querySelector<HTMLElement>(
-              `[data-id="${currentId}"][data-state]`
-            )?.dataset.state;
+              currentSerializedStateSelector
+            );
+
+          const currentSerializedState =
+            currentSerializedStateElement?.dataset.state;
 
           const currentComponentIndex =
-            (previousComponentIndexByName.get(currentComponent) ?? -1) + 1;
+            (previousComponentIndexByName.get(currentName) ?? -1) + 1;
 
-          previousComponentIndexByName.set(
-            currentComponent,
-            currentComponentIndex
-          );
+          previousComponentIndexByName.set(currentName, currentComponentIndex);
 
           if (currentSerializedState) {
-            const currentStateKey = `${currentComponent}.${currentComponentIndex}`;
+            const currentStateKey = `${currentName}.${currentComponentIndex}`;
 
             portalState[currentStateKey] = JSON.parse(currentSerializedState);
           }
@@ -259,7 +277,7 @@ export const ReactiveHydrationContainerInner = memo(
         }
 
         if ($contexts.length) {
-          const contexts = (
+          const contextMetas = (
             await Promise.all(
               $contexts.map(async ($context) => {
                 const contextName = $context?.dataset.contextName;
@@ -268,43 +286,55 @@ export const ReactiveHydrationContainerInner = memo(
                 if (!contextName) return;
                 if (!serializedValue) return;
 
-                const context = await importContext(contextName);
+                const Context = await importContext(contextName);
 
                 const value = JSON.parse(serializedValue);
 
                 return {
                   $context,
-                  context,
+                  Context,
                   value,
                 };
               })
             )
           ).filter(truthy);
 
-          contexts.forEach((context) => {
-            const contextPortalTreeEntry = contextPortalTree.get(
-              context.$context
-            );
+          contextMetas.forEach((contextMeta) => {
+            const { $context, Context, value } = contextMeta;
+            const { DefaultProvider, Provider } = Context;
 
-            const setContextValue = getSetContextValueByContextElement(
-              context.$context
-            );
+            const contextPortalTreeEntry = contextPortalTree.get($context);
+
+            let ContextDefaultProviderWrapper =
+              ContextDefaultProviderWrapperByContextElement.get($context);
+
+            if (!ContextDefaultProviderWrapper) {
+              const setContextValue =
+                getSetContextValueByContextElement($context);
+
+              ContextDefaultProviderWrapper = makeContextDefaultProviderWrapper(
+                Provider,
+                setContextValue
+              );
+
+              ContextDefaultProviderWrapperByContextElement.set(
+                $context,
+                ContextDefaultProviderWrapper
+              );
+            }
 
             if (
               contextPortalTreeEntry &&
               !contextPortalTreeEntry.ContextWrapper
             ) {
               const ContextWrapper = (props: PropsWithChildren<unknown>) => (
-                <context.context.DefaultProvider
+                <DefaultProvider
                   key={contextPortalTreeEntry.key}
-                  Provider={makeContextDefaultProviderWrapper(
-                    context.context.Provider,
-                    setContextValue
-                  )}
-                  serializedValue={context.value}
+                  Provider={ContextDefaultProviderWrapper}
+                  serializedValue={value}
                 >
                   {props.children}
-                </context.context.DefaultProvider>
+                </DefaultProvider>
               );
 
               ContextWrapper.displayName = "ContextWrapper";
