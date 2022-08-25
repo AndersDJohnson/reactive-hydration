@@ -27,21 +27,13 @@ export const ExampleServerComponent = () => {
 
   const myContextValue = useMemo(
     () => ({
-      // This is needed to support hydration for synchronized values across multiple context provider instances below.
-      __id: Math.random().toString(),
       message,
       setMessage,
     }),
     [message, setMessage]
   );
 
-  const dummyContextValue = useMemo(
-    () => ({
-      // This is needed to support hydration for synchronized values across multiple context provider instances below.
-      // __id: Math.random().toString(),
-    }),
-    []
-  );
+  const dummyContextValue = useMemo(() => ({}), []);
 
   return (
     <div>

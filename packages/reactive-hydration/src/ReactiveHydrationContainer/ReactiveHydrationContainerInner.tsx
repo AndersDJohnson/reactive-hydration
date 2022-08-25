@@ -10,11 +10,7 @@ import {
   ContextPortalTreeRenderer,
 } from "./ContextPortalTreeRenderer";
 import { usePluginRecoil } from "./plugins/recoil";
-import {
-  ContextHydratorsByContextElementThenComponentElement,
-  Hydrate,
-  Hydrator,
-} from "./types";
+import { Hydrate, Hydrator } from "./types";
 import { pluginContext } from "./plugins/context";
 import { useState } from "../react-actual";
 
@@ -223,6 +219,7 @@ export const ReactiveHydrationContainerInner = memo(
 
         let contextPortalTreePath = [];
 
+        // eslint-disable-next-line no-constant-condition -- We are handling carefully with `break` statements.
         while (true) {
           const $previous: HTMLElement | null | undefined = $context;
           const previousId = $previous?.dataset.contextId;
@@ -331,6 +328,7 @@ export const ReactiveHydrationContainerInner = memo(
                 getSetContextValueByContextElement($context);
 
               ContextDefaultProviderWrapper = makeContextDefaultProviderWrapper(
+                contextId,
                 Provider,
                 deserializedValue,
                 setContextValue
