@@ -6,7 +6,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "yarn workspaces foreach run build"
+    "build": "yarn workspaces foreach run build",
+    "lint": "yarn workspaces foreach --parallel --verbose --exclude reactive-hydration-root run eslint src --ext ts --ext tsx"
   },
   "devDependencies": {
     "eslint": "8.22.0",
