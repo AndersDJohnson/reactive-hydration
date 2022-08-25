@@ -94,7 +94,7 @@ export const reactiveHydrate = <
     );
 
     const portalRef = useRef<HTMLDivElement>(null);
-    const hooksRef = useRef<HooksRef>({
+    const usedHooksRef = useRef<HooksRef>({
       contexts: new Set(),
     });
 
@@ -103,7 +103,7 @@ export const reactiveHydrate = <
         reactiveHydratingId={reactiveHydrateIdProp}
         reactiveHydratePortalState={reactiveHydratePortalState}
         portalRef={portalRef}
-        hooksRef={hooksRef}
+        usedHooksRef={usedHooksRef}
       >
         <ReactiveHydrate
           id={reactiveHydrateId}

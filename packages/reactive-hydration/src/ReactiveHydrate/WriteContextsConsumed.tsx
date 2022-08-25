@@ -2,9 +2,9 @@ import { useContext } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 
 export const WriteContextsConsumed = () => {
-  const { hooksRef } = useContext(ReactiveHydrateContext);
+  const { usedHooksRef } = useContext(ReactiveHydrateContext);
 
-  const setValues = hooksRef?.current?.contexts.values();
+  const setValues = usedHooksRef?.current?.contexts.values();
 
   const contexts = setValues ? [...setValues] : undefined;
 
