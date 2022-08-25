@@ -4,7 +4,6 @@ import { reactiveHydrate } from "reactive-hydration";
 export const ExampleClientComponentHydrateTree = reactiveHydrate(
   {
     name: "ExampleClientComponentHydrateTree",
-    states: "text2State",
   },
   () => (
     <>
