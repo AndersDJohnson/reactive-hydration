@@ -92,11 +92,11 @@ export const ReactiveHydrationContainerInner = memo(
 
         $context.dataset.contextValue = serializedNewValue;
 
-        // @ts-expect-error Let's assume it may have an SSR ID.
+        // @ts-expect-error ID isn't on the types but may be there at runtime...
         if (value.__id) {
           [
             ...(contextHydratorsByContextId.get(
-              // @ts-expect-error Let's assume it may have an SSR ID.
+              // @ts-expect-error ID isn't on the types but may be there at runtime...
               value.__id
             ) ?? []),
           ].forEach((hydrator) => {
