@@ -48,7 +48,9 @@ export const ReactiveHydrationContainer = memo(
     }
 
     const reactiveHydrationContainerContext = hasSoftRouted
-      ? reactiveHydrationContainerContextInactive
+      ? // TODO: Maybe we want it inactive in future, but for now I like how it keeps serializing resumable state.
+        // reactiveHydrationContainerContextInactive
+        reactiveHydrationContainerContextActive
       : reactiveHydrationContainerContextActive;
 
     if (hasSoftRouted) {
