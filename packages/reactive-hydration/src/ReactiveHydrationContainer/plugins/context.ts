@@ -1,22 +1,13 @@
-import {
-  ContextHydratorsByContextElementThenComponentElement,
-  Hydrate,
-} from "../types";
+import { Hydrate } from "../types";
 
 interface Args {
   $component: HTMLElement;
   hydrate: Hydrate;
   contextHydratorsByContextId: Map<string, (() => void)[]>;
-  // contextHydratorsByContextElementThenComponentElement: ContextHydratorsByContextElementThenComponentElement;
 }
 
 export const pluginContext = (args: Args) => {
-  const {
-    $component,
-    hydrate,
-    contextHydratorsByContextId,
-    // contextHydratorsByContextElementThenComponentElement,
-  } = args;
+  const { $component, hydrate, contextHydratorsByContextId } = args;
 
   const contextNames = $component
     .querySelector<HTMLElement>(
@@ -55,29 +46,5 @@ export const pluginContext = (args: Args) => {
     hydrator.$context = $context;
 
     contextHydrators.push(hydrator);
-
-    // let contextHydratorsByContextElement =
-    //   contextHydratorsByContextElementThenComponentElement.get($context);
-
-    // if (!contextHydratorsByContextElement) {
-    //   contextHydratorsByContextElement = new Map();
-
-    //   contextHydratorsByContextElementThenComponentElement.set(
-    //     $context,
-    //     contextHydratorsByContextElement
-    //   );
-    // }
-
-    // const hydrator = () => {
-    //   hydrate({
-    //     $component,
-    //     reason: ["context (by tree)", contextName],
-    //   });
-    // };
-
-    // hydrator.$component = $component;
-    // hydrator.$context = $context;
-
-    // contextHydratorsByContextElement?.set($component, hydrator);
   });
 };
