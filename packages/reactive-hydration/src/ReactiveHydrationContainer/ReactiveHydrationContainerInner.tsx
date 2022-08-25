@@ -296,7 +296,8 @@ export const ReactiveHydrationContainerInner = memo(
               const ContextWrapper = (props: PropsWithChildren<unknown>) => (
                 <context.context.DefaultProvider
                   key={contextPortalTreeEntry.key}
-                  Context={context.context}
+                  // TODO: Should this be `ActualProvider`?
+                  Provider={context.context.Provider}
                   serializedValue={context.value}
                   setContextValue={setContextValue}
                 >

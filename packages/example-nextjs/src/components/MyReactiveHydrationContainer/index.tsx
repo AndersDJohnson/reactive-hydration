@@ -23,3 +23,5 @@ export const MyReactiveHydrationContainer = () => (
     LazyComp={ExampleServerComponentDynamic}
   />
 );
+
+MyReactiveHydrationContainer.displayName = "MyReactiveHydrationContainer";

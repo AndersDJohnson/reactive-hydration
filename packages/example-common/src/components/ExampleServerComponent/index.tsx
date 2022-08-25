@@ -11,9 +11,9 @@ const DummyContext = createContextWithDefaultValue(
   {},
   (props) => {
     return (
-      <props.Context.Provider value={props.serializedValue}>
+      <props.Provider value={props.serializedValue}>
         {props.children}
-      </props.Context.Provider>
+      </props.Provider>
     );
   }
 );

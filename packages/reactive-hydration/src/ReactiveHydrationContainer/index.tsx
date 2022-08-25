@@ -1,4 +1,5 @@
 import { ComponentType, memo } from "react";
+import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 import {
   ReactiveHydrationContainerInner,
   ReactiveHydrationContainerInnerProps,
@@ -30,6 +31,10 @@ export interface ReactiveHydrationContainerProps
   LazyComp: ComponentType<unknown>;
 }
 
+const reactiveHydrationContainerContext = {
+  isActive: true,
+};
+
 export const ReactiveHydrationContainer = memo(
   (props: ReactiveHydrationContainerProps) => {
     const { Comp, LazyComp, importComponent, importContext } = props;
@@ -40,26 +45,42 @@ export const ReactiveHydrationContainer = memo(
 
     if (isClientSideSoftRouteAwayFromInitialUrl) {
       return (
-        <div>
-          <LazyComp />
-        </div>
+        // TODO: Do we want this active after soft route?
+        <ReactiveHydrationContainerContext.Provider
+          value={reactiveHydrationContainerContext}
+        >
+          {/* This `div` wrapper matches the suppress hydration `div` below to
+          avoid hydration mismatch. */}
+          <div>
+            <LazyComp />
+          </div>
+        </ReactiveHydrationContainerContext.Provider>
       );
     }
 
     if (typeof window !== "object" && Comp) {
       return (
-        // This `div` wrapper matches the suppress hydration `div` below to avoid hydration mismatch.
-        <div>
-          <Comp />
-        </div>
+        <ReactiveHydrationContainerContext.Provider
+          value={reactiveHydrationContainerContext}
+        >
+          {/* This `div` wrapper matches the suppress hydration `div` below to
+          avoid hydration mismatch. */}
+          <div>
+            <Comp />
+          </div>
+        </ReactiveHydrationContainerContext.Provider>
       );
     }
 
     return (
-      <ReactiveHydrationContainerInner
-        importComponent={importComponent}
-        importContext={importContext}
-      />
+      <ReactiveHydrationContainerContext.Provider
+        value={reactiveHydrationContainerContext}
+      >
+        <ReactiveHydrationContainerInner
+          importComponent={importComponent}
+          importContext={importContext}
+        />
+      </ReactiveHydrationContainerContext.Provider>
     );
   },
   // Never re-render only due to parent re-renders.

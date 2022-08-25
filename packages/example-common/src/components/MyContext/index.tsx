@@ -9,7 +9,7 @@ export const MyContext = createContextWithDefaultValue(
     setMessage: (_: string) => {},
   },
   (props) => {
-    const { children, serializedValue, Context, setContextValue } = props;
+    const { children, serializedValue, Provider, setContextValue } = props;
 
     const [message, setMessage] = useState<string>(serializedValue.message);
 
@@ -25,6 +25,6 @@ export const MyContext = createContextWithDefaultValue(
       setContextValue(value);
     }, [setContextValue, value]);
 
-    return <Context.Provider value={value}>{children}</Context.Provider>;
+    return <Provider value={value}>{children}</Provider>;
   }
 );

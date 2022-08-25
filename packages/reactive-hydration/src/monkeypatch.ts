@@ -1,30 +1,39 @@
 /* eslint-disable react-hooks/rules-of-hooks -- Okay to disable here. In any given hook call, we won't change number of hook calls between renders. */
 import React from "react";
-import { contextProviderSerialized } from "./ContextProviderSerialized";
-import { ReactiveHydrateContext } from "./ReactiveHydrateContext";
+import { ReactiveHydrationContainerContext } from "./ReactiveHydrationContainerContext";
 import { useContextUsageTracker } from "./useContextUsageTracker";
 import { useStateSerialize } from "./useStateSerialize";
 
-const { useContext, useState, createContext } = React;
+const { useContext, useState } = React;
 
-// @ts-expect-error We need to support the `displayName` and `bypassMonkeypatch` arguments.
-React.createContext = (init, displayName, bypassMonkeypatch) => {
-  const context = createContext(init);
+// // @ts-expect-error We need to support the `displayName` and `bypassMonkeypatch` arguments.
+// React.createContext = (init, displayName, bypassMonkeypatch) => {
+//   const context = createContext(init);
 
-  if (bypassMonkeypatch) {
-    return context;
-  }
+//   if (bypassMonkeypatch) {
+//     return context;
+//   }
 
-  console.log("*** createContext pre", init, context.displayName, context);
+//   console.log(
+//     "*** createContext pre",
+//     displayName,
+//     context.displayName,
+//     context.Provider,
+//     context
+//   );
 
-  context.displayName = displayName;
+//   context.displayName = displayName;
 
-  context.Provider = contextProviderSerialized(context);
+//   console.log(
+//     "*** createContext post",
+//     displayName,
+//     context.displayName,
+//     context.Provider,
+//     context
+//   );
 
-  console.log("*** createContext post", init, context.displayName, context);
-
-  return context;
-};
+//   return context;
+// };
 
 // @ts-expect-error We need to support the `bypassMonkeypatch` argument.
 React.useState = (init: Parameters<typeof useState>[0], bypassMonkeypatch) => {
@@ -32,9 +41,11 @@ React.useState = (init: Parameters<typeof useState>[0], bypassMonkeypatch) => {
     return useState(init);
   }
 
-  const reactiveHydrateContext = useContext(ReactiveHydrateContext);
+  const reactiveHydrationContainerContext = useContext(
+    ReactiveHydrationContainerContext
+  );
 
-  if (!reactiveHydrateContext.isActive) {
+  if (!reactiveHydrationContainerContext.isActive) {
     return useState(init);
   }
 
@@ -47,9 +58,11 @@ React.useContext = (context: Context<unknown>, bypassMonkeypatch) => {
     return useContext(context);
   }
 
-  const reactiveHydrateContext = useContext(ReactiveHydrateContext);
+  const reactiveHydrationContainerContext = useContext(
+    ReactiveHydrationContainerContext
+  );
 
-  if (!reactiveHydrateContext.isActive) {
+  if (!reactiveHydrationContainerContext.isActive) {
     return useContext(context);
   }
 

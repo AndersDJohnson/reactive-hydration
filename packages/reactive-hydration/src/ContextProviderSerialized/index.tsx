@@ -1,19 +1,20 @@
 import { Context, PropsWithChildren, useId, useMemo } from "react";
 import { useContext } from "../react-actual";
-import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
+import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 
-export function contextProviderSerialized<T>({
-  Provider,
-  displayName,
-}: Context<T>): Context<T>["Provider"] {
+export function contextProviderSerialized<T>(context: Context<T>) {
+  const { Provider, displayName } = context;
+
   const ContextProviderSerialized = (
     props: PropsWithChildren<{ value: T }>
   ) => {
     const { children, value } = props;
 
-    const reactiveHydrateContext = useContext(ReactiveHydrateContext);
+    const reactiveHydrationContainerContext = useContext(
+      ReactiveHydrationContainerContext
+    );
 
-    if (!reactiveHydrateContext.isActive) {
+    if (!reactiveHydrationContainerContext.isActive) {
       return <Provider value={value}>{children}</Provider>;
     }
 
@@ -34,10 +35,11 @@ export function contextProviderSerialized<T>({
     );
   };
 
-  Object.assign(ContextProviderSerialized, Provider);
+  // Object.assign(ContextProviderSerialized, Provider);
+  // ContextProviderSerialized.$$typeof = Provider.$$typeof;
+  // ContextProviderSerialized._context = context;
 
   ContextProviderSerialized.displayName = `ContextProviderSerialized(${displayName})`;
 
-  // @ts-expect-error Hopefully the `Object.assign` above accounts for this.
   return ContextProviderSerialized;
 }
