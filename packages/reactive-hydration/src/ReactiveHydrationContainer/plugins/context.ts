@@ -7,7 +7,7 @@ interface Args {
   $component: HTMLElement;
   hydrate: Hydrate;
   contextHydratorsByContextId: Map<string, (() => void)[]>;
-  contextHydratorsByContextElementThenComponentElement: ContextHydratorsByContextElementThenComponentElement;
+  // contextHydratorsByContextElementThenComponentElement: ContextHydratorsByContextElementThenComponentElement;
 }
 
 export const pluginContext = (args: Args) => {
@@ -15,7 +15,7 @@ export const pluginContext = (args: Args) => {
     $component,
     hydrate,
     contextHydratorsByContextId,
-    contextHydratorsByContextElementThenComponentElement,
+    // contextHydratorsByContextElementThenComponentElement,
   } = args;
 
   const contextNames = $component
@@ -58,28 +58,28 @@ export const pluginContext = (args: Args) => {
       contextHydrators.push(hydrator);
     }
 
-    let contextHydratorsByContextElement =
-      contextHydratorsByContextElementThenComponentElement.get($context);
+    // let contextHydratorsByContextElement =
+    //   contextHydratorsByContextElementThenComponentElement.get($context);
 
-    if (!contextHydratorsByContextElement) {
-      contextHydratorsByContextElement = new Map();
+    // if (!contextHydratorsByContextElement) {
+    //   contextHydratorsByContextElement = new Map();
 
-      contextHydratorsByContextElementThenComponentElement.set(
-        $context,
-        contextHydratorsByContextElement
-      );
-    }
+    //   contextHydratorsByContextElementThenComponentElement.set(
+    //     $context,
+    //     contextHydratorsByContextElement
+    //   );
+    // }
 
-    const hydrator = () => {
-      hydrate({
-        $component,
-        reason: ["context (by tree)", contextName],
-      });
-    };
+    // const hydrator = () => {
+    //   hydrate({
+    //     $component,
+    //     reason: ["context (by tree)", contextName],
+    //   });
+    // };
 
-    hydrator.$component = $component;
-    hydrator.$context = $context;
+    // hydrator.$component = $component;
+    // hydrator.$context = $context;
 
-    contextHydratorsByContextElement?.set($component, hydrator);
+    // contextHydratorsByContextElement?.set($component, hydrator);
   });
 };

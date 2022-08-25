@@ -73,10 +73,10 @@ export const ReactiveHydrationContainerInner = memo(
       () => []
     );
 
-    const [contextHydratorsByContextElementThenComponentElement] =
-      useState<ContextHydratorsByContextElementThenComponentElement>(
-        () => new Map()
-      );
+    // const [contextHydratorsByContextElementThenComponentElement] =
+    //   useState<ContextHydratorsByContextElementThenComponentElement>(
+    //     () => new Map()
+    //   );
 
     const [contextHydratorsByContextId] = useState<Map<string, Hydrator[]>>(
       () => new Map()
@@ -108,15 +108,15 @@ export const ReactiveHydrationContainerInner = memo(
           });
         }
 
-        [
-          ...(contextHydratorsByContextElementThenComponentElement
-            .get($context)
-            ?.values() ?? []),
-        ].forEach((hydrator) => hydrator());
+        // [
+        //   ...(contextHydratorsByContextElementThenComponentElement
+        //     .get($context)
+        //     ?.values() ?? []),
+        // ].forEach((hydrator) => hydrator());
       },
       [
         contextHydratorsByContextId,
-        contextHydratorsByContextElementThenComponentElement,
+        // contextHydratorsByContextElementThenComponentElement,
       ]
     );
 
@@ -469,13 +469,13 @@ export const ReactiveHydrationContainerInner = memo(
           $component,
           hydrate,
           contextHydratorsByContextId,
-          contextHydratorsByContextElementThenComponentElement,
+          // contextHydratorsByContextElementThenComponentElement,
         });
       });
     }, [
       hydrate,
       contextHydratorsByContextId,
-      contextHydratorsByContextElementThenComponentElement,
+      // contextHydratorsByContextElementThenComponentElement,
     ]);
 
     usePluginRecoil({
