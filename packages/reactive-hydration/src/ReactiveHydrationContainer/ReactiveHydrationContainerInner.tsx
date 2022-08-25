@@ -332,6 +332,7 @@ export const ReactiveHydrationContainerInner = memo(
                 <DefaultProvider
                   key={contextPortalTreeEntry.key}
                   Provider={ContextDefaultProviderWrapper}
+                  defaultValue={Context.defaultValue}
                   serializedValue={value}
                 >
                   {props.children}

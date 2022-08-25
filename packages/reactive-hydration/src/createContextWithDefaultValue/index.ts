@@ -13,6 +13,7 @@ export type ContextDefaultProvider<T> = ComponentType<
   PropsWithChildren<{
     Provider: ComponentType<PropsWithChildren<{ value: T }>>;
     serializedValue: T;
+    defaultValue: T;
   }>
 >;
 
