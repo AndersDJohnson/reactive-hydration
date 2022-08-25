@@ -52,7 +52,7 @@ export const ReactiveHydrationContainerInner = memo(
     const componentRef = useRef<HTMLDivElement>(null);
 
     const [contextPortalTree] = useState(
-      () => new Map<HTMLElement, ContextPortalTreeEntry>()
+      () => new Map<string, ContextPortalTreeEntry>()
     );
 
     const [topmostContextPortalTreeEntries] = useState(
@@ -242,6 +242,7 @@ export const ReactiveHydrationContainerInner = memo(
 
         while (true) {
           const $previous: HTMLElement | null | undefined = $context;
+          const previousId = $previous?.dataset.contextId;
 
           $context = $context?.closest<HTMLElement>("[data-context-value]");
 
@@ -269,7 +270,7 @@ export const ReactiveHydrationContainerInner = memo(
 
           const contextPortalTreeEntryKey = contextPortalTreePath.join(" > ");
 
-          let contextPortalTreeEntry = contextPortalTree.get($context);
+          let contextPortalTreeEntry = contextPortalTree.get(contextId);
 
           if (!contextPortalTreeEntry) {
             contextPortalTreeEntry = {
@@ -278,11 +279,12 @@ export const ReactiveHydrationContainerInner = memo(
               leafPortals: [],
             };
 
-            contextPortalTree.set($context, contextPortalTreeEntry);
+            contextPortalTree.set(contextId, contextPortalTreeEntry);
           }
 
-          const previousContextPortalTreeEntry =
-            contextPortalTree.get($previous);
+          const previousContextPortalTreeEntry = previousId
+            ? contextPortalTree.get(previousId)
+            : undefined;
 
           if (previousContextPortalTreeEntry) {
             contextPortalTreeEntry.childPortalTreeEntries.push(
@@ -294,8 +296,11 @@ export const ReactiveHydrationContainerInner = memo(
         }
 
         if ($topmostContext) {
-          const topmostContextPortalTreeEntry =
-            contextPortalTree.get($topmostContext);
+          const topmostContextId = $topmostContext?.dataset.contextId;
+
+          const topmostContextPortalTreeEntry = topmostContextId
+            ? contextPortalTree.get(topmostContextId)
+            : undefined;
 
           if (topmostContextPortalTreeEntry) {
             topmostContextPortalTreeEntries.add(topmostContextPortalTreeEntry);
@@ -307,7 +312,6 @@ export const ReactiveHydrationContainerInner = memo(
             await Promise.all(
               $contexts.map(async ($context) => {
                 const contextName = $context?.dataset.contextName;
-                const contextId = $context?.dataset.contextId;
                 const serializedValue = $context?.dataset.contextValue;
 
                 if (!contextName) return;
@@ -330,7 +334,11 @@ export const ReactiveHydrationContainerInner = memo(
             const { $context, Context, deserializedValue } = contextMeta;
             const { DefaultProvider, Provider } = Context;
 
-            const contextPortalTreeEntry = contextPortalTree.get($context);
+            const contextId = $context?.dataset.contextId;
+
+            if (!contextId) return;
+
+            const contextPortalTreeEntry = contextPortalTree.get(contextId);
 
             let ContextDefaultProviderWrapper =
               ContextDefaultProviderWrapperByContextElement.get($context);
@@ -383,8 +391,10 @@ export const ReactiveHydrationContainerInner = memo(
 
         const key = [...contextPortalTreePath, `${name}[${id}]`].join(" > ");
 
-        const closestContextPortalTreeEntry = $closestContext
-          ? contextPortalTree.get($closestContext)
+        const closestContextId = $closestContext?.dataset?.contextId;
+
+        const closestContextPortalTreeEntry = closestContextId
+          ? contextPortalTree.get(closestContextId)
           : undefined;
 
         if (closestContextPortalTreeEntry) {

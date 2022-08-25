@@ -14,7 +14,11 @@ export function contextProviderSerialized<T>(context: Context<T>) {
 
     const serializedValue = useMemo(() => JSON.stringify(value), [value]);
 
-    const id = useId();
+    const usedId = useId();
+
+    const id =
+      // @ts-expect-error ID isn't on the types but may be there at runtime...
+      value?.__id ?? usedId;
 
     if (typeof window === "object" && !hasSoftRouted) {
       return <Provider value={value}>{children}</Provider>;

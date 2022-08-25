@@ -12,7 +12,7 @@ export function makeContextDefaultProviderWrapper<T>(
 
     useEffect(() => {
       const {
-        // @ts-expect-error ID isn't on the types but should be at runtime...
+        // @ts-expect-error ID isn't on the types but may be there at runtime...
         __id,
         ...valueWithoutId
       } = value ?? {};
