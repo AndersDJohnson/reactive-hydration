@@ -10,11 +10,11 @@ const DummyContext = createContextWithDefaultValue(
   "DummyContext",
   {},
   (props) => {
-    return (
-      <props.Provider value={props.serializedValue}>
-        {props.children}
-      </props.Provider>
-    );
+    const { children, Provider } = props;
+
+    const value = useMemo(() => ({}), []);
+
+    return <Provider value={value}>{children}</Provider>;
   }
 );
 
@@ -27,12 +27,15 @@ export const ExampleServerComponent = () => {
 
   const myContextValue = useMemo(
     () => ({
+      // This is needed to support hydration for synchronized values across multiple context provider instances below.
       __id: Math.random().toString(),
       message,
       setMessage,
     }),
     [message, setMessage]
   );
+
+  const dummyContextValue = useMemo(() => ({}), []);
 
   return (
     <div>
@@ -51,11 +54,11 @@ export const ExampleServerComponent = () => {
           <ExampleClientComponentNesting />
 
           {/* Just to test context tree walk order. */}
-          <DummyContext.Provider value={myContextValue} />
+          <DummyContext.Provider value={dummyContextValue} />
         </MyContext.Provider>
 
         {/* Just to test context tree walk order. */}
-        <DummyContext.Provider value={myContextValue} />
+        <DummyContext.Provider value={dummyContextValue} />
       </div>
 
       <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
