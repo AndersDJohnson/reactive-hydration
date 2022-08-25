@@ -1,4 +1,4 @@
-import { useContext, useEffect, useId, useMemo, useState, useRef } from "react";
+import { useEffect, useId, useMemo, useRef } from "react";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import {
   HooksRef,
@@ -8,6 +8,7 @@ import {
 import { SerializedStateContext } from "../useStateSerialize";
 import { WriteContextsConsumed } from "./WriteContextsConsumed";
 import { ReactiveHydrate } from "./ReactiveHydrate";
+import { useContext, useState } from "../react-actual";
 
 /**
  * TODO: This wrapper could perhaps be wrapped around all components by the compiler.
@@ -26,7 +27,6 @@ export const reactiveHydrate = <
   Comp: React.ComponentType<P>
 ) => {
   // TODO: memo wrap? if so, fix display name
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const ReactiveHydrateWrapper = (props: P) => {
     const { name, states } = args;
 
@@ -36,7 +36,6 @@ export const reactiveHydrate = <
     } = props;
 
     // TODO: If these IDs isn't stable enough, we could just resolve the DOM children at runtime that aren't nested inside a deeper client component.
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const reactiveHydrateIdNew = useId();
     const reactiveHydrateId = reactiveHydrateIdProp ?? reactiveHydrateIdNew;
 

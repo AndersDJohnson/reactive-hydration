@@ -1,11 +1,12 @@
-import { ComponentType, memo } from "react";
+import { ComponentType, memo, useMemo } from "react";
+import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 import {
   ReactiveHydrationContainerInner,
   ReactiveHydrationContainerInnerProps,
 } from "./ReactiveHydrationContainerInner";
 
 let initialUrl = typeof window === "object" ? window.location.href : undefined;
-let isSoftRouting = false;
+let hasSoftRouted = false;
 
 export interface ReactiveHydrationContainerProps
   extends ReactiveHydrationContainerInnerProps {
@@ -30,36 +31,66 @@ export interface ReactiveHydrationContainerProps
   LazyComp: ComponentType<unknown>;
 }
 
+const reactiveHydrationContainerContextInactive = { isActive: false };
+const reactiveHydrationContainerContextActive = { isActive: true };
+
 export const ReactiveHydrationContainer = memo(
   (props: ReactiveHydrationContainerProps) => {
     const { Comp, LazyComp, importComponent, importContext } = props;
 
+    // TODO: Subscribe to location changes.
     const isClientSideSoftRouteAwayFromInitialUrl =
-      typeof window === "object" &&
-      (window.location.href !== initialUrl || isSoftRouting);
+      // TODO: Will this have ill effect on any rerenders during page transitions?
+      typeof window === "object" && window.location.href !== initialUrl;
 
     if (isClientSideSoftRouteAwayFromInitialUrl) {
+      hasSoftRouted = true;
+    }
+
+    const reactiveHydrationContainerContext = hasSoftRouted
+      ? // TODO: Maybe we want it inactive in future, but for now I like how it keeps serializing resumable state.
+        // reactiveHydrationContainerContextInactive
+        reactiveHydrationContainerContextActive
+      : reactiveHydrationContainerContextActive;
+
+    if (hasSoftRouted) {
       return (
-        <div>
-          <LazyComp />
-        </div>
+        // TODO: Do we want this active after soft route?
+        <ReactiveHydrationContainerContext.Provider
+          value={reactiveHydrationContainerContext}
+        >
+          {/* This `div` wrapper matches the suppress hydration `div` below to
+          avoid hydration mismatch. */}
+          <div>
+            <LazyComp />
+          </div>
+        </ReactiveHydrationContainerContext.Provider>
       );
     }
 
     if (typeof window !== "object" && Comp) {
       return (
-        // This `div` wrapper matches the suppress hydration `div` below to avoid hydration mismatch.
-        <div>
-          <Comp />
-        </div>
+        <ReactiveHydrationContainerContext.Provider
+          value={reactiveHydrationContainerContext}
+        >
+          {/* This `div` wrapper matches the suppress hydration `div` below to
+          avoid hydration mismatch. */}
+          <div>
+            <Comp />
+          </div>
+        </ReactiveHydrationContainerContext.Provider>
       );
     }
 
     return (
-      <ReactiveHydrationContainerInner
-        importComponent={importComponent}
-        importContext={importContext}
-      />
+      <ReactiveHydrationContainerContext.Provider
+        value={reactiveHydrationContainerContext}
+      >
+        <ReactiveHydrationContainerInner
+          importComponent={importComponent}
+          importContext={importContext}
+        />
+      </ReactiveHydrationContainerContext.Provider>
     );
   },
   // Never re-render only due to parent re-renders.

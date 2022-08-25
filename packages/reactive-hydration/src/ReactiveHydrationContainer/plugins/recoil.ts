@@ -1,6 +1,7 @@
-import { useState, useMemo, useEffect, RefObject } from "react";
+import { useMemo, useEffect, RefObject } from "react";
 import { useRecoilValue, selector } from "recoil";
 import { getRecoil } from "recoil-nexus";
+import { useState } from "../../react-actual";
 import { getRegisteredState, State } from "../../stateRegistry";
 import { truthy } from "../../utilities/truthy";
 import { Hydrate } from "../types";
@@ -10,12 +11,12 @@ interface UsePluginRecoilArgs {
   componentRef: RefObject<HTMLElement>;
 }
 
+// TODO: Instead of requiring component state annotations, monkeypatch `useAtom` to detect and track similar to `useContextUsageTracker`.
 export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
   const { hydrate, componentRef } = args;
 
   const [allNesteds, setAllNesteds] = useState<
     {
-      component: string;
       states?: State<unknown>[];
       $component: HTMLElement;
     }[]
@@ -46,7 +47,7 @@ export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
     // State has changed - we must load!
 
     allNesteds.forEach((nested) => {
-      const { component, states, $component } = nested;
+      const { states, $component } = nested;
 
       // TODO: When not debugging, this could be faster with `.some`.
       const statesChanged = states?.filter(
@@ -79,9 +80,12 @@ export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
 
         const id = $component.dataset.id;
         const component = $component.dataset.component;
+        const loaded = $component.dataset.loaded;
 
         if (!id) return;
         if (!component) return;
+
+        if (loaded === "true") return;
 
         const stateNames = $component.dataset.states?.split(",");
 
@@ -94,12 +98,11 @@ export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
 
         return {
           $component,
-          component,
           states,
         };
       })
       .filter(truthy);
 
     setAllNesteds((a) => [...a, ...newAllNesteds]);
-  }, [hydrate]);
+  }, [hydrate, componentRef]);
 };

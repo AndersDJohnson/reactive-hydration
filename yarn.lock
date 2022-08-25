@@ -694,6 +694,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/parser@npm:^5.35.1":
+  version: 5.35.1
+  resolution: "@typescript-eslint/parser@npm:5.35.1"
+  dependencies:
+    "@typescript-eslint/scope-manager": 5.35.1
+    "@typescript-eslint/types": 5.35.1
+    "@typescript-eslint/typescript-estree": 5.35.1
+    debug: ^4.3.4
+  peerDependencies:
+    eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 57ea1a1da60b370f8d5c11c86155f7339359a90f2c59e34c89f626f1a79cb440248f07bd307a27ebbbcc997d2731cb9754cdbc37639770940521a938dd89870c
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/scope-manager@npm:5.33.1":
   version: 5.33.1
   resolution: "@typescript-eslint/scope-manager@npm:5.33.1"
@@ -704,10 +721,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/scope-manager@npm:5.35.1":
+  version: 5.35.1
+  resolution: "@typescript-eslint/scope-manager@npm:5.35.1"
+  dependencies:
+    "@typescript-eslint/types": 5.35.1
+    "@typescript-eslint/visitor-keys": 5.35.1
+  checksum: 5a969a081309bac5962f99ee6dfdfd9c68ea677bc79d9796592dce82a36217f67aa55c7bf421b2c97b46c5149d6a9401bb4c57829595e8c19f47cfa9e8c2dd86
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/types@npm:5.33.1":
   version: 5.33.1
   resolution: "@typescript-eslint/types@npm:5.33.1"
   checksum: 122891bd4ab4b930b1d33f3ce43a010825c1e61b9879520a0f3dc34cf92df71e2a873410845ab8d746333511c455c115eaafdec149298a161cef713829dfdb77
+  languageName: node
+  linkType: hard
+
+"@typescript-eslint/types@npm:5.35.1":
+  version: 5.35.1
+  resolution: "@typescript-eslint/types@npm:5.35.1"
+  checksum: a4e1001867f43f3364b109fc5a07b91ae7a34b78ab191c6c5c4695dac9bb2b80b0a602651c0b807c1c7c1fc3656d2bbd47c637afa08a09e7b1c39eae3c489e00
   languageName: node
   linkType: hard
 
@@ -729,6 +763,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/typescript-estree@npm:5.35.1":
+  version: 5.35.1
+  resolution: "@typescript-eslint/typescript-estree@npm:5.35.1"
+  dependencies:
+    "@typescript-eslint/types": 5.35.1
+    "@typescript-eslint/visitor-keys": 5.35.1
+    debug: ^4.3.4
+    globby: ^11.1.0
+    is-glob: ^4.0.3
+    semver: ^7.3.7
+    tsutils: ^3.21.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: a917ca4753a3f92c8d8555c96f5414383a9742761625476fa36a019401543aa74996159afa0f7fc7fae05fe0f904e3c6f4153a55412070c8a94e8171e81084c7
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/visitor-keys@npm:5.33.1":
   version: 5.33.1
   resolution: "@typescript-eslint/visitor-keys@npm:5.33.1"
@@ -736,6 +788,16 @@ __metadata:
     "@typescript-eslint/types": 5.33.1
     eslint-visitor-keys: ^3.3.0
   checksum: 0d32a433450f61e97b5fa6b1e167f06ed395c200b16b4dbd4490a1c4941de420689b622f8a2486f5398806fb24f57b9fab901b4cbc8fdb8853f568264b3a182a
+  languageName: node
+  linkType: hard
+
+"@typescript-eslint/visitor-keys@npm:5.35.1":
+  version: 5.35.1
+  resolution: "@typescript-eslint/visitor-keys@npm:5.35.1"
+  dependencies:
+    "@typescript-eslint/types": 5.35.1
+    eslint-visitor-keys: ^3.3.0
+  checksum: ef3c8377aac89935b5cc2fcf37bb3e42aa5f98848e7c22bdcbe5bb06c0fe8a1373a6897fd21109be8929b4708ad06c8874d2ef7bba17ff64911964203457330d
   languageName: node
   linkType: hard
 
@@ -1861,7 +1923,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-hooks@npm:^4.5.0":
+"eslint-plugin-react-hooks@npm:^4.5.0, eslint-plugin-react-hooks@npm:^4.6.0":
   version: 4.6.0
   resolution: "eslint-plugin-react-hooks@npm:4.6.0"
   peerDependencies:
@@ -1929,7 +1991,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:8.22.0":
+"eslint@npm:8.22.0, eslint@npm:^8.22.0":
   version: 8.22.0
   resolution: "eslint@npm:8.22.0"
   dependencies:
@@ -3705,7 +3767,10 @@ __metadata:
   dependencies:
     "@types/hoist-non-react-statics": ^3.3.1
     "@types/react": 18.0.17
+    "@typescript-eslint/parser": ^5.35.1
     dom-element-path: ^1.3.1
+    eslint: ^8.22.0
+    eslint-plugin-react-hooks: ^4.6.0
     hoist-non-react-statics: ^3.3.2
     react: ^18
     react-dom: ^18
