@@ -3,6 +3,7 @@ import { ComponentType, memo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { truthy } from "../utilities/truthy";
 import { ContextWithDefaultValues } from "../createContextWithDefaultValue";
+import { makeContextDefaultProviderWrapper } from "../makeContextDefaultProviderWrapper";
 import { pluginClick } from "./plugins/click";
 import {
   ContextPortalTreeEntry,
@@ -296,10 +297,11 @@ export const ReactiveHydrationContainerInner = memo(
               const ContextWrapper = (props: PropsWithChildren<unknown>) => (
                 <context.context.DefaultProvider
                   key={contextPortalTreeEntry.key}
-                  // TODO: Should this be `ActualProvider`?
-                  Provider={context.context.Provider}
+                  Provider={makeContextDefaultProviderWrapper(
+                    context.context.Provider,
+                    setContextValue
+                  )}
                   serializedValue={context.value}
-                  setContextValue={setContextValue}
                 >
                   {props.children}
                 </context.context.DefaultProvider>

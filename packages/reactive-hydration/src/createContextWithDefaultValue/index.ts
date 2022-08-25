@@ -11,16 +11,14 @@ export type ContextUpdater<T> = (value: T) => void;
 
 export type ContextDefaultProvider<T> = ComponentType<
   PropsWithChildren<{
-    Provider: Context<T>["Provider"];
+    Provider: ComponentType<PropsWithChildren<{ value: T }>>;
     serializedValue: T;
-    setContextValue: (value: T) => void;
   }>
 >;
 
 export interface ContextDefaultValues<T> {
   displayName: string;
   defaultValue: T;
-  ActualProvider: Context<T>["Provider"];
   DefaultProvider: ContextDefaultProvider<T>;
 }
 
@@ -40,10 +38,6 @@ export function createContextWithDefaultValue<T>(
   RawContext.displayName = displayName;
 
   RawContext.defaultValue = defaultValue;
-
-  const { Provider: ActualProvider } = RawContext;
-
-  RawContext.ActualProvider = ActualProvider;
 
   // @ts-expect-error We know this isn't a native Provider, but a wrapper - but consumers should mostly use it without knowing the difference.
   RawContext.Provider = contextProviderSerialized(RawContext);
