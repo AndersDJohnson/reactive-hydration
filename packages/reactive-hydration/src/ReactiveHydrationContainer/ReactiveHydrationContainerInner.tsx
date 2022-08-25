@@ -90,12 +90,6 @@ export const ReactiveHydrationContainerInner = memo(
 
         if (serializedNewValue === serializedCurrentValue) return;
 
-        console.log(
-          "*** getSetContextValueByContextElement serializedNewValue",
-          serializedNewValue,
-          $context
-        );
-
         $context.dataset.contextValue = serializedNewValue;
 
         // @ts-expect-error Let's assume it may have an SSR ID.
@@ -107,11 +101,6 @@ export const ReactiveHydrationContainerInner = memo(
             ) ?? []),
           ].forEach((hydrator) => {
             if (hydrator.$context) {
-              console.log(
-                "*** hydrator serializedNewValue",
-                serializedNewValue,
-                hydrator.$context
-              );
               hydrator.$context.dataset.contextValue = serializedNewValue;
             }
 
@@ -276,14 +265,6 @@ export const ReactiveHydrationContainerInner = memo(
           if (!contextId) break;
           if (!contextName) break;
 
-          console.log(
-            "*** CONTEXT FOR",
-            contextName,
-            contextId,
-            $component,
-            $context
-          );
-
           contextPortalTreePath.push(`${contextName}[${contextId}]`);
 
           const contextPortalTreeEntryKey = contextPortalTreePath.join(" > ");
@@ -329,14 +310,6 @@ export const ReactiveHydrationContainerInner = memo(
                 const contextId = $context?.dataset.contextId;
                 const serializedValue = $context?.dataset.contextValue;
 
-                console.log(
-                  "*** CONTEXT METAS serializedValue",
-                  contextName,
-                  contextId,
-                  serializedValue,
-                  $context
-                );
-
                 if (!contextName) return;
                 if (!serializedValue) return;
 
@@ -365,12 +338,6 @@ export const ReactiveHydrationContainerInner = memo(
             if (!ContextDefaultProviderWrapper) {
               const setContextValue =
                 getSetContextValueByContextElement($context);
-
-              console.log(
-                "*** CONTEXT WRAPPER deserializedValue",
-                Context.displayName,
-                deserializedValue
-              );
 
               ContextDefaultProviderWrapper = makeContextDefaultProviderWrapper(
                 Provider,
@@ -500,8 +467,6 @@ export const ReactiveHydrationContainerInner = memo(
       contextHydratorsByContextId,
       contextHydratorsByContextElementThenComponentElement,
     ]);
-
-    console.log("*** contextHydratorsByContextId", contextHydratorsByContextId);
 
     usePluginRecoil({
       hydrate,

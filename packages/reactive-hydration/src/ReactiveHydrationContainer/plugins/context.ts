@@ -39,8 +39,6 @@ export const pluginContext = (args: Args) => {
     if (parsedValue?.__id) {
       let contextHydrators = contextHydratorsByContextId.get(parsedValue.__id);
 
-      console.log("*** parsedValue.__id", parsedValue.__id);
-
       if (!contextHydrators) {
         contextHydrators = [];
 
