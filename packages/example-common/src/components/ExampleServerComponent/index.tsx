@@ -18,8 +18,6 @@ const DummyContext = createContextWithDefaultValue(
   }
 );
 
-console.log("*** MyContext.Provider", MyContext.Provider);
-
 export const ExampleServerComponent = () => {
   console.debug(
     "Rendering ExampleServerComponent (should be on server only on initial page load, but may be loaded on client after routing)"

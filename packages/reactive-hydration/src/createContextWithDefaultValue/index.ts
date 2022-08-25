@@ -37,18 +37,20 @@ export function createContextWithDefaultValue<T>(
     displayName
   ) as ContextWithDefaultValues<T>;
 
+  RawContext.displayName = displayName;
+
   RawContext.defaultValue = defaultValue;
 
-  // @ ts-expect-error We know this isn't a native Provider, but a wrapper - but consumers should mostly use it without knowing the difference.
-  // RawContext.Provider = contextProviderSerialized(RawContext);
+  const { Provider: ActualProvider } = RawContext;
 
-  DefaultProvider.displayName = "DefaultProvider";
+  RawContext.ActualProvider = ActualProvider;
 
-  RawContext.ActualProvider = RawContext.Provider;
+  // @ts-expect-error We know this isn't a native Provider, but a wrapper - but consumers should mostly use it without knowing the difference.
+  RawContext.Provider = contextProviderSerialized(RawContext);
 
   RawContext.DefaultProvider = DefaultProvider;
 
-  RawContext.displayName = displayName;
+  DefaultProvider.displayName = "DefaultProvider";
 
   return RawContext;
 }
