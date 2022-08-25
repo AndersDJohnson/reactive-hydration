@@ -1,4 +1,4 @@
-import { ComponentType, memo } from "react";
+import { ComponentType, memo, useMemo } from "react";
 import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 import {
   ReactiveHydrationContainerInner,
@@ -6,7 +6,7 @@ import {
 } from "./ReactiveHydrationContainerInner";
 
 let initialUrl = typeof window === "object" ? window.location.href : undefined;
-let isSoftRouting = false;
+let hasSoftRouted = false;
 
 export interface ReactiveHydrationContainerProps
   extends ReactiveHydrationContainerInnerProps {
@@ -31,19 +31,27 @@ export interface ReactiveHydrationContainerProps
   LazyComp: ComponentType<unknown>;
 }
 
-const reactiveHydrationContainerContext = {
-  isActive: true,
-};
+const reactiveHydrationContainerContextInactive = { isActive: false };
+const reactiveHydrationContainerContextActive = { isActive: true };
 
 export const ReactiveHydrationContainer = memo(
   (props: ReactiveHydrationContainerProps) => {
     const { Comp, LazyComp, importComponent, importContext } = props;
 
+    // TODO: Subscribe to location changes.
     const isClientSideSoftRouteAwayFromInitialUrl =
-      typeof window === "object" &&
-      (window.location.href !== initialUrl || isSoftRouting);
+      // TODO: Will this have ill effect on any rerenders during page transitions?
+      typeof window === "object" && window.location.href !== initialUrl;
 
     if (isClientSideSoftRouteAwayFromInitialUrl) {
+      hasSoftRouted = true;
+    }
+
+    const reactiveHydrationContainerContext = hasSoftRouted
+      ? reactiveHydrationContainerContextInactive
+      : reactiveHydrationContainerContextActive;
+
+    if (hasSoftRouted) {
       return (
         // TODO: Do we want this active after soft route?
         <ReactiveHydrationContainerContext.Provider
