@@ -31,8 +31,14 @@ export interface ReactiveHydrationContainerProps
   LazyComp: ComponentType<unknown>;
 }
 
-const reactiveHydrationContainerContextInactive = { isActive: false };
-const reactiveHydrationContainerContextActive = { isActive: true };
+const reactiveHydrationContainerContextHasNotSoftRouted = {
+  isActive: false,
+  hasSoftRouted: false,
+};
+const reactiveHydrationContainerContextHasSoftRouted = {
+  isActive: true,
+  hasSoftRouted: true,
+};
 
 export const ReactiveHydrationContainer = memo(
   (props: ReactiveHydrationContainerProps) => {
@@ -50,8 +56,8 @@ export const ReactiveHydrationContainer = memo(
     const reactiveHydrationContainerContext = hasSoftRouted
       ? // TODO: Maybe we want it inactive in future, but for now I like how it keeps serializing resumable state.
         // reactiveHydrationContainerContextInactive
-        reactiveHydrationContainerContextActive
-      : reactiveHydrationContainerContextActive;
+        reactiveHydrationContainerContextHasSoftRouted
+      : reactiveHydrationContainerContextHasNotSoftRouted;
 
     if (hasSoftRouted) {
       return (

@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useMemo, useState } from "react";
 import { createContextWithDefaultValue } from "reactive-hydration";
 
