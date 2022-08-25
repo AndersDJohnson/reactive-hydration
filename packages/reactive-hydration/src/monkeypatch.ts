@@ -6,35 +6,6 @@ import { useStateSerialize } from "./useStateSerialize";
 
 const { useContext, useState } = React;
 
-// // @ts-expect-error We need to support the `displayName` and `bypassMonkeypatch` arguments.
-// React.createContext = (init, displayName, bypassMonkeypatch) => {
-//   const context = createContext(init);
-
-//   if (bypassMonkeypatch) {
-//     return context;
-//   }
-
-//   console.log(
-//     "*** createContext pre",
-//     displayName,
-//     context.displayName,
-//     context.Provider,
-//     context
-//   );
-
-//   context.displayName = displayName;
-
-//   console.log(
-//     "*** createContext post",
-//     displayName,
-//     context.displayName,
-//     context.Provider,
-//     context
-//   );
-
-//   return context;
-// };
-
 // @ts-expect-error We need to support the `bypassMonkeypatch` argument.
 React.useState = (init: Parameters<typeof useState>[0], bypassMonkeypatch) => {
   if (bypassMonkeypatch) {

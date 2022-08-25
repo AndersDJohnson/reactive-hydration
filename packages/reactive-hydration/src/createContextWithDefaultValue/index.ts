@@ -2,7 +2,6 @@ import {
   ComponentType,
   Context,
   PropsWithChildren,
-  // eslint-disable-next-line no-restricted-imports -- Here we do want our monkeypatched version to use within our consumer-facing wrapper.
   createContext,
 } from "react";
 import { contextProviderSerialized } from "../contextProviderSerialized";

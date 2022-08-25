@@ -1,4 +1,4 @@
-import { createContext } from "../react-actual";
+import { createContext } from "react";
 
 export const ReactiveHydrationContainerContext = createContext({
   isActive: false,
