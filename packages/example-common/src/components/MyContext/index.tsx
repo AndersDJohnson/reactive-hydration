@@ -1,16 +1,19 @@
 import { useMemo, useState } from "react";
 import { createContextWithDefaultValue } from "reactive-hydration";
 
-export const MyContext = createContextWithDefaultValue(
+export const MyContext = createContextWithDefaultValue<{
+  message: string | undefined;
+  setMessage: (s: string) => void;
+}>(
   "MyContext",
   {
     message: "default",
-    setMessage: (_: string) => {},
+    setMessage: () => {},
   },
   (props) => {
-    const { children, serializedValue, Provider } = props;
+    const { children, Provider } = props;
 
-    const [message, setMessage] = useState<string>(serializedValue.message);
+    const [message, setMessage] = useState<string>();
 
     const value = useMemo(
       () => ({
