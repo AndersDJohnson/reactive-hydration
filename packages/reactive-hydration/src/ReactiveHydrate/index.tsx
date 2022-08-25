@@ -72,17 +72,17 @@ export const reactiveHydrate = <
       return state;
     });
 
-    const [serializableState, setSerializedState] = useState<any[] | undefined>(
-      () => []
-    );
+    const [serializableState, setSerializableState] = useState<
+      any[] | undefined
+    >(() => []);
 
     const serializeStateContextValue = useMemo(
       () => ({
         serializableState,
-        setSerializedState,
+        setSerializableState,
         reactiveHydrateState,
       }),
-      [serializableState, setSerializedState, reactiveHydrateState]
+      [serializableState, setSerializableState, reactiveHydrateState]
     );
 
     const serializedState = useMemo(

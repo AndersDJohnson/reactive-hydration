@@ -4,7 +4,7 @@ import { createContext, useContext, useState } from "../react-actual";
 export const SerializedStateContext = createContext<
   | {
       serializableState: string[] | undefined;
-      setSerializedState:
+      setSerializableState:
         | (() => string[])
         | ((sf: (s: any[] | undefined) => any[] | undefined) => void);
       reactiveHydrateState?: any[];
@@ -15,7 +15,7 @@ export const SerializedStateContext = createContext<
 SerializedStateContext.displayName = "SerializedStateContext";
 
 export const useStateSerialize = <S>(init: S | (() => S)) => {
-  const { serializableState, setSerializedState, reactiveHydrateState } =
+  const { serializableState, setSerializableState, reactiveHydrateState } =
     useContext(SerializedStateContext) ?? {};
 
   // TODO: For better performance, consider an optional optimization to no longer serialize the state
@@ -50,7 +50,7 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
           typeof value === "function" ? value(currentState) : value;
 
         setTimeout(() => {
-          setSerializedState?.((previousStates) => {
+          setSerializableState?.((previousStates) => {
             return stateIndex == null
               ? previousStates
               : !previousStates || stateIndex === 0
@@ -62,7 +62,7 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
         return actualValue;
       });
     },
-    [setSerializedState, stateIndex]
+    [setSerializableState, stateIndex]
   );
 
   return [state, setStateAndSerializedState] as const;

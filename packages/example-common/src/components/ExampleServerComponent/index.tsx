@@ -6,17 +6,17 @@ import { ExampleClientComponent2 } from "../ExampleClientComponent2";
 import { ExampleClientComponentNesting } from "../ExampleClientComponentNesting";
 import { MyContext } from "../MyContext";
 
-const DummyContext = createContextWithDefaultValue(
-  "DummyContext",
-  {},
-  (props) => {
-    const { children, Provider } = props;
+// const DummyContext = createContextWithDefaultValue(
+//   "DummyContext",
+//   {},
+//   (props) => {
+//     const { Provider, children } = props;
 
-    const value = useMemo(() => ({}), []);
+//     const value = useMemo(() => ({}), []);
 
-    return <Provider value={value}>{children}</Provider>;
-  }
-);
+//     return <Provider value={value}>{children}</Provider>;
+//   }
+// );
 
 export const ExampleServerComponent = () => {
   console.debug(
@@ -35,7 +35,13 @@ export const ExampleServerComponent = () => {
     [message, setMessage]
   );
 
-  const dummyContextValue = useMemo(() => ({}), []);
+  // const dummyContextValue = useMemo(
+  //   () => ({
+  //     // This is needed to support hydration for synchronized values across multiple context provider instances below.
+  //     __id: Math.random().toString(),
+  //   }),
+  //   []
+  // );
 
   return (
     <div>
@@ -54,11 +60,11 @@ export const ExampleServerComponent = () => {
           <ExampleClientComponentNesting />
 
           {/* Just to test context tree walk order. */}
-          <DummyContext.Provider value={dummyContextValue} />
+          {/* <DummyContext.Provider value={dummyContextValue} /> */}
         </MyContext.Provider>
 
         {/* Just to test context tree walk order. */}
-        <DummyContext.Provider value={dummyContextValue} />
+        {/* <DummyContext.Provider value={dummyContextValue} /> */}
       </div>
 
       <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>

@@ -12,7 +12,7 @@ export type ContextUpdater<T> = (value: T) => void;
 export type ContextDefaultProvider<T> = ComponentType<
   PropsWithChildren<{
     Provider: ComponentType<PropsWithChildren<{ value: T }>>;
-    serializedValue: T;
+    deserializedValue: T;
     defaultValue: T;
   }>
 >;

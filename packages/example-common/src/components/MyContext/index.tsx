@@ -11,9 +11,9 @@ export const MyContext = createContextWithDefaultValue<{
     setMessage: () => {},
   },
   (props) => {
-    const { children, Provider } = props;
+    const { Provider, children, deserializedValue } = props;
 
-    const [message, setMessage] = useState<string>();
+    const [message, setMessage] = useState(deserializedValue.message);
 
     const value = useMemo(
       () => ({

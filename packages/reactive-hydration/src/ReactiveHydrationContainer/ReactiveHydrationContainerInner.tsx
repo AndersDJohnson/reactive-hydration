@@ -90,6 +90,12 @@ export const ReactiveHydrationContainerInner = memo(
 
         if (serializedNewValue === serializedCurrentValue) return;
 
+        console.log(
+          "*** getSetContextValueByContextElement serializedNewValue",
+          serializedNewValue,
+          $context
+        );
+
         $context.dataset.contextValue = serializedNewValue;
 
         // @ts-expect-error Let's assume it may have an SSR ID.
@@ -101,6 +107,11 @@ export const ReactiveHydrationContainerInner = memo(
             ) ?? []),
           ].forEach((hydrator) => {
             if (hydrator.$context) {
+              console.log(
+                "*** hydrator serializedNewValue",
+                serializedNewValue,
+                hydrator.$context
+              );
               hydrator.$context.dataset.contextValue = serializedNewValue;
             }
 
@@ -265,6 +276,14 @@ export const ReactiveHydrationContainerInner = memo(
           if (!contextId) break;
           if (!contextName) break;
 
+          console.log(
+            "*** CONTEXT FOR",
+            contextName,
+            contextId,
+            $component,
+            $context
+          );
+
           contextPortalTreePath.push(`${contextName}[${contextId}]`);
 
           const contextPortalTreeEntryKey = contextPortalTreePath.join(" > ");
@@ -307,26 +326,35 @@ export const ReactiveHydrationContainerInner = memo(
             await Promise.all(
               $contexts.map(async ($context) => {
                 const contextName = $context?.dataset.contextName;
+                const contextId = $context?.dataset.contextId;
                 const serializedValue = $context?.dataset.contextValue;
+
+                console.log(
+                  "*** CONTEXT METAS serializedValue",
+                  contextName,
+                  contextId,
+                  serializedValue,
+                  $context
+                );
 
                 if (!contextName) return;
                 if (!serializedValue) return;
 
                 const Context = await importContext(contextName);
 
-                const value = JSON.parse(serializedValue);
+                const deserializedValue = JSON.parse(serializedValue);
 
                 return {
                   $context,
                   Context,
-                  value,
+                  deserializedValue,
                 };
               })
             )
           ).filter(truthy);
 
           contextMetas.forEach((contextMeta) => {
-            const { $context, Context, value } = contextMeta;
+            const { $context, Context, deserializedValue } = contextMeta;
             const { DefaultProvider, Provider } = Context;
 
             const contextPortalTreeEntry = contextPortalTree.get($context);
@@ -338,9 +366,15 @@ export const ReactiveHydrationContainerInner = memo(
               const setContextValue =
                 getSetContextValueByContextElement($context);
 
+              console.log(
+                "*** CONTEXT WRAPPER deserializedValue",
+                Context.displayName,
+                deserializedValue
+              );
+
               ContextDefaultProviderWrapper = makeContextDefaultProviderWrapper(
                 Provider,
-                value,
+                deserializedValue,
                 setContextValue
               );
 
@@ -359,7 +393,7 @@ export const ReactiveHydrationContainerInner = memo(
                   key={contextPortalTreeEntry.key}
                   Provider={ContextDefaultProviderWrapper}
                   defaultValue={Context.defaultValue}
-                  serializedValue={value}
+                  deserializedValue={deserializedValue}
                 >
                   {props.children}
                 </DefaultProvider>
