@@ -35,10 +35,6 @@ export function contextProviderSerialized<T>(context: Context<T>) {
     );
   };
 
-  // Object.assign(ContextProviderSerialized, Provider);
-  // ContextProviderSerialized.$$typeof = Provider.$$typeof;
-  // ContextProviderSerialized._context = context;
-
   ContextProviderSerialized.displayName = `ContextProviderSerialized(${displayName})`;
 
   return ContextProviderSerialized;
