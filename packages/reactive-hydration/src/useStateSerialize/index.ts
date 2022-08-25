@@ -49,12 +49,14 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
         const actualValue =
           typeof value === "function" ? value(currentState) : value;
 
-        setSerializedState?.((previousStates) => {
-          return stateIndex == null
-            ? previousStates
-            : !previousStates || stateIndex === 0
-            ? [actualValue]
-            : [...previousStates].splice(stateIndex, 0, actualValue);
+        setTimeout(() => {
+          setSerializedState?.((previousStates) => {
+            return stateIndex == null
+              ? previousStates
+              : !previousStates || stateIndex === 0
+              ? [actualValue]
+              : [...previousStates].splice(stateIndex, 0, actualValue);
+          });
         });
 
         return actualValue;
