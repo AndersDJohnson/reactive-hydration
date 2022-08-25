@@ -115,6 +115,7 @@ export const reactiveHydrate = <
             {serializedState ? (
               <div data-id={reactiveHydrateId} data-state={serializedState} />
             ) : null}
+
             <Comp {...props} />
           </SerializedStateContext.Provider>
 
