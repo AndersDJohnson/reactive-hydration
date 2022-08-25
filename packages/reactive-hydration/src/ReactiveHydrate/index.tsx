@@ -93,7 +93,6 @@ export const reactiveHydrate = <
       [serializableState]
     );
 
-    const portalRef = useRef<HTMLDivElement>(null);
     const usedHooksRef = useRef<HooksRef>({
       contexts: new Set(),
     });
@@ -102,15 +101,9 @@ export const reactiveHydrate = <
       <ReactiveHydrateContextProvider
         reactiveHydratingId={reactiveHydrateIdProp}
         reactiveHydratePortalState={reactiveHydratePortalState}
-        portalRef={portalRef}
         usedHooksRef={usedHooksRef}
       >
-        <ReactiveHydrate
-          id={reactiveHydrateId}
-          name={name}
-          states={states}
-          portalRef={portalRef}
-        >
+        <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
           <SerializedStateContext.Provider value={serializeStateContextValue}>
             {serializedState ? (
               <div data-id={reactiveHydrateId} data-state={serializedState} />

@@ -11,10 +11,9 @@ export const ReactiveHydrate = (
     id?: string;
     name: string;
     states?: string;
-    portalRef: RefObject<HTMLDivElement>;
   }>
 ) => {
-  const { id: idProp, portalRef } = props;
+  const { id: idProp } = props;
 
   const defaultId = useId();
 
@@ -34,7 +33,6 @@ export const ReactiveHydrate = (
           data-id={id}
           // For soft route loading on client-side, check for `window`.
           data-loaded={typeof window === "object"}
-          ref={portalRef}
         >
           {props.children}
         </div>
