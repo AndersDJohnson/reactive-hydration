@@ -1,8 +1,9 @@
 import {
   ComponentType,
   Context,
-  createContext,
   PropsWithChildren,
+  // eslint-disable-next-line no-restricted-imports -- Here we do want our monkeypatched version to use within our consumer-facing wrapper.
+  createContext,
 } from "react";
 
 export type ContextUpdater<T> = (value: T) => void;
@@ -29,7 +30,9 @@ export function createContextWithDefaultValue<T>(
   DefaultProvider: ContextDefaultProvider<T>
 ) {
   const RawContext = createContext<T>(
-    defaultValue
+    defaultValue,
+    // @ts-expect-error Pass `displayName` to monkeypatch.
+    displayName
   ) as ContextWithDefaultValues<T>;
 
   RawContext.defaultValue = defaultValue;

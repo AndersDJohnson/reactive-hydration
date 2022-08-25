@@ -27,7 +27,6 @@ export const reactiveHydrate = <
   Comp: React.ComponentType<P>
 ) => {
   // TODO: memo wrap? if so, fix display name
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const ReactiveHydrateWrapper = (props: P) => {
     const { name, states } = args;
 
@@ -37,7 +36,6 @@ export const reactiveHydrate = <
     } = props;
 
     // TODO: If these IDs isn't stable enough, we could just resolve the DOM children at runtime that aren't nested inside a deeper client component.
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const reactiveHydrateIdNew = useId();
     const reactiveHydrateId = reactiveHydrateIdProp ?? reactiveHydrateIdNew;
 

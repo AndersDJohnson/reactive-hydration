@@ -1,8 +1,5 @@
 import { useMemo, useState } from "react";
-import {
-  ContextSerialized,
-  createContextWithDefaultValue,
-} from "reactive-hydration";
+import { createContextWithDefaultValue } from "reactive-hydration";
 import { ExampleClientComponent } from "../ExampleClientComponent";
 import { ExampleClientComponent1 } from "../ExampleClientComponent1";
 import { ExampleClientComponent2 } from "../ExampleClientComponent2";
@@ -20,6 +17,8 @@ const DummyContext = createContextWithDefaultValue(
     );
   }
 );
+
+console.log("*** MyContext.Provider", MyContext.Provider);
 
 export const ExampleServerComponent = () => {
   console.debug(
@@ -42,11 +41,7 @@ export const ExampleServerComponent = () => {
         <div>Inside of MyContext:</div>
 
         {/* TODO: Replace this with runtime monkeypatch of React module. */}
-        <ContextSerialized
-          context={MyContext}
-          name="MyContext"
-          value={myContextValue}
-        >
+        <MyContext.Provider value={myContextValue}>
           <ExampleClientComponent />
 
           <ExampleClientComponent />
@@ -58,31 +53,19 @@ export const ExampleServerComponent = () => {
           <ExampleClientComponentNesting />
 
           {/* Just to test context tree walk order. */}
-          <ContextSerialized
-            context={DummyContext}
-            name="DummyContext"
-            value={myContextValue}
-          />
-        </ContextSerialized>
+          <DummyContext.Provider value={myContextValue} />
+        </MyContext.Provider>
 
         {/* Just to test context tree walk order. */}
-        <ContextSerialized
-          context={DummyContext}
-          name="DummyContext"
-          value={myContextValue}
-        />
+        <DummyContext.Provider value={myContextValue} />
       </div>
 
       <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
         <div>Separate MyContext:</div>
 
-        <ContextSerialized
-          context={MyContext}
-          name="MyContext"
-          value={myContextValue}
-        >
+        <MyContext.Provider value={myContextValue}>
           <ExampleClientComponent1 />
-        </ContextSerialized>
+        </MyContext.Provider>
       </div>
 
       <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
