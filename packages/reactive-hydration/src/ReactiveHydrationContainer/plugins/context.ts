@@ -32,31 +32,29 @@ export const pluginContext = (args: Args) => {
 
     if (!$context) return;
 
-    const contextValue = $context.dataset?.contextValue;
+    const contextId = $context.dataset?.contextId;
 
-    const parsedValue = contextValue ? JSON.parse(contextValue) : undefined;
+    if (!contextId) return;
 
-    if (parsedValue?.__id) {
-      let contextHydrators = contextHydratorsByContextId.get(parsedValue.__id);
+    let contextHydrators = contextHydratorsByContextId.get(contextId);
 
-      if (!contextHydrators) {
-        contextHydrators = [];
+    if (!contextHydrators) {
+      contextHydrators = [];
 
-        contextHydratorsByContextId.set(parsedValue.__id, contextHydrators);
-      }
-
-      const hydrator = () => {
-        hydrate({
-          $component,
-          reason: ["context (by SSR ID)", contextName],
-        });
-      };
-
-      hydrator.$component = $component;
-      hydrator.$context = $context;
-
-      contextHydrators.push(hydrator);
+      contextHydratorsByContextId.set(contextId, contextHydrators);
     }
+
+    const hydrator = () => {
+      hydrate({
+        $component,
+        reason: ["context (by SSR ID)", contextName],
+      });
+    };
+
+    hydrator.$component = $component;
+    hydrator.$context = $context;
+
+    contextHydrators.push(hydrator);
 
     // let contextHydratorsByContextElement =
     //   contextHydratorsByContextElementThenComponentElement.get($context);

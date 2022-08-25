@@ -85,6 +85,9 @@ export const ReactiveHydrationContainerInner = memo(
     const getSetContextValueByContextElement = useCallback(
       ($context: HTMLElement) => (value: unknown) => {
         const serializedCurrentValue = $context.dataset.contextValue;
+        const contextId = $context.dataset.contextId;
+
+        if (!contextId) return;
 
         const serializedNewValue = JSON.stringify(value);
 
@@ -92,21 +95,15 @@ export const ReactiveHydrationContainerInner = memo(
 
         $context.dataset.contextValue = serializedNewValue;
 
-        // @ts-expect-error ID isn't on the types but may be there at runtime...
-        if (value.__id) {
-          [
-            ...(contextHydratorsByContextId.get(
-              // @ts-expect-error ID isn't on the types but may be there at runtime...
-              value.__id
-            ) ?? []),
-          ].forEach((hydrator) => {
+        [...(contextHydratorsByContextId.get(contextId) ?? [])].forEach(
+          (hydrator) => {
             if (hydrator.$context) {
               hydrator.$context.dataset.contextValue = serializedNewValue;
             }
 
             hydrator();
-          });
-        }
+          }
+        );
 
         // [
         //   ...(contextHydratorsByContextElementThenComponentElement
