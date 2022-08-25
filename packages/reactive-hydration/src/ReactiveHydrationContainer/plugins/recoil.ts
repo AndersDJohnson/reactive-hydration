@@ -16,7 +16,6 @@ export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
 
   const [allNesteds, setAllNesteds] = useState<
     {
-      component: string;
       states?: State<unknown>[];
       $component: HTMLElement;
     }[]
@@ -47,7 +46,7 @@ export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
     // State has changed - we must load!
 
     allNesteds.forEach((nested) => {
-      const { component, states, $component } = nested;
+      const { states, $component } = nested;
 
       // TODO: When not debugging, this could be faster with `.some`.
       const statesChanged = states?.filter(
@@ -80,9 +79,12 @@ export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
 
         const id = $component.dataset.id;
         const component = $component.dataset.component;
+        const loaded = $component.dataset.loaded;
 
         if (!id) return;
         if (!component) return;
+
+        if (loaded === "true") return;
 
         const stateNames = $component.dataset.states?.split(",");
 
@@ -95,7 +97,6 @@ export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
 
         return {
           $component,
-          component,
           states,
         };
       })
