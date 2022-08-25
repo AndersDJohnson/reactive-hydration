@@ -11,6 +11,7 @@ interface UsePluginRecoilArgs {
   componentRef: RefObject<HTMLElement>;
 }
 
+// TODO: Instead of requiring component state annotations, monkeypatch `useAtom` to detect and track similar to `useContextUsageTracker`.
 export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
   const { hydrate, componentRef } = args;
 

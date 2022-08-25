@@ -38,15 +38,14 @@ export const ExampleServerComponent = () => {
       <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
         <div>Inside of MyContext:</div>
 
-        {/* TODO: Replace this with runtime monkeypatch of React module. */}
         <MyContext.Provider value={myContextValue}>
-          {/* <ExampleClientComponent />
+          <ExampleClientComponent />
 
           <ExampleClientComponent />
 
           <ExampleClientComponent1 />
 
-          <ExampleClientComponent2 /> */}
+          <ExampleClientComponent2 />
 
           <ExampleClientComponentNesting />
 
@@ -57,7 +56,7 @@ export const ExampleServerComponent = () => {
         {/* Just to test context tree walk order. */}
         <DummyContext.Provider value={myContextValue} />
       </div>
-      {/* 
+
       <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
         <div>Separate MyContext:</div>
 
@@ -70,7 +69,7 @@ export const ExampleServerComponent = () => {
         <div>No MyContext (setting message is a no-op here):</div>
 
         <ExampleClientComponent1 />
-      </div> */}
+      </div>
     </div>
   );
 };
