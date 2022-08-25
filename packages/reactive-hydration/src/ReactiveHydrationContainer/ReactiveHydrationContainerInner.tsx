@@ -13,6 +13,7 @@ import { usePluginRecoil } from "./plugins/recoil";
 import {
   ContextHydratorsByContextElementThenComponentElement,
   Hydrate,
+  Hydrator,
 } from "./types";
 import { pluginContext } from "./plugins/context";
 import { useState } from "../react-actual";
@@ -65,25 +66,47 @@ export const ReactiveHydrationContainerInner = memo(
       }[]
     >(() => []);
 
-    const [forcedRender, setForcedRender] = useState({});
+    const [forcedRender, setForcedRender] = useState(() => ({}));
     const forceRender = useCallback(() => setForcedRender({}), []);
 
     const [pendingCallbacks, setPendingCallbacks] = useState<(() => void)[]>(
-      []
+      () => []
     );
 
     const [contextHydratorsByContextElementThenComponentElement] =
-      useState<ContextHydratorsByContextElementThenComponentElement>(new Map());
+      useState<ContextHydratorsByContextElementThenComponentElement>(
+        () => new Map()
+      );
+
+    const [contextHydratorsByContextId] = useState<Map<string, Hydrator[]>>(
+      () => new Map()
+    );
 
     const getSetContextValueByContextElement = useCallback(
       ($context: HTMLElement) => (value: unknown) => {
-        const currentValue = $context.dataset.contextValue;
+        const serializedCurrentValue = $context.dataset.contextValue;
 
-        const newValue = JSON.stringify(value);
+        const serializedNewValue = JSON.stringify(value);
 
-        if (newValue === currentValue) return;
+        if (serializedNewValue === serializedCurrentValue) return;
 
-        $context.dataset.contextValue = newValue;
+        $context.dataset.contextValue = serializedNewValue;
+
+        // @ts-expect-error Let's assume it may have an SSR ID.
+        if (value.__id) {
+          [
+            ...(contextHydratorsByContextId.get(
+              // @ts-expect-error Let's assume it may have an SSR ID.
+              value.__id
+            ) ?? []),
+          ].forEach((hydrator) => {
+            if (hydrator.$context) {
+              hydrator.$context.dataset.contextValue = serializedNewValue;
+            }
+
+            hydrator();
+          });
+        }
 
         [
           ...(contextHydratorsByContextElementThenComponentElement
@@ -91,7 +114,10 @@ export const ReactiveHydrationContainerInner = memo(
             ?.values() ?? []),
         ].forEach((hydrator) => hydrator());
       },
-      [contextHydratorsByContextElementThenComponentElement]
+      [
+        contextHydratorsByContextId,
+        contextHydratorsByContextElementThenComponentElement,
+      ]
     );
 
     const hydrate = useCallback<Hydrate>(
@@ -431,10 +457,17 @@ export const ReactiveHydrationContainerInner = memo(
         pluginContext({
           $component,
           hydrate,
+          contextHydratorsByContextId,
           contextHydratorsByContextElementThenComponentElement,
         });
       });
-    }, [hydrate, contextHydratorsByContextElementThenComponentElement]);
+    }, [
+      hydrate,
+      contextHydratorsByContextId,
+      contextHydratorsByContextElementThenComponentElement,
+    ]);
+
+    console.log("*** contextHydratorsByContextId", contextHydratorsByContextId);
 
     usePluginRecoil({
       hydrate,

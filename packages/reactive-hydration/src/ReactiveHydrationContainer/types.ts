@@ -1,6 +1,12 @@
+export interface Hydrator {
+  (): void;
+  $component?: HTMLElement;
+  $context?: HTMLElement;
+}
+
 export type ContextHydratorsByContextElementThenComponentElement = Map<
   HTMLElement,
-  Map<HTMLElement, () => void>
+  Map<HTMLElement, Hydrator>
 >;
 
 export type Hydrate = (args: {
