@@ -16,16 +16,12 @@ export const pluginContext = (args: Args) => {
     contextHydratorsByContextElementThenComponentElement,
   } = args;
 
-  console.log("*** pluginContext", $component);
-
   const contextNames = $component
     .querySelector<HTMLElement>(
       // TODO: Check browser support for `:scope` selector.
       ":scope > [data-contexts]"
     )
     ?.dataset.contexts?.split(",");
-
-  console.log("*** contextNames", contextNames);
 
   contextNames?.forEach((contextName) => {
     const $context = $component.closest<HTMLElement>(
@@ -47,7 +43,6 @@ export const pluginContext = (args: Args) => {
     }
 
     contextHydratorsByContextElement?.set($component, () => {
-      console.log("*** context hydrator for $component", $component);
       hydrate({
         $component: $component,
         reason: ["context", contextName],

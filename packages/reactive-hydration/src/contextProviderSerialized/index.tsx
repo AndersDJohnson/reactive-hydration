@@ -12,14 +12,10 @@ export function contextProviderSerialized<T>(context: Context<T>) {
 
     const { hasSoftRouted } = useContext(ReactiveHydrationContainerContext);
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks -- Okay to disable here. In any given re-render, we won't change number of hook calls between renders.
     const serializedValue = useMemo(() => JSON.stringify(value), [value]);
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks -- Okay to disable here. In any given re-render, we won't change number of hook calls between renders.
     const id = useId();
 
-    // // Otherwise we get dummy context DOM nodes where the portals are rendered into the React tree.
-    // // TODO: Is this ok on soft routes, to maintain a resumable DOM snapshot throughout interactions?
     if (typeof window === "object" && !hasSoftRouted) {
       return <Provider value={value}>{children}</Provider>;
     }

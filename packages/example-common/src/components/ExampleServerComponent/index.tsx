@@ -27,6 +27,7 @@ export const ExampleServerComponent = () => {
 
   const myContextValue = useMemo(
     () => ({
+      __id: Math.random().toString(),
       message,
       setMessage,
     }),

@@ -98,8 +98,6 @@ export const ReactiveHydrationContainerInner = memo(
       async (args) => {
         const { $component, reason, callback } = args;
 
-        console.log("*** hydrate for $component", $component);
-
         const id = $component.dataset?.id;
         const name = $component.dataset?.component;
 
@@ -316,6 +314,7 @@ export const ReactiveHydrationContainerInner = memo(
 
               ContextDefaultProviderWrapper = makeContextDefaultProviderWrapper(
                 Provider,
+                value,
                 setContextValue
               );
 
@@ -440,12 +439,6 @@ export const ReactiveHydrationContainerInner = memo(
       hydrate,
       componentRef,
     });
-
-    console.log(
-      "*** topmostContextPortalTreeEntries",
-      topmostContextPortalTreeEntries
-    );
-    console.log("*** contextFreePortals", contextFreePortals);
 
     return (
       <>
