@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
 import { createContext, useContext, useState } from "../react-actual";
 
 export const SerializedStateContext = createContext<
@@ -34,7 +34,7 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
   // and then looking up its value based on that ID and the component path (to account for multiple instances).
   const initOverride = reactiveHydrateState?.[stateIndex] as S;
 
-  const result = useState(
+  const [state, setState] = useState(
     () =>
       initOverride ??
       (typeof init === "function"
@@ -43,17 +43,25 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
         : init)
   );
 
-  const [state] = result;
+  const setStateAndSerializedState = useCallback(
+    (value: S) => {
+      setState((currentState) => {
+        const actualValue =
+          typeof value === "function" ? value(currentState) : value;
 
-  useEffect(() => {
-    setSerializedState?.((s) => {
-      return stateIndex == null
-        ? s
-        : !s || stateIndex === 0
-        ? [state]
-        : [...s].splice(stateIndex, 0, state);
-    });
-  }, [setSerializedState, state, stateIndex]);
+        setSerializedState?.((previousStates) => {
+          return stateIndex == null
+            ? previousStates
+            : !previousStates || stateIndex === 0
+            ? [actualValue]
+            : [...previousStates].splice(stateIndex, 0, actualValue);
+        });
 
-  return result;
+        return actualValue;
+      });
+    },
+    [setSerializedState, stateIndex]
+  );
+
+  return [state, setStateAndSerializedState] as const;
 };
