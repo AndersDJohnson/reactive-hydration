@@ -10,9 +10,5 @@ export const WriteContextsConsumed = () => {
 
   if (!contexts?.length) return null;
 
-  return (
-    <div data-contexts={contexts.join(",")}>
-      contexts = {contexts.join(",")}
-    </div>
-  );
+  return <div data-contexts={contexts.join(",")} />;
 };
