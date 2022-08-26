@@ -9,6 +9,10 @@ import { SerializedStateContext } from "../useStateSerialize";
 import { WriteContextsConsumed } from "./WriteContextsConsumed";
 import { ReactiveHydrate } from "./ReactiveHydrate";
 import { useContext, useState } from "../react-actual";
+import {
+  ReactiveHydrationInnardsContext,
+  reactiveHydrationInnardsContextValue,
+} from "../ReactiveHydrationInnardsContext";
 
 /**
  * TODO: This wrapper could perhaps be wrapped around all components by the compiler.
@@ -21,8 +25,11 @@ export const reactiveHydrate = <
 >(
   args: {
     name: string;
+    /**
+     * @deprecated We'll transition to a hook monkeypatch for Recoil `useAtom` to detect and track similar to `useContextUsageTracker`.
+     * TODO: We'll transition to a hook monkeypatch for Recoil `useAtom` to detect and track similar to `useContextUsageTracker`.
+     */
     states?: string;
-    contexts?: string;
   },
   Comp: React.ComponentType<P>
 ) => {
@@ -98,29 +105,35 @@ export const reactiveHydrate = <
     });
 
     return (
-      <ReactiveHydrateContextProvider
-        reactiveHydratingId={reactiveHydrateIdProp}
-        reactiveHydratePortalState={reactiveHydratePortalState}
-        usedHooksRef={usedHooksRef}
+      <ReactiveHydrationInnardsContext.Provider
+        value={reactiveHydrationInnardsContextValue}
       >
-        <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
-          <SerializedStateContext.Provider value={serializeStateContextValue}>
-            {serializedState ? (
-              <div data-id={reactiveHydrateId} data-state={serializedState} />
-            ) : null}
+        <ReactiveHydrateContextProvider
+          reactiveHydratingId={reactiveHydrateIdProp}
+          reactiveHydratePortalState={reactiveHydratePortalState}
+          usedHooksRef={usedHooksRef}
+        >
+          <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
+            <SerializedStateContext.Provider value={serializeStateContextValue}>
+              {serializedState ? (
+                <div data-id={reactiveHydrateId} data-state={serializedState} />
+              ) : null}
 
-            <Comp {...props} />
-          </SerializedStateContext.Provider>
+              <ReactiveHydrationInnardsContext.Provider value={undefined}>
+                <Comp {...props} />
+              </ReactiveHydrationInnardsContext.Provider>
+            </SerializedStateContext.Provider>
 
-          <WriteContextsConsumed />
-        </ReactiveHydrate>
-      </ReactiveHydrateContextProvider>
+            <WriteContextsConsumed />
+          </ReactiveHydrate>
+        </ReactiveHydrateContextProvider>
+      </ReactiveHydrationInnardsContext.Provider>
     );
   };
 
-  if (!Comp.displayName) {
-    Comp.displayName = args.name;
-  }
+  // if (!Comp.displayName) {
+  //   Comp.displayName = args.name;
+  // }
 
   // TODO: Do we really want/need to hoist these?
   hoistNonReactStatics(ReactiveHydrateWrapper, Comp);

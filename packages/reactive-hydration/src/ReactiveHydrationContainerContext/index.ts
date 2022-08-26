@@ -1,7 +1,7 @@
 import { createContext } from "react";
 
 export const ReactiveHydrationContainerContext = createContext({
-  isActive: false,
+  isWithinReactiveHydrationContainer: false,
   hasSoftRouted: false,
 });
 
