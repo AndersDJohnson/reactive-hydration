@@ -58,6 +58,7 @@ jsxRuntime.jsx = (type, props) => {
 
     const reactiveHydrationInnardsContext =
       useContext(ReactiveHydrationInnardsContext) ?? {};
+
     const { isInReactiveHydrationInnards } = reactiveHydrationInnardsContext;
 
     console.log("*** NewType for", name, "contexts", {
