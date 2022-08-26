@@ -1,5 +1,5 @@
-import { Fragment, PropsWithChildren, ReactNode, useCallback } from "react";
-import { ComponentType, memo, useEffect, useRef } from "react";
+import { Fragment, PropsWithChildren, ReactNode, useCallback } from "_react";
+import { ComponentType, memo, useEffect, useRef } from "_react";
 import { createPortal } from "react-dom";
 import { truthy } from "../utilities/truthy";
 import { ContextWithDefaultValues } from "../createContextWithDefaultValue";
@@ -12,7 +12,7 @@ import {
 import { usePluginRecoil } from "./plugins/recoil";
 import { Hydrate, Hydrator } from "./types";
 import { pluginContext } from "./plugins/context";
-import { useState } from "react";
+import { useState } from "_react";
 
 const hydratedComponentsMap = new Map();
 const ContextDefaultProviderWrapperByContextElement = new Map();

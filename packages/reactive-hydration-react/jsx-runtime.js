@@ -1,6 +1,5 @@
 const jsxRuntime = require("_react/jsx-runtime");
 const { useContext } = require("_react");
-// TODO: Circular dep? Update imports in package to `_react`?
 const {
   reactiveHydrate,
   ReactiveHydrationContainerContext,
