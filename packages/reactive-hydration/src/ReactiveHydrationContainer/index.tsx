@@ -1,4 +1,4 @@
-import { ComponentType, memo } from "react";
+import { ComponentType, memo } from "_react";
 import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 import {
   ReactiveHydrationInnardsContext,
@@ -47,6 +47,16 @@ const reactiveHydrationContainerContextHasSoftRouted = {
 export const ReactiveHydrationContainer = memo(
   (props: ReactiveHydrationContainerProps) => {
     const { Comp, LazyComp, importComponent, importContext } = props;
+
+    console.log(
+      "*** ReactiveHydrationInnardsContext",
+      ReactiveHydrationInnardsContext
+    );
+    console.log(
+      "*** ReactiveHydrationContainerContext",
+      ReactiveHydrationContainerContext
+    );
+    console.log("*** Comp", Comp);
 
     // TODO: Subscribe to location changes.
     const isClientSideSoftRouteAwayFromInitialUrl =

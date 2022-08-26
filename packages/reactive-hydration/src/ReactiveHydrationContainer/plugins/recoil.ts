@@ -1,7 +1,7 @@
-import { useMemo, useEffect, RefObject } from "react";
+import { useMemo, useEffect, RefObject } from "_react";
 import { useRecoilValue, selector } from "recoil";
 import { getRecoil } from "recoil-nexus";
-import { useState } from "../../react-actual";
+import { useState } from "_react";
 import { getRegisteredState, State } from "../../stateRegistry";
 import { truthy } from "../../utilities/truthy";
 import { Hydrate } from "../types";
