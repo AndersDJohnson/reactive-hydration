@@ -16,9 +16,11 @@
     "compression": "^1.7.4",
     "cross-env": "^7.0.3",
     "express": "^4.18.1",
-    "react": "^18.2.0",
+    "react": "link:../reactive-hydration-react",
     "react-dom": "^18.2.0",
     "reactive-hydration-example-common": "*",
+    "recoil": "^0.7.5",
+    "recoil-nexus": "^0.4.0",
     "serve-static": "^1.15.0"
   },
   "devDependencies": {

@@ -5,12 +5,12 @@ module.exports = {
       "error",
       {
         paths: [
-          {
-            name: "react",
-            importNames: ["useState", "useContext"],
-            message:
-              "Unless you want monkeypatched versions internally, you probably mean import to these from './src/react-actual.ts' - otherwise feel free to disble the rule in this instance.",
-          },
+          // {
+          //   name: "react",
+          //   importNames: ["useState", "useContext"],
+          //   message:
+          //     "Unless you want monkeypatched versions internally, you probably mean import to these from './src/react-actual.ts' - otherwise feel free to disble the rule in this instance.",
+          // },
         ],
       },
     ],

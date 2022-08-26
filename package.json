@@ -7,10 +7,7 @@
   ],
   "scripts": {
     "build": "yarn workspaces foreach run build",
-    "lint": "yarn workspaces foreach --parallel --verbose --exclude reactive-hydration-root run eslint src --ext ts --ext tsx"
-  },
-  "devDependencies": {
-    "eslint": "8.22.0",
-    "typescript": "4.7.4"
+    "lint": "yarn workspaces foreach --parallel --verbose --exclude reactive-hydration-root run eslint src --ext ts --ext tsx",
+    "postinstall": "rm -rf packages/*/node_modules/{recoil}"
   }
 }

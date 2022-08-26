@@ -1,9 +1,4 @@
-import {
-  ComponentType,
-  Fragment,
-  PropsWithChildren,
-  ReactPortal,
-} from "_react";
+import { ComponentType, Fragment, PropsWithChildren, ReactPortal } from "react";
 
 export interface ContextPortalTreeEntry {
   key: string;

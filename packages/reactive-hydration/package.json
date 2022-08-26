@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "main": "dist",
+  "module": "dist",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc"
@@ -18,16 +19,9 @@
     "recoil": "^0.7.5"
   },
   "devDependencies": {
-    "@types/_react": "npm:@types/react@18.0.17",
     "@types/hoist-non-react-statics": "^3.3.1",
-    "@types/react": "18.0.17",
-    "@typescript-eslint/parser": "^5.35.1",
-    "_react": "npm:react@^18",
-    "eslint": "^8.22.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
     "react": "^18",
     "react-dom": "^18",
-    "recoil": "^0.7.5",
-    "typescript": "4.7.4"
+    "recoil": "^0.7.5"
   }
 }

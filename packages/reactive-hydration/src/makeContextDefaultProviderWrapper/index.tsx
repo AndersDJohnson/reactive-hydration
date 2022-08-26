@@ -1,4 +1,4 @@
-import { ComponentType, PropsWithChildren, useEffect } from "_react";
+import { ComponentType, PropsWithChildren, useEffect } from "react";
 
 export function makeContextDefaultProviderWrapper<T>(
   id: string,

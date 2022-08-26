@@ -4,8 +4,8 @@ import {
   createContext,
   useCallback,
   useMemo,
-} from "_react";
-import { useState, useContext } from "_react";
+} from "react";
+import { useState, useContext } from "react";
 
 export interface HooksRef {
   contexts: Set<string>;

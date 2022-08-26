@@ -28,30 +28,30 @@ module.exports = () => {
       //   });
       // }
 
-      config.plugins = [
-        ...config.plugins,
-        new webpack.NormalModuleReplacementPlugin(
-          /^react[/]?/,
-          require
-            .resolve("reactive-hydration/dist/react")
-            .replace("/index.js", "")
-        ),
-        new webpack.NormalModuleReplacementPlugin(
-          /^_react[/]?/,
-          require.resolve("react").replace("/index.js", "")
-        ),
-      ];
+      // config.plugins = [
+      //   ...config.plugins,
+      //   new webpack.NormalModuleReplacementPlugin(
+      //     /^react[/]?/,
+      //     require
+      //       .resolve("reactive-hydration/dist/react")
+      //       .replace("/index.js", "")
+      //   ),
+      //   new webpack.NormalModuleReplacementPlugin(
+      //     /^_react[/]?/,
+      //     require.resolve("react").replace("/index.js", "")
+      //   ),
+      // ];
 
-      config.resolve = {
-        ...config.resolve,
-        alias: {
-          ...config.resolve.alias,
-          // react: require
-          //   .resolve("reactive-hydration/dist/react")
-          //   .replace("/index.js", ""),
-          // _react: require.resolve("react").replace("/index.js", ""),
-        },
-      };
+      // config.resolve = {
+      //   ...config.resolve,
+      //   alias: {
+      //     ...config.resolve.alias,
+      //     // react: require
+      //     //   .resolve("reactive-hydration/dist/react")
+      //     //   .replace("/index.js", ""),
+      //     // _react: require.resolve("react").replace("/index.js", ""),
+      //   },
+      // };
 
       return config;
     },

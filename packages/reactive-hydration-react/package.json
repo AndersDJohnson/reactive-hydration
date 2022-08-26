@@ -1,0 +1,14 @@
+{
+  "name": "reactive-hydration-react",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist",
+  "module": "dist",
+  "scripts": {
+    "build": "rm -rf dist && tsc"
+  },
+  "devDependencies": {
+    "@types/_react": "npm:@types/react@^18",
+    "_react": "npm:react@^18"
+  }
+}
