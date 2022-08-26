@@ -20,7 +20,10 @@ const DummyContext = createContextWithDefaultValue(
 
 export const ExampleServerComponent = () => {
   console.debug(
-    "Rendering ExampleServerComponent (should be on server only on initial page load, but may be loaded on client after routing)"
+    "Rendering ExampleServerComponent (should be on server only on initial page load, but may be loaded on client after routing)",
+    "ExampleClientComponent",
+    ExampleClientComponent.displayName,
+    ExampleClientComponent
   );
 
   const [message, setMessage] = useState(`initial ${Math.random()}`);
@@ -37,6 +40,8 @@ export const ExampleServerComponent = () => {
 
   return (
     <div>
+      <ExampleClientComponent />
+
       <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
         <div>Inside of MyContext:</div>
 

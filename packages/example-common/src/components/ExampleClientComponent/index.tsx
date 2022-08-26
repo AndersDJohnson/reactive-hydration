@@ -3,6 +3,11 @@ import { textState } from "../../state/textState";
 import { text2State } from "../../state/text2State";
 
 export const ExampleClientComponent = () => {
+  console.log(
+    "*** Rendering ExampleClientComponent",
+    ExampleClientComponent.toString()
+  );
+
   const [text] = useRecoilState(textState);
   const [text2] = useRecoilState(text2State);
 

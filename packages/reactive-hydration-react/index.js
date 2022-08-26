@@ -1,6 +1,8 @@
+/* eslint-disable no-import-assign */
 /* eslint-disable react-hooks/rules-of-hooks -- Okay to disable here. In any given hook call, we won't change number of hook calls between renders. */
 // import type { ComponentType, Context, ReactNode } from "react";
-import * as React from "_react";
+const React = require("_react");
+// const React = require("_react");
 // import { reactiveHydrate } from "../ReactiveHydrate";
 // import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 // import { ReactiveHydrationInnardsContext } from "../ReactiveHydrationInnardsContext";
@@ -11,12 +13,17 @@ console.log("** react monkeypatch");
 
 console.log("*** React from _react", React);
 
-// const {
-//   createElement,
-//   useContext,
-//   useState,
-//   // forwardRef
-// } = React;
+const {
+  createElement,
+  // useContext,
+  // useState,
+} = React;
+
+const createElementReactiveHydration = (type, props, ...children) => {
+  console.log("*** createElement", type, props, children);
+
+  return createElement(type, props, ...children);
+};
 
 // console.log("*** React", React);
 
@@ -87,50 +94,50 @@ console.log("*** React from _react", React);
 
 //   // console.log("*** createElement name", name);
 
-//   // const Type = type;
+// const Type = type;
 
-//   // const { states } = Type;
+// const { states } = Type;
 
-//   // const ReactiveHydrateType = reactiveHydrate<P>(
-//   //   {
-//   //     name,
-//   //     states,
-//   //   },
-//   //   Type
-//   // );
+// const ReactiveHydrateType = reactiveHydrate<P>(
+//   {
+//     name,
+//     states,
+//   },
+//   Type
+// );
 
-//   // const NewType = forwardRef((props: P, ref) => {
-//   //   const { isReactiveHydrationServerComponent } = props;
+// const NewType = forwardRef((props: P, ref) => {
+//   const { isReactiveHydrationServerComponent } = props;
 
-//   //   const { isWithinReactiveHydrationContainer } = useContext(
-//   //     ReactiveHydrationContainerContext
-//   //   );
+//   const { isWithinReactiveHydrationContainer } = useContext(
+//     ReactiveHydrationContainerContext
+//   );
 
-//   //   const { isInReactiveHydrationInnards } =
-//   //     useContext(ReactiveHydrationInnardsContext) ?? {};
+//   const { isInReactiveHydrationInnards } =
+//     useContext(ReactiveHydrationInnardsContext) ?? {};
 
-//   //   console.log("*** NewType for", name, "booleans", {
-//   //     isReactiveHydrationServerComponent,
-//   //     isWithinReactiveHydrationContainer,
-//   //     isInReactiveHydrationInnards,
-//   //   });
+//   console.log("*** NewType for", name, "booleans", {
+//     isReactiveHydrationServerComponent,
+//     isWithinReactiveHydrationContainer,
+//     isInReactiveHydrationInnards,
+//   });
 
-//   //   if (
-//   //     !isWithinReactiveHydrationContainer ||
-//   //     isInReactiveHydrationInnards ||
-//   //     isReactiveHydrationServerComponent
-//   //   ) {
-//   //     console.log("*** bypassing ReactiveHydrate wrapper", name);
+//   if (
+//     !isWithinReactiveHydrationContainer ||
+//     isInReactiveHydrationInnards ||
+//     isReactiveHydrationServerComponent
+//   ) {
+//     console.log("*** bypassing ReactiveHydrate wrapper", name);
 
-//   //     return createElement(Type, props, ...children);
-//   //   }
+//     return createElement(Type, props, ...children);
+//   }
 
-//   //   console.log("*** using ReactiveHydrate wrapper", name);
+//   console.log("*** using ReactiveHydrate wrapper", name);
 
-//   //   return createElement(ReactiveHydrateType, props, ...children);
-//   // });
+//   return createElement(ReactiveHydrateType, props, ...children);
+// });
 
-//   // NewType.displayName = `ReactiveHydrationCreateElementWrapper(${name})`;
+// NewType.displayName = `ReactiveHydrationCreateElementWrapper(${name})`;
 
 //   // return createElement(
 //   //   NewType,
@@ -140,8 +147,8 @@ console.log("*** React from _react", React);
 //   // );
 // }
 
-// // @ ts-expect-error Hard to get types exactly right...
-// // React.createElement = createElementReactiveHydration;
+// @ts-expect-error Hard to get types exactly right...
+React.createElement = createElementReactiveHydration;
 
 // const useStateReactiveHydration = (
 //   // @ts-expect-error Not sure why this tuple type doesn't work.
@@ -165,6 +172,6 @@ console.log("*** React from _react", React);
 // React.useContext = useContext;
 
 // export default React;
-// module.exports = React;
+// export = React;
 
-export = React;
+module.exports = React;
