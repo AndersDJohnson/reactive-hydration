@@ -6,7 +6,6 @@ import { MyContext } from "../MyContext";
 export const ExampleClientComponent1 = () => {
   const [text] = useRecoilState(textState);
 
-  // TODO: Replace this with runtime monkeypatch of React module.
   const { message, setMessage } = useContext(MyContext);
 
   const handleClickContextSetMessage = useCallback(() => {

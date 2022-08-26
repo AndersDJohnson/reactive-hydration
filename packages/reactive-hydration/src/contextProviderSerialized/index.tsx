@@ -26,8 +26,11 @@ export function contextProviderSerialized<T>(context: Context<T>) {
 
     if (!idFromMap) {
       idFromMap = Math.random().toString();
-
-      idByValueMap.set(value, idFromMap);
+      try {
+        idByValueMap.set(value, idFromMap);
+      } catch (error) {
+        console.error("*** WeakMap error for value", value, error);
+      }
     }
 
     const id =

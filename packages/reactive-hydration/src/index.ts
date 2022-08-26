@@ -5,3 +5,5 @@ export { registerState } from "./stateRegistry";
 export { ReactiveHydrationContainer } from "./ReactiveHydrationContainer";
 // TODO: Do we really need to export this?
 export { ReactiveHydrateContextProvider } from "./ReactiveHydrateContext";
+export { ReactiveHydrationContainerContext } from "./ReactiveHydrationContainerContext";
+export { ReactiveHydrationInnardsContext } from "./ReactiveHydrationInnardsContext";

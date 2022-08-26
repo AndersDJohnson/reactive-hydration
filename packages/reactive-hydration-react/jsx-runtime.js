@@ -1,5 +1,5 @@
 const jsxRuntime = require("_react/jsx-runtime");
-const { useContext } = require("_react");
+const { useContext, useState, createContext } = require("_react");
 const {
   reactiveHydrate,
   ReactiveHydrationContainerContext,
@@ -9,6 +9,15 @@ const {
 const origJsx = jsxRuntime.jsx;
 const origJsxs = jsxRuntime.jsxs;
 
+console.log(
+  "*** ReactiveHydrationContainerContext",
+  ReactiveHydrationContainerContext
+);
+console.log(
+  "*** ReactiveHydrationInnardsContext",
+  ReactiveHydrationInnardsContext
+);
+
 jsxRuntime.jsx = (type, props) => {
   console.log("*** jsx", type, props);
 
@@ -16,6 +25,8 @@ jsxRuntime.jsx = (type, props) => {
   if (typeof type !== "function") {
     return origJsx(type, props);
   }
+
+  console.log("*** type fn", type.toString());
 
   const name =
     type.displayName ??
@@ -36,8 +47,8 @@ jsxRuntime.jsx = (type, props) => {
   );
 
   // TODO: forwardRef ?
-  const NewType = (props) => {
-    const { isReactiveHydrationServerComponent } = props;
+  const NewType = (p) => {
+    const { isReactiveHydrationServerComponent } = p;
 
     const { isWithinReactiveHydrationContainer } = useContext(
       ReactiveHydrationContainerContext
@@ -57,19 +68,24 @@ jsxRuntime.jsx = (type, props) => {
       isInReactiveHydrationInnards ||
       isReactiveHydrationServerComponent
     ) {
-      console.log("*** bypassing ReactiveHydrate wrapper", name);
+      // console.log("*** bypassing ReactiveHydrate wrapper", name);
 
-      return origJsx(Type, props);
+      // TODO: Should this be `props` or `p`?
+      return origJsx(Type, p);
     }
 
     console.log("*** using ReactiveHydrate wrapper", name);
 
-    return origJsx(ReactiveHydrateType, props);
+    // TODO: Should this be `props` or `p`?
+    return origJsx(ReactiveHydrateType, p);
   };
 
   NewType.displayName = `ReactiveHydrationCreateElementWrapper(${name})`;
 
-  return origJsx(NewType, props);
+  return origJsx(NewType, {
+    // displayName,
+    children: origJsx(Type, props),
+  });
 };
 
 jsxRuntime.jsxs = (type, props) => {
