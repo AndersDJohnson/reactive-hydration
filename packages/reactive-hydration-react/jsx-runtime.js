@@ -50,12 +50,20 @@ jsxRuntime.jsx = (type, props) => {
   const NewType = (p) => {
     const { isReactiveHydrationServerComponent } = p;
 
-    const { isWithinReactiveHydrationContainer } = useContext(
+    const reactiveHydrationContainerContext = useContext(
       ReactiveHydrationContainerContext
     );
+    const { isWithinReactiveHydrationContainer } =
+      reactiveHydrationContainerContext;
 
-    const { isInReactiveHydrationInnards } =
+    const reactiveHydrationInnardsContext =
       useContext(ReactiveHydrationInnardsContext) ?? {};
+    const { isInReactiveHydrationInnards } = reactiveHydrationInnardsContext;
+
+    console.log("*** NewType for", name, "contexts", {
+      reactiveHydrationContainerContext,
+      reactiveHydrationInnardsContext,
+    });
 
     console.log("*** NewType for", name, "booleans", {
       isReactiveHydrationServerComponent,
