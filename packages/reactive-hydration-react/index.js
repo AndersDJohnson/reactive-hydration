@@ -8,6 +8,7 @@ const React = require("_react");
 // import { ReactiveHydrationInnardsContext } from "../ReactiveHydrationInnardsContext";
 // import { useContextUsageTracker } from "../useContextUsageTracker";
 // import { useStateSerialize } from "../useStateSerialize";
+const { logRender } = require("./log");
 
 const {
   createElement,
@@ -16,7 +17,7 @@ const {
 } = React;
 
 const createElementReactiveHydration = (type, props, ...children) => {
-  console.log("*** createElement", type);
+  logRender("*** createElement", type);
 
   return createElement(type, props, ...children);
 };

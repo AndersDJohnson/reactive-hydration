@@ -3,12 +3,12 @@ const {
   useContext,
   // useState, createContext
 } = require("_react");
-const { typeOf } = require("react-is");
 const {
   reactiveHydrate,
   ReactiveHydrationContainerContext,
   ReactiveHydrationInnardsContext,
 } = require("reactive-hydration");
+const { logRender } = require("./log");
 
 const origJsx = jsxRuntime.jsx;
 const origJsxs = jsxRuntime.jsxs;
@@ -23,7 +23,7 @@ const origJsxs = jsxRuntime.jsxs;
 // );
 
 jsxRuntime.jsx = (type, props) => {
-  console.log("*** jsx", type, typeOf(type));
+  logRender("*** createElement", type);
 
   // TODO: Handle memo objects?
   if (typeof type !== "function") {
@@ -102,7 +102,7 @@ jsxRuntime.jsx = (type, props) => {
 };
 
 jsxRuntime.jsxs = (type, props) => {
-  console.log("*** jsxs", type);
+  logRender("*** createElement", type);
 
   return origJsxs(type, props);
 };

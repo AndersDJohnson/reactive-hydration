@@ -1,9 +1,10 @@
 const jsxDevRuntime = require("_react/jsx-dev-runtime");
+const { logRender } = require("./log");
 
 const origJsxDev = jsxDevRuntime.jsxDEV;
 
 jsxDevRuntime.jsxDEV = (type, props) => {
-  console.log("*** jsxDEV", type);
+  logRender("*** createElement", type);
 
   return origJsxDev(type, props);
 };
