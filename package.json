@@ -8,6 +8,6 @@
   "scripts": {
     "build": "yarn workspaces foreach run build",
     "lint": "yarn workspaces foreach --parallel --verbose --exclude reactive-hydration-root run eslint src --ext ts --ext tsx",
-    "postinstall": "rm -rf packages/*/node_modules/{recoil}"
+    "postinstall": "rm -rf packages/*/node_modules/{react,react-dom,recoil,recoil-nexus}"
   }
 }

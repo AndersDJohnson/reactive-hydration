@@ -48,16 +48,6 @@ export const ReactiveHydrationContainer = memo(
   (props: ReactiveHydrationContainerProps) => {
     const { Comp, LazyComp, importComponent, importContext } = props;
 
-    console.log(
-      "*** ReactiveHydrationInnardsContext",
-      ReactiveHydrationInnardsContext
-    );
-    console.log(
-      "*** ReactiveHydrationContainerContext",
-      ReactiveHydrationContainerContext
-    );
-    console.log("*** Comp", Comp);
-
     // TODO: Subscribe to location changes.
     const isClientSideSoftRouteAwayFromInitialUrl =
       // TODO: Will this have ill effect on any rerenders during page transitions?
