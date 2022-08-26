@@ -9,10 +9,6 @@ const React = require("_react");
 // import { useContextUsageTracker } from "../useContextUsageTracker";
 // import { useStateSerialize } from "../useStateSerialize";
 
-console.log("** react monkeypatch");
-
-console.log("*** React from _react", React);
-
 const {
   createElement,
   // useContext,
@@ -20,12 +16,10 @@ const {
 } = React;
 
 const createElementReactiveHydration = (type, props, ...children) => {
-  console.log("*** createElement", type, props, children);
+  console.log("*** createElement", type);
 
   return createElement(type, props, ...children);
 };
-
-// console.log("*** React", React);
 
 // function createElementReactiveHydration<
 //   P extends {

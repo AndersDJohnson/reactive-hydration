@@ -2,5 +2,11 @@
   "name": "reactive-hydration-react",
   "version": "0.1.0",
   "private": true,
-  "main": "index.js"
+  "main": "index.js",
+  "dependencies": {
+    "react-is": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/_react": "npm:@types/react@18.0.17"
+  }
 }
