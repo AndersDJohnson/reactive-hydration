@@ -2,6 +2,12 @@
 /* eslint-disable react-hooks/rules-of-hooks -- Okay to disable here. In any given hook call, we won't change number of hook calls between renders. */
 // import type { ComponentType, Context, ReactNode } from "react";
 const React = require("_react");
+
+// TODO: We may need to polyfill `createElement` similar to `jsx-runtime` for folks building that way.
+// createElement,
+const useContext = React.useContext;
+const useState = React.useState;
+
 // const React = require("_react");
 // import { reactiveHydrate } from "../ReactiveHydrate";
 // import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
@@ -28,12 +34,12 @@ console.log("*** React", React);
 
 // const { logRender } = require("./log");
 
-const {
-  // TODO: We may need to polyfill `createElement` similar to `jsx-runtime` for folks building that way.
-  // createElement,
-  useContext,
-  useState,
-} = React;
+// const {
+//   // TODO: We may need to polyfill `createElement` similar to `jsx-runtime` for folks building that way.
+//   // createElement,
+//   useContext,
+//   useState,
+// } = React;
 
 // const createElementReactiveHydration = (type, props, ...children) => {
 //   logRender("*** createElement", type);
@@ -164,7 +170,15 @@ const {
 //   // );
 // }
 
-const useStateReactiveHydration = (init) => {
+/**
+ * @param {*} init
+ * @param {*} bypass This isn't known to React, but passed by `reactive-hydration/react-actual`.
+ */
+const useStateReactiveHydrationMonkeypatch = (init, bypass) => {
+  if (bypass) {
+    return useState(init);
+  }
+
   const { isWithinReactiveHydrationContainer } = useContext(
     ReactiveHydrationContainerContext
   );
@@ -176,9 +190,25 @@ const useStateReactiveHydration = (init) => {
   return useStateSerialize(init);
 };
 
-React.useState = useStateReactiveHydration;
+React.useState = useStateReactiveHydrationMonkeypatch;
 
-// React.useContext = useContextUsageTracker;
+const useContextReactiveHydrationMonkeypatch = (Context, bypass) => {
+  if (bypass) {
+    return useContext(Context);
+  }
+
+  const { isWithinReactiveHydrationContainer } = useContext(
+    ReactiveHydrationContainerContext
+  );
+
+  if (!isWithinReactiveHydrationContainer) {
+    return useContext(Context);
+  }
+
+  return useContextUsageTracker(Context);
+};
+
+React.useContext = useContextReactiveHydrationMonkeypatch;
 
 // export default React;
 // export = React;

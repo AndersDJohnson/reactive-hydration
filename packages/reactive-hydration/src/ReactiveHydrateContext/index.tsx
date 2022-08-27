@@ -1,12 +1,11 @@
 import React, {
-  useState,
-  useContext,
   RefObject,
   PropsWithChildren,
   createContext,
   useCallback,
   useMemo,
 } from "_react";
+import { useState, useContext } from "../react-actual";
 
 export interface HooksRef {
   contexts: Set<string>;

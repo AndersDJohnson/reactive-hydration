@@ -6,7 +6,8 @@
   "module": "dist",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint 'src/**'"
   },
   "dependencies": {
     "dom-element-path": "^1.3.1",

@@ -1,13 +1,14 @@
-import React, { Context, useContext, useState } from "_react";
+import React, { Context } from "_react";
+import { useState, useContext } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 
-export const useContextUsageTracker = <T>(context: Context<T>) => {
+export const useContextUsageTracker = <T>(Context: Context<T>) => {
+  const contextValue = useContext(Context);
+
   const { isWithinReactiveHydrationContainer } = useContext(
     ReactiveHydrationContainerContext
   );
-
-  const contextValue = useContext(context);
 
   const { usedHooksRef } = useContext(ReactiveHydrateContext);
 
@@ -21,10 +22,10 @@ export const useContextUsageTracker = <T>(context: Context<T>) => {
 
     console.log(
       "*** useContextUsageTracker context.displayName",
-      context.displayName
+      Context.displayName
     );
 
-    if (!context.displayName) {
+    if (!Context.displayName) {
       // const message = "Not serializing context without a `displayName`.";
 
       // console.debug(message, context);
@@ -34,7 +35,7 @@ export const useContextUsageTracker = <T>(context: Context<T>) => {
       return;
     }
 
-    usedHooksRef?.current?.contexts.add(context.displayName);
+    usedHooksRef?.current?.contexts.add(Context.displayName);
   });
 
   return contextValue;

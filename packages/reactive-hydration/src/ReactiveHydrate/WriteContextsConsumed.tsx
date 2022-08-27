@@ -1,4 +1,5 @@
-import React, { useContext } from "_react";
+import React from "_react";
+import { useContext } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 
 export const WriteContextsConsumed = () => {

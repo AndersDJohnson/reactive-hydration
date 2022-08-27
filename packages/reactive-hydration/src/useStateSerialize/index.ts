@@ -1,10 +1,6 @@
-import React, {
-  createContext,
-  useCallback,
-  useRef,
-  useContext,
-  useState,
-} from "_react";
+import React, { createContext, useCallback, useRef } from "_react";
+import { useContext } from "../react-actual";
+import { useState } from "../react-actual";
 
 export const SerializedStateContext = createContext<
   | {
