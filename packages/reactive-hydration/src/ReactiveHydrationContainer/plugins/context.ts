@@ -35,6 +35,8 @@ export const pluginContext = (args: Args) => {
       contextHydratorsByContextId.set(contextId, contextHydrators);
     }
 
+    console.log("*** contextHydrators by id", contextId, contextHydrators);
+
     const hydrator = () => {
       hydrate({
         $component,

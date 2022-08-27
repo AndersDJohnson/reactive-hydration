@@ -6,16 +6,34 @@ const React = require("_react");
 // import { reactiveHydrate } from "../ReactiveHydrate";
 // import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 // import { ReactiveHydrationInnardsContext } from "../ReactiveHydrationInnardsContext";
-// import { useContextUsageTracker } from "../useContextUsageTracker";
-// import { useStateSerialize } from "../useStateSerialize";
+// const {
+//   useContextUsageTracker,
+//   useStateSerialize,
+// } = require("reactive-hydration");
+
+// Deep imports to avoid pulling in anything like `react-dom` that will require `react`
+// which would cause a circular dependency given our monkeypatch here registering as `react`.
+
+const {
+  useStateSerialize,
+} = require("reactive-hydration/dist/useStateSerialize");
+const {
+  useContextUsageTracker,
+} = require("reactive-hydration/dist/useContextUsageTracker");
+const {
+  ReactiveHydrationContainerContext,
+} = require("reactive-hydration/dist/ReactiveHydrationContainerContext");
+
+console.log("*** React", React);
 
 // const { logRender } = require("./log");
 
-// const {
-//   createElement,
-//   // useContext,
-//   // useState,
-// } = React;
+const {
+  // TODO: We may need to polyfill `createElement` similar to `jsx-runtime` for folks building that way.
+  // createElement,
+  useContext,
+  useState,
+} = React;
 
 // const createElementReactiveHydration = (type, props, ...children) => {
 //   logRender("*** createElement", type);
@@ -146,26 +164,21 @@ const React = require("_react");
 //   // );
 // }
 
-// const useStateReactiveHydration = (
-//   // @ts-expect-error Not sure why this tuple type doesn't work.
-//   init: Parameters<typeof useState>[0]
-// ) => {
-//   const { isWithinReactiveHydrationContainer } = useContext(
-//     ReactiveHydrationContainerContext
-//   );
+const useStateReactiveHydration = (init) => {
+  const { isWithinReactiveHydrationContainer } = useContext(
+    ReactiveHydrationContainerContext
+  );
 
-//   if (!isWithinReactiveHydrationContainer) {
-//     return useState(init);
-//   }
+  if (!isWithinReactiveHydrationContainer) {
+    return useState(init);
+  }
 
-//   return useStateSerialize(init);
-// };
+  return useStateSerialize(init);
+};
 
-// // @ts-expect-error We need to support the `bypassMonkeypatch` argument.
-// React.useState = useStateReactiveHydration;
+React.useState = useStateReactiveHydration;
 
-// // React.useContext = useContextUsageTracker;
-// React.useContext = useContext;
+// React.useContext = useContextUsageTracker;
 
 // export default React;
 // export = React;
