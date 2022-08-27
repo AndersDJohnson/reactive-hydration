@@ -6,7 +6,7 @@ import {
   ReactiveHydrateContext,
   ReactiveHydrateContextProvider,
 } from "../ReactiveHydrateContext";
-import { SerializedStateContext } from "../useStateSerialize";
+import { SerializedStateContext } from "../SerializedStateContext";
 import { WriteContextsConsumed } from "./WriteContextsConsumed";
 import { ReactiveHydrate } from "./ReactiveHydrate";
 import {

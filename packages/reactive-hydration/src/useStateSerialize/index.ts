@@ -1,19 +1,6 @@
-import React, { createContext, useCallback, useRef } from "_react";
-import { useContext } from "../react-actual";
-import { useState } from "../react-actual";
-
-export const SerializedStateContext = createContext<
-  | {
-      serializableState: string[] | undefined;
-      setSerializableState:
-        | (() => string[])
-        | ((sf: (s: any[] | undefined) => any[] | undefined) => void);
-      reactiveHydrateState?: any[];
-    }
-  | undefined
->(undefined);
-
-SerializedStateContext.displayName = "SerializedStateContext";
+import React, { useCallback, useRef } from "_react";
+import { useContext, useState } from "../react-actual";
+import { SerializedStateContext } from "../SerializedStateContext";
 
 export const useStateSerialize = <S>(init: S | (() => S)) => {
   const { serializableState, setSerializableState, reactiveHydrateState } =
