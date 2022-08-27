@@ -8,5 +8,18 @@ export const ReactiveHydrationContainerContext = createContext({
 ReactiveHydrationContainerContext.displayName =
   "ReactiveHydrationContainerContext";
 
-// @ts-ignore
+if (typeof global !== "undefined") {
+  // @ts-expect-error
+  if (global.ReactiveHydrationContainerContext) {
+    module.exports =
+      // @ts-expect-error
+      global.ReactiveHydrationContainerContext;
+  } else {
+    // @ts-expect-error
+    global.ReactiveHydrationContainerContext = exports;
+  }
+}
+
+// TODO: Delete after debugging.
+// @ts-expect-error
 ReactiveHydrationContainerContext.id = Math.random();

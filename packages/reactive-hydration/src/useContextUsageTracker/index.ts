@@ -14,6 +14,11 @@ export const useContextUsageTracker = <T>(Context: Context<T>) => {
 
   useState(() => {
     console.log(
+      "*** useContextUsageTracker ReactiveHydrationContainerContext.id",
+      // @ts-expect-error
+      ReactiveHydrationContainerContext.id
+    );
+    console.log(
       "*** useContextUsageTracker isWithinReactiveHydrationContainer",
       isWithinReactiveHydrationContainer
     );
@@ -36,7 +41,24 @@ export const useContextUsageTracker = <T>(Context: Context<T>) => {
     }
 
     usedHooksRef?.current?.contexts.add(Context.displayName);
+
+    console.log(
+      "*** useContextUsageTracker usedHooksRef?.current?.contexts",
+      usedHooksRef?.current?.contexts
+    );
   });
 
   return contextValue;
 };
+
+if (typeof global !== "undefined") {
+  // @ts-expect-error
+  if (global.useContextUsageTracker) {
+    module.exports =
+      // @ts-expect-error
+      global.useContextUsageTracker;
+  } else {
+    // @ts-expect-error
+    global.useContextUsageTracker = exports;
+  }
+}

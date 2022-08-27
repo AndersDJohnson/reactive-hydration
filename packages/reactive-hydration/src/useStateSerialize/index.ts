@@ -68,3 +68,15 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
 
   return [state, setStateAndSerializedState] as const;
 };
+
+if (typeof global !== "undefined") {
+  // @ts-expect-error
+  if (global.useStateSerialize) {
+    module.exports =
+      // @ts-expect-error
+      global.useStateSerialize;
+  } else {
+    // @ts-expect-error
+    global.useStateSerialize = exports;
+  }
+}

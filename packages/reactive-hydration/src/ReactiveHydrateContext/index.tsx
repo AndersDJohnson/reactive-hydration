@@ -91,3 +91,19 @@ export const ReactiveHydrateContextProvider = (
     </ReactiveHydrateContext.Provider>
   );
 };
+
+if (typeof global !== "undefined") {
+  // @ts-expect-error
+  if (global.ReactiveHydrateContext) {
+    module.exports =
+      // @ts-expect-error
+      global.ReactiveHydrateContext;
+  } else {
+    // @ts-expect-error
+    global.ReactiveHydrateContext = exports;
+  }
+}
+
+// TODO: Delete after debugging.
+// @ts-expect-error
+ReactiveHydrateContext.id = Math.random();

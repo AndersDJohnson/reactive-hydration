@@ -197,17 +197,17 @@ const useContextReactiveHydrationMonkeypatch = (Context, bypass) => {
     return useContext(Context);
   }
 
-  const { isWithinReactiveHydrationContainer } = useContext(
-    ReactiveHydrationContainerContext
-  );
+  // const { isWithinReactiveHydrationContainer } = useContext(
+  //   ReactiveHydrationContainerContext
+  // );
 
-  console.log("*** useContextReactiveHydrationMonkeypatch", {
-    isWithinReactiveHydrationContainer,
-  });
+  // console.log("*** useContextReactiveHydrationMonkeypatch", {
+  //   isWithinReactiveHydrationContainer,
+  // });
 
-  if (!isWithinReactiveHydrationContainer) {
-    return useContext(Context);
-  }
+  // if (!isWithinReactiveHydrationContainer) {
+  //   return useContext(Context);
+  // }
 
   return useContextUsageTracker(Context);
 };
