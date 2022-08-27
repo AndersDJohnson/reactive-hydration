@@ -29,6 +29,16 @@ export const ExampleServerComponent = () => {
     [message, setMessage]
   );
 
+  const [message2, setMessage2] = useState(`initial ${Math.random()}`);
+
+  const myContext2Value = useMemo(
+    () => ({
+      message: message2,
+      setMessage: setMessage2,
+    }),
+    [message2, setMessage2]
+  );
+
   const dummyContextValue = useMemo(() => ({}), []);
 
   return (
@@ -58,9 +68,17 @@ export const ExampleServerComponent = () => {
       </div>
 
       <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
-        <div>Separate MyContext:</div>
+        <div>Separate MyContext (but same source value):</div>
 
         <MyContext.Provider value={myContextValue}>
+          <ExampleClientComponent1 />
+        </MyContext.Provider>
+      </div>
+
+      <div style={{ border: "1px solid gray", padding: 4, margin: 4 }}>
+        <div>Separate MyContext (and different source value):</div>
+
+        <MyContext.Provider value={myContext2Value}>
           <ExampleClientComponent1 />
         </MyContext.Provider>
       </div>
