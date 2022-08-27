@@ -1,5 +1,6 @@
 import React, { createContext } from "_react";
 
+// TODO: Is this still needed?
 export const ReactiveHydrationInnardsContext = createContext<
   | {
       isInReactiveHydrationInnards: true;

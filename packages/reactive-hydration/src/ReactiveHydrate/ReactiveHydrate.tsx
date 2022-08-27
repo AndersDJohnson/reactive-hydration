@@ -21,9 +21,8 @@ export const ReactiveHydrate = (
 
   const { reactiveHydratingId } = useContext(ReactiveHydrateContext);
 
+  // TODO: Is this still needed?
   const isHydratingSelf = reactiveHydratingId === id;
-
-  console.log("*** isHydratingSelf", isHydratingSelf);
 
   return (
     <>

@@ -86,13 +86,13 @@ jsxRuntime.jsx = (type, props, ...rest) => {
 
     const { isInReactiveHydrationInnards } = reactiveHydrationInnardsContext;
 
-    console.log("*** NewType for", name, "contexts", {
-      "ReactiveHydrationContainerContext.id":
-        // @ts-ignore
-        ReactiveHydrationContainerContext.id,
-      reactiveHydrationContainerContext,
-      reactiveHydrationInnardsContext,
-    });
+    // console.log("*** NewType for", name, "contexts", {
+    //   "ReactiveHydrationContainerContext.id":
+    //     // @ts-ignore
+    //     ReactiveHydrationContainerContext.id,
+    //   reactiveHydrationContainerContext,
+    //   reactiveHydrationInnardsContext,
+    // });
 
     // console.log("*** NewType for", name, "booleans", {
     //   isReactiveHydrationServerComponent,

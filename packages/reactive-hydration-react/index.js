@@ -30,7 +30,7 @@ const {
   ReactiveHydrationContainerContext,
 } = require("reactive-hydration/dist/ReactiveHydrationContainerContext");
 
-console.log("*** React", React);
+// console.log("*** React", React);
 
 // const { logRender } = require("./log");
 
@@ -200,6 +200,10 @@ const useContextReactiveHydrationMonkeypatch = (Context, bypass) => {
   const { isWithinReactiveHydrationContainer } = useContext(
     ReactiveHydrationContainerContext
   );
+
+  console.log("*** useContextReactiveHydrationMonkeypatch", {
+    isWithinReactiveHydrationContainer,
+  });
 
   if (!isWithinReactiveHydrationContainer) {
     return useContext(Context);

@@ -65,9 +65,7 @@ export const ExampleServerComponent = () => {
         <div>Inside of MyContext:</div>
 
         <MyContext.Provider value={myContextValue}>
-          <ExampleClientComponent
-            debug={{ reactiveHydrationContainerContext }}
-          />
+          <ExampleClientComponent />
 
           <ExampleClientComponent />
 
