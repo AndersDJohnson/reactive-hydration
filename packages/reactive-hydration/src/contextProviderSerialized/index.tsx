@@ -1,5 +1,10 @@
-import { Context, PropsWithChildren, useId, useMemo } from "_react";
-import { useContext } from "_react";
+import React, {
+  Context,
+  PropsWithChildren,
+  useId,
+  useMemo,
+  useContext,
+} from "_react";
 import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 
 const idByValueMap = new WeakMap<any, string>();

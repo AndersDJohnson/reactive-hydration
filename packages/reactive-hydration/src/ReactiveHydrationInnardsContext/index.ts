@@ -1,4 +1,4 @@
-import { createContext } from "_react";
+import React, { createContext } from "_react";
 
 export const ReactiveHydrationInnardsContext = createContext<
   | {
