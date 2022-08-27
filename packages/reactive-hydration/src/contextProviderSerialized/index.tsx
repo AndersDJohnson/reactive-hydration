@@ -29,6 +29,8 @@ export function contextProviderSerialized<T>(context: Context<T>) {
 
     let idFromMap = idByValueMap.get(value);
 
+    console.log("*** context value", value, { idProp, idFromMap, usedId });
+
     if (!idFromMap) {
       idFromMap = Math.random().toString();
       try {
