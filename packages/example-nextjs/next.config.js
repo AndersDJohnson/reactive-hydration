@@ -1,4 +1,4 @@
-const webpack = require("webpack");
+// const webpack = require("webpack");
 
 const BUILD_EXPORT = process.env.BUILD_EXPORT;
 
@@ -18,6 +18,66 @@ module.exports = () => {
 
     webpack(config, { isServer }) {
       // config.optimization.minimize = false;
+
+      if (isServer) {
+        console.log("*** webpack config", config);
+
+        config.externals = [
+          function ({ context, request }, callback) {
+            console.log("*** webpack externals", request, context);
+
+            if (
+              ["react", "react/jsx-runtime", "react/jsx-dev-runtime"].includes(
+                request
+              )
+            ) {
+              console.log(
+                "*** webpack externalizing request",
+                request,
+                context
+              );
+              return callback(null, "commonjs " + request);
+            }
+
+            // if (/^yourregex$/.test(request)) {
+            //   // Externalize to a commonjs module using the request path
+            //   return callback(null, 'commonjs ' + request);
+            // }
+
+            // Continue without externalizing the import
+            callback();
+          },
+          // {
+          //   "reactive-hydration-react": "commonjs reactive-hydration-react",
+          // },
+          ...config.externals,
+
+          function ({ context, request }, callback) {
+            console.log("*** webpack externals", request, context);
+
+            if (
+              ["react", "react/jsx-runtime", "react/jsx-dev-runtime"].includes(
+                request
+              )
+            ) {
+              console.log(
+                "*** webpack externalizing request",
+                request,
+                context
+              );
+              return callback(null, "commonjs " + request);
+            }
+
+            // if (/^yourregex$/.test(request)) {
+            //   // Externalize to a commonjs module using the request path
+            //   return callback(null, 'commonjs ' + request);
+            // }
+
+            // Continue without externalizing the import
+            callback();
+          },
+        ];
+      }
 
       // if (!isServer) {
       //   config.module.rules.push({
