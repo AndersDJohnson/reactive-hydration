@@ -6,7 +6,7 @@ import React, {
   useContext,
   useState,
 } from "_react";
-import hoistNonReactStatics from "hoist-non-react-statics";
+// import hoistNonReactStatics from "hoist-non-react-statics";
 import {
   HooksRef,
   ReactiveHydrateContext,
@@ -142,7 +142,7 @@ export const reactiveHydrate = <
   // }
 
   // TODO: Do we really want/need to hoist these?
-  hoistNonReactStatics(ReactiveHydrateWrapper, Comp);
+  // hoistNonReactStatics(ReactiveHydrateWrapper, Comp);
 
   ReactiveHydrateWrapper.displayName = `ReactiveHydrateWrapper(${Comp.displayName})`;
 
