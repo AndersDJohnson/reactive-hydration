@@ -63,11 +63,6 @@ export const ReactiveHydrationContainer = memo(
         reactiveHydrationContainerContextHasSoftRouted
       : reactiveHydrationContainerContextHasNotSoftRouted;
 
-    console.log(
-      "*** ReactiveHydrationContainer reactiveHydrationContainerContext",
-      reactiveHydrationContainerContext
-    );
-
     // Client-side render after soft routing - just stand up the whole tree at this point since we don't have SSR HTML to hydrate.
     if (hasSoftRouted) {
       return (
@@ -93,10 +88,6 @@ export const ReactiveHydrationContainer = memo(
 
     // Server-side render.
     if (typeof window !== "object" && Comp) {
-      console.log("*** ReactiveHydrationContainer SSR", {
-        reactiveHydrationContainerContext,
-      });
-
       return (
         <ReactiveHydrationInnardsContext.Provider
           value={reactiveHydrationInnardsContextValue}

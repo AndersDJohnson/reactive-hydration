@@ -104,6 +104,5 @@ if (typeof global !== "undefined") {
   }
 }
 
-// TODO: Delete after debugging.
-// @ts-expect-error
-ReactiveHydrateContext.id = Math.random();
+// // @ts-expect-error For debugging only.
+// ReactiveHydrateContext.id = Math.random();

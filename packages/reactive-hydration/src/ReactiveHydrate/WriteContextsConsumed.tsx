@@ -5,8 +5,6 @@ import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 export const WriteContextsConsumed = () => {
   const { usedHooksRef } = useContext(ReactiveHydrateContext);
 
-  console.log("*** WriteContextsConsumed", usedHooksRef);
-
   const setValues = usedHooksRef?.current?.contexts.values();
 
   const contexts = setValues ? [...setValues] : undefined;

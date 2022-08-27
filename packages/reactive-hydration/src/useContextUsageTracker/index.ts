@@ -13,22 +13,7 @@ export const useContextUsageTracker = <T>(Context: Context<T>) => {
   const { usedHooksRef } = useContext(ReactiveHydrateContext);
 
   useState(() => {
-    console.log(
-      "*** useContextUsageTracker ReactiveHydrationContainerContext.id",
-      // @ts-expect-error
-      ReactiveHydrationContainerContext.id
-    );
-    console.log(
-      "*** useContextUsageTracker isWithinReactiveHydrationContainer",
-      isWithinReactiveHydrationContainer
-    );
-
     if (!isWithinReactiveHydrationContainer) return;
-
-    console.log(
-      "*** useContextUsageTracker context.displayName",
-      Context.displayName
-    );
 
     if (!Context.displayName) {
       // const message = "Not serializing context without a `displayName`.";
@@ -41,11 +26,6 @@ export const useContextUsageTracker = <T>(Context: Context<T>) => {
     }
 
     usedHooksRef?.current?.contexts.add(Context.displayName);
-
-    console.log(
-      "*** useContextUsageTracker usedHooksRef?.current?.contexts",
-      usedHooksRef?.current?.contexts
-    );
   });
 
   return contextValue;
