@@ -1,9 +1,5 @@
-import { useContext, useMemo, useState } from "react";
-import {
-  createContextWithDefaultValue,
-  ReactiveHydrationContainerContext,
-  ReactiveHydrationInnardsContext,
-} from "reactive-hydration";
+import { useMemo, useState } from "react";
+import { createContextWithDefaultValue } from "reactive-hydration";
 import { ExampleClientComponent } from "../ExampleClientComponent";
 import { ExampleClientComponent1 } from "../ExampleClientComponent1";
 import { ExampleClientComponent2 } from "../ExampleClientComponent2";
@@ -23,28 +19,6 @@ const DummyContext = createContextWithDefaultValue(
 );
 
 export const ExampleServerComponent = () => {
-  console.debug(
-    "Rendering ExampleServerComponent (should be on server only on initial page load, but may be loaded on client after routing)",
-    "ExampleClientComponent",
-    ExampleClientComponent.displayName,
-    ExampleClientComponent
-  );
-
-  const reactiveHydrationContainerContext = useContext(
-    ReactiveHydrationContainerContext
-  );
-
-  const reactiveHydrationInnardsContext =
-    useContext(ReactiveHydrationInnardsContext) ?? {};
-
-  console.log("*** ExampleServerComponent contexts", {
-    "ReactiveHydrationContainerContext.id":
-      // @ts-ignore
-      ReactiveHydrationContainerContext.id,
-    reactiveHydrationContainerContext,
-    reactiveHydrationInnardsContext,
-  });
-
   const [message, setMessage] = useState(`initial ${Math.random()}`);
 
   const myContextValue = useMemo(
