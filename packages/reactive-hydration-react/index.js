@@ -8,19 +8,23 @@ const React = require("_react");
 // import { ReactiveHydrationInnardsContext } from "../ReactiveHydrationInnardsContext";
 // import { useContextUsageTracker } from "../useContextUsageTracker";
 // import { useStateSerialize } from "../useStateSerialize";
-const { logRender } = require("./log");
 
-const {
-  createElement,
-  // useContext,
-  // useState,
-} = React;
+// const { logRender } = require("./log");
 
-const createElementReactiveHydration = (type, props, ...children) => {
-  logRender("*** createElement", type);
+// const {
+//   createElement,
+//   // useContext,
+//   // useState,
+// } = React;
 
-  return createElement(type, props, ...children);
-};
+// const createElementReactiveHydration = (type, props, ...children) => {
+//   logRender("*** createElement", type);
+
+//   return createElement(type, props, ...children);
+// };
+
+// // @ts-expect-error Hard to get types exactly right...
+// React.createElement = createElementReactiveHydration;
 
 // function createElementReactiveHydration<
 //   P extends {
@@ -141,9 +145,6 @@ const createElementReactiveHydration = (type, props, ...children) => {
 //   //   ...children
 //   // );
 // }
-
-// @ts-expect-error Hard to get types exactly right...
-React.createElement = createElementReactiveHydration;
 
 // const useStateReactiveHydration = (
 //   // @ts-expect-error Not sure why this tuple type doesn't work.

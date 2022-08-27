@@ -22,8 +22,8 @@ const origJsxs = jsxRuntime.jsxs;
 //   ReactiveHydrationInnardsContext
 // );
 
-jsxRuntime.jsx = (type, props) => {
-  logRender("*** createElement", type);
+jsxRuntime.jsx = (type, props, ...rest) => {
+  logRender("*** jsx", type);
 
   // TODO: Handle memo objects?
   if (typeof type !== "function") {
@@ -97,14 +97,14 @@ jsxRuntime.jsx = (type, props) => {
 
   return origJsx(NewType, {
     // displayName,
-    children: origJsx(Type, props),
+    children: origJsx(Type, props, ...rest),
   });
 };
 
-jsxRuntime.jsxs = (type, props) => {
-  logRender("*** createElement", type);
+jsxRuntime.jsxs = (type, props, ...rest) => {
+  logRender("*** jsxs", type);
 
-  return origJsxs(type, props);
+  return origJsxs(type, props, ...rest);
 };
 
 module.exports = jsxRuntime;
