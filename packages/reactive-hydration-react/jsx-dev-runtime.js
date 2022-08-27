@@ -1,12 +1,7 @@
 const jsxDevRuntime = require("_react/jsx-dev-runtime");
 // const { logRender } = require("./log");
+const { makeJsx } = require("./makeJsx");
 
-const origJsxDev = jsxDevRuntime.jsxDEV;
-
-jsxDevRuntime.jsxDEV = (type, props, ...rest) => {
-  // logRender("*** jsxDEV", type);
-
-  return origJsxDev(type, props, ...rest);
-};
+jsxDevRuntime.jsxDEV = makeJsx("jsxDEV", jsxDevRuntime.jsxDEV);
 
 module.exports = jsxDevRuntime;
