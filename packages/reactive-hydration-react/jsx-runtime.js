@@ -2,6 +2,7 @@ const jsxRuntime = require("_react/jsx-runtime");
 const { makeJsx } = require("./makeJsx");
 
 jsxRuntime.jsx = makeJsx("jsx", jsxRuntime.jsx);
-jsxRuntime.jsxs = makeJsx("jsxs", jsxRuntime.jsxs);
+// TODO: Do we need to override this one for static children?
+// jsxRuntime.jsxs = makeJsx("jsxs", jsxRuntime.jsxs);
 
 module.exports = jsxRuntime;
