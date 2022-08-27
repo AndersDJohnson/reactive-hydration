@@ -24,15 +24,22 @@ const {
  */
 const useStateReactiveHydrationMonkeypatch = (init, bypass) => {
   if (bypass) {
-    return useState(init);
+    return useState(init, true);
   }
 
   const { isWithinReactiveHydrationContainer } = useContext(
-    ReactiveHydrationContainerContext
+    ReactiveHydrationContainerContext,
+    true
+  );
+
+  console.log(
+    "*** useState isWithinReactiveHydrationContainer",
+    isWithinReactiveHydrationContainer,
+    init
   );
 
   if (!isWithinReactiveHydrationContainer) {
-    return useState(init);
+    return useState(init, true);
   }
 
   return useStateSerialize(init);
@@ -42,7 +49,15 @@ React.useState = useStateReactiveHydrationMonkeypatch;
 
 const useContextReactiveHydrationMonkeypatch = (Context, bypass) => {
   if (bypass) {
-    return useContext(Context);
+    try {
+      return useContext(Context, true);
+    } catch (error) {
+      console.error(
+        "*** ERROR useContextReactiveHydrationMonkeypatch",
+        Context.displayName
+      );
+      throw error;
+    }
   }
 
   return useContextUsageTracker(Context);

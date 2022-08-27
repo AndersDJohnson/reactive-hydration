@@ -6,6 +6,8 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
   const { serializableState, setSerializableState, reactiveHydrateState } =
     useContext(SerializedStateContext) ?? {};
 
+  console.log("*** useStateSerialize serializableState", serializableState);
+
   // TODO: For better performance, consider an optional optimization to no longer serialize the state
   // after the entire tree has been hydrated (walking up ancestor components to root).
 
@@ -39,6 +41,13 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
 
         setTimeout(() => {
           setSerializableState?.((previousStates) => {
+            console.log(
+              "*** useStateSerialize setSerializableState",
+              stateIndex,
+              value,
+              previousStates
+            );
+
             return stateIndex == null
               ? previousStates
               : !previousStates || stateIndex === 0
