@@ -22,6 +22,8 @@ export const ReactiveHydrate = (
 
   const isHydratingSelf = reactiveHydratingId === id;
 
+  console.log("*** isHydratingSelf", isHydratingSelf);
+
   return (
     <>
       {typeof window !== "object" || !isHydratingSelf ? (

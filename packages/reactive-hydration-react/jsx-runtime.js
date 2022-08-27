@@ -57,6 +57,10 @@ jsxRuntime.jsx = (type, props, ...rest) => {
     type.render?.displayName ??
     type.render?.name;
 
+  if (name?.startsWith("ContextProviderSerialized")) {
+    return origJsx(type, props, ...rest);
+  }
+
   const Type = type;
 
   const { states } = Type;
