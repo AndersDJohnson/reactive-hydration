@@ -7,3 +7,6 @@ export const ReactiveHydrationContainerContext = createContext({
 
 ReactiveHydrationContainerContext.displayName =
   "ReactiveHydrationContainerContext";
+
+// @ts-ignore
+ReactiveHydrationContainerContext.id = Math.random();

@@ -25,9 +25,11 @@ const origJsxs = jsxRuntime.jsxs;
 jsxRuntime.jsx = (type, props, ...rest) => {
   logRender("*** jsx", type);
 
-  // TODO: Handle memo objects?
+  // return origJsx(type, props, ...rest);
+
+  // // TODO: Handle memo objects?
   if (typeof type !== "function") {
-    return origJsx(type, props);
+    return origJsx(type, props, ...rest);
   }
 
   // console.log("*** type fn", type.toString());
@@ -57,6 +59,7 @@ jsxRuntime.jsx = (type, props, ...rest) => {
     const reactiveHydrationContainerContext = useContext(
       ReactiveHydrationContainerContext
     );
+
     const { isWithinReactiveHydrationContainer } =
       reactiveHydrationContainerContext;
 
@@ -66,6 +69,9 @@ jsxRuntime.jsx = (type, props, ...rest) => {
     const { isInReactiveHydrationInnards } = reactiveHydrationInnardsContext;
 
     console.log("*** NewType for", name, "contexts", {
+      "ReactiveHydrationContainerContext.id":
+        // @ts-ignore
+        ReactiveHydrationContainerContext.id,
       reactiveHydrationContainerContext,
       reactiveHydrationInnardsContext,
     });
@@ -95,10 +101,14 @@ jsxRuntime.jsx = (type, props, ...rest) => {
 
   NewType.displayName = `ReactiveHydrationCreateElementWrapper(${name})`;
 
-  return origJsx(NewType, {
-    // displayName,
-    children: origJsx(Type, props, ...rest),
-  });
+  return origJsx(
+    NewType,
+    {
+      // displayName,
+      children: origJsx(Type, props, ...rest),
+    },
+    ...rest
+  );
 };
 
 jsxRuntime.jsxs = (type, props, ...rest) => {

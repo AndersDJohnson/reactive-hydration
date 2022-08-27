@@ -38,6 +38,9 @@ export const ExampleServerComponent = () => {
     useContext(ReactiveHydrationInnardsContext) ?? {};
 
   console.log("*** ExampleServerComponent contexts", {
+    "ReactiveHydrationContainerContext.id":
+      // @ts-ignore
+      ReactiveHydrationContainerContext.id,
     reactiveHydrationContainerContext,
     reactiveHydrationInnardsContext,
   });
@@ -62,7 +65,9 @@ export const ExampleServerComponent = () => {
         <div>Inside of MyContext:</div>
 
         <MyContext.Provider value={myContextValue}>
-          <ExampleClientComponent />
+          <ExampleClientComponent
+            debug={{ reactiveHydrationContainerContext }}
+          />
 
           <ExampleClientComponent />
 
