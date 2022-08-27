@@ -15,7 +15,7 @@ const {
   reactiveHydrate,
   ReactiveHydrationContainerContext,
   ReactiveHydrationInnardsContext,
-} = require("reactive-hydration");
+} = global.ReactiveHydrationSingleton ?? require("reactive-hydration");
 
 const { logRender } = require("./log");
 
