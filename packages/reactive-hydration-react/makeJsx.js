@@ -1,10 +1,15 @@
-const { useContext } = require("_react");
+const React = require("_react");
+const { useContext } = React;
+
+console.log("*** react reactive-hydration-react makeJsx", React.id);
 
 const {
   reactiveHydrate,
   ReactiveHydrationContainerContext,
   ReactiveHydrationInnardsContext,
-} = global.ReactiveHydrationSingleton ?? require("reactive-hydration");
+} =
+  // global.ReactiveHydrationSingleton ??
+  require("reactive-hydration");
 
 // const { logRender } = require("./log");
 

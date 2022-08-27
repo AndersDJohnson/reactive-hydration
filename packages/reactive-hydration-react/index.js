@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks -- Okay to disable here. In any given hook call, we won't change number of hook calls between renders. */
 const React = require("_react");
 
+console.log("*** react reactive-hydration-react index", React.id);
+
 // TODO: We may need to polyfill `createElement` similar to `jsx-runtime` for folks building that way.
 // const createElement = React.createElement;
 const useContext = React.useContext;
