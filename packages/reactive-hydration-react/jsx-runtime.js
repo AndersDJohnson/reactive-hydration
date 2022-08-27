@@ -3,11 +3,20 @@ const {
   useContext,
   // useState, createContext
 } = require("_react");
+
+// const {
+//   reactiveHydrate,
+//   ReactiveHydrationContainerContext,
+//   ReactiveHydrationInnardsContext,
+// } =
+//   __webpack_require__("reactive-hydration");
+
 const {
   reactiveHydrate,
   ReactiveHydrationContainerContext,
   ReactiveHydrationInnardsContext,
 } = require("reactive-hydration");
+
 const { logRender } = require("./log");
 
 const origJsx = jsxRuntime.jsx;
@@ -23,6 +32,14 @@ const origJsxs = jsxRuntime.jsxs;
 // );
 
 jsxRuntime.jsx = (type, props, ...rest) => {
+  // const {
+  //   reactiveHydrate,
+  //   ReactiveHydrationContainerContext,
+  //   ReactiveHydrationInnardsContext,
+  // } =
+  //   // require("reactive-hydration");
+  //   __webpack_require__("reactive-hydration");
+
   logRender("*** jsx", type);
 
   // return origJsx(type, props, ...rest);
