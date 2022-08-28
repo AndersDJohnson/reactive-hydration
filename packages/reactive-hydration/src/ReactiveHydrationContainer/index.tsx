@@ -10,6 +10,10 @@ import {
 } from "./ReactiveHydrationContainerInner";
 
 let initialUrl = typeof window === "object" ? window.location.href : undefined;
+const forceHydrate =
+  typeof window === "object"
+    ? window.location.search.includes("forceHydrate")
+    : false;
 let hasSoftRouted = false;
 
 export interface ReactiveHydrationContainerProps
@@ -64,7 +68,7 @@ export const ReactiveHydrationContainer = memo(
       : reactiveHydrationContainerContextHasNotSoftRouted;
 
     // Client-side render after soft routing - just stand up the whole tree at this point since we don't have SSR HTML to hydrate.
-    if (hasSoftRouted) {
+    if (hasSoftRouted || forceHydrate) {
       return (
         // TODO: Do we want this active after soft route?
         <ReactiveHydrationInnardsContext.Provider

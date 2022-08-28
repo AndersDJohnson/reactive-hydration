@@ -2,6 +2,11 @@ import React, { Context, PropsWithChildren, useId, useMemo } from "_react";
 import { useContext } from "../react-actual";
 import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 
+const forceHydrate =
+  typeof window === "object"
+    ? window.location.search.includes("forceHydrate")
+    : false;
+
 const idByValueMap = new WeakMap<any, string>();
 
 export function contextProviderSerialized<T>(context: Context<T>) {
@@ -18,7 +23,7 @@ export function contextProviderSerialized<T>(context: Context<T>) {
 
     const usedId = useId();
 
-    if (typeof window === "object" && !hasSoftRouted) {
+    if (typeof window === "object" && !hasSoftRouted && !forceHydrate) {
       return <Provider value={value}>{children}</Provider>;
     }
 

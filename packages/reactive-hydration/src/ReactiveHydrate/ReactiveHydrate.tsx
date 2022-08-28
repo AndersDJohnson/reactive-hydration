@@ -2,6 +2,11 @@ import React, { PropsWithChildren, useId } from "_react";
 import { useContext } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 
+const forceHydrate =
+  typeof window === "object"
+    ? window.location.search.includes("forceHydrate")
+    : false;
+
 /**
  * On server we'll create a wrapper `div` as a portal host to mount into,
  * but on the client we don't want that wrapper or else we'll get extra nesting.
@@ -26,7 +31,7 @@ export const ReactiveHydrate = (
 
   return (
     <>
-      {typeof window !== "object" || !isHydratingSelf ? (
+      {typeof window !== "object" || !isHydratingSelf || forceHydrate ? (
         <div
           data-component={props.name}
           data-states={props.states}
