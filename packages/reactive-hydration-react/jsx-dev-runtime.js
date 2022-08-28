@@ -4,13 +4,16 @@ const { jsxDEV: origJsxDEV } = jsxDevRuntime;
 
 const React = require("_react");
 
-// const { useContext } = React;
+const { useContext } = React;
 
 // const {
 //   SerializedStateContext,
 // } = require("reactive-hydration/dist/SerializedStateContext");
 
 const { reactiveHydrate } = require("reactive-hydration/dist/ReactiveHydrate");
+const {
+  ReactiveHydrationContainerContext,
+} = require("reactive-hydration/dist/ReactiveHydrationContainerContext");
 // const {
 //   reactiveHydrate,
 //   // ReactiveHydrationContainerContext,
@@ -55,6 +58,18 @@ const jsxDEV = (type, ...args) => {
   }
 
   const Wrapper = () => {
+    const reactiveHydrationContainerContext = useContext(
+      ReactiveHydrationContainerContext,
+      true
+    );
+
+    const { isWithinReactiveHydrationContainer } =
+      reactiveHydrationContainerContext ?? {};
+
+    if (!isWithinReactiveHydrationContainer) {
+      origJsxDEV(type, ...args);
+    }
+
     return origJsxDEV(ReactiveHydrateType, {
       children: origJsxDEV(type, ...args),
     });
