@@ -3,6 +3,16 @@ const React =
     ? window.React || require("_react")
     : require("_react");
 
+if (typeof window !== "undefined") {
+  if (window.React) {
+    console.log(
+      "*** reactive-hydration-react index window.React.id",
+      window.React.id
+    );
+  }
+  window.React = window.React || React;
+}
+
 const { useContext } = React;
 
 console.log("*** react reactive-hydration-react makeJsx React.id", React.id);

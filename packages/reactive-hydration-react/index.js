@@ -1,7 +1,16 @@
 /* eslint-disable react-hooks/rules-of-hooks -- Okay to disable here. In any given hook call, we won't change number of hook calls between renders. */
-const React = require("_react");
+const React =
+  typeof window !== "undefined"
+    ? window.React || require("_react")
+    : require("_react");
 
 if (typeof window !== "undefined") {
+  if (window.React) {
+    console.log(
+      "*** reactive-hydration-react index window.React.id",
+      window.React.id
+    );
+  }
   window.React = window.React || React;
 }
 
@@ -29,44 +38,47 @@ const {
  * @param {*} bypass This isn't known to React, but passed by `reactive-hydration/react-actual`.
  */
 const useStateReactiveHydrationMonkeypatch = (init, bypass) => {
-  if (bypass) {
-    return useState(init, true);
-  }
+  return useState(init);
+  // if (bypass) {
+  //   return useState(init, true);
+  // }
 
-  const { isWithinReactiveHydrationContainer } = useContext(
-    ReactiveHydrationContainerContext,
-    true
-  );
+  // const { isWithinReactiveHydrationContainer } = useContext(
+  //   ReactiveHydrationContainerContext,
+  //   true
+  // );
 
-  console.log(
-    "*** useState isWithinReactiveHydrationContainer",
-    isWithinReactiveHydrationContainer,
-    init
-  );
+  // console.log(
+  //   "*** useState isWithinReactiveHydrationContainer",
+  //   isWithinReactiveHydrationContainer,
+  //   init
+  // );
 
-  if (!isWithinReactiveHydrationContainer) {
-    return useState(init, true);
-  }
+  // if (!isWithinReactiveHydrationContainer) {
+  //   return useState(init, true);
+  // }
 
-  return useStateSerialize(init);
+  // return useStateSerialize(init);
 };
 
 React.useState = useStateReactiveHydrationMonkeypatch;
 
 const useContextReactiveHydrationMonkeypatch = (Context, bypass) => {
-  if (bypass) {
-    try {
-      return useContext(Context, true);
-    } catch (error) {
-      console.error(
-        "*** ERROR useContextReactiveHydrationMonkeypatch",
-        Context.displayName
-      );
-      throw error;
-    }
-  }
+  return useContext(Context);
 
-  return useContextUsageTracker(Context);
+  // if (bypass) {
+  //   try {
+  //     return useContext(Context, true);
+  //   } catch (error) {
+  //     console.error(
+  //       "*** ERROR useContextReactiveHydrationMonkeypatch",
+  //       Context.displayName
+  //     );
+  //     throw error;
+  //   }
+  // }
+
+  // return useContextUsageTracker(Context);
 };
 
 React.useContext = useContextReactiveHydrationMonkeypatch;
