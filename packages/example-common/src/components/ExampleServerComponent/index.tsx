@@ -19,7 +19,8 @@ const DummyContext = createContextWithDefaultValue(
 );
 
 export const ExampleServerComponent = () => {
-  const [message, setMessage] = useState(`initial ${Math.random()}`);
+  // const [message, setMessage] = useState(`initial ${Math.random()}`);
+  const [message, setMessage] = useState(`initial 1`);
 
   const myContextValue = useMemo(
     () => ({
@@ -29,7 +30,8 @@ export const ExampleServerComponent = () => {
     [message, setMessage]
   );
 
-  const [message2, setMessage2] = useState(`initial ${Math.random()}`);
+  // const [message2, setMessage2] = useState(`initial ${Math.random()}`);
+  const [message2, setMessage2] = useState(`initial 2`);
 
   const myContext2Value = useMemo(
     () => ({
