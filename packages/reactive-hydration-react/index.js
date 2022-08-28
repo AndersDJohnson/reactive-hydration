@@ -1,18 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks -- Okay to disable here. In any given hook call, we won't change number of hook calls between renders. */
-const React =
-  typeof window !== "undefined"
-    ? window.React || require("_react")
-    : require("_react");
-
-if (typeof window !== "undefined") {
-  if (window.React) {
-    console.log(
-      "*** reactive-hydration-react index window.React.id",
-      window.React.id
-    );
-  }
-  window.React = window.React || React;
-}
+const React = require("reactive-hydration/dist/react-actual");
 
 console.log("*** react reactive-hydration-react index React.id", React.id);
 
