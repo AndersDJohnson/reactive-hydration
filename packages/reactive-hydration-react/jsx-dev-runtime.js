@@ -4,16 +4,16 @@ const { jsxDEV: origJsxDEV } = jsxDevRuntime;
 
 const React = require("_react");
 
-const { useContext } = React;
+// const { useContext } = React;
 
 // const {
 //   SerializedStateContext,
 // } = require("reactive-hydration/dist/SerializedStateContext");
 
 const { reactiveHydrate } = require("reactive-hydration/dist/ReactiveHydrate");
-const {
-  ReactiveHydrationContainerContext,
-} = require("reactive-hydration/dist/ReactiveHydrationContainerContext");
+// const {
+//   ReactiveHydrationContainerContext,
+// } = require("reactive-hydration/dist/ReactiveHydrationContainerContext");
 // const {
 //   reactiveHydrate,
 //   // ReactiveHydrationContainerContext,
@@ -57,47 +57,7 @@ const jsxDEV = (type, ...args) => {
     reactiveHydrateRegistry.set(name, ReactiveHydrateType);
   }
 
-  const Wrapper = () => {
-    const reactiveHydrationContainerContext = useContext(
-      ReactiveHydrationContainerContext,
-      true
-    );
-
-    const { isWithinReactiveHydrationContainer } =
-      reactiveHydrationContainerContext ?? {};
-
-    console.log(
-      "*** isWithinReactiveHydrationContainer",
-      isWithinReactiveHydrationContainer
-    );
-
-    if (!isWithinReactiveHydrationContainer) {
-      return origJsxDEV(type, ...args);
-    }
-
-    return origJsxDEV(ReactiveHydrateType, {
-      children: origJsxDEV(type, ...args),
-    });
-
-    // // Works!
-    // const serializedStateContext = useContext(SerializedStateContext);
-    // console.log(
-    //   "*** reactive-hydration-react/jsx-dev-runtime Wrapper serializedStateContext",
-    //   serializedStateContext
-    // );
-    // return origJsxDEV(SerializedStateContext.Provider, {
-    //   value: {
-    //     serializableState: ["ok"],
-    //   },
-    //   children: origJsxDEV(type, ...args),
-    // });
-    // // Works!
-    // return origJsxDEV(type, ...args);
-  };
-
-  Wrapper.displayName = "Wrapper";
-
-  return origJsxDEV(Wrapper, ...args);
+  return origJsxDEV(ReactiveHydrateType, ...args);
 };
 
 jsxDevRuntime.jsxDEV = jsxDEV;

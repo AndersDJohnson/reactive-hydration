@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useId } from "_react";
 import { useContext } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
+import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 
 const forceHydrate =
   typeof window === "object"
@@ -25,6 +26,22 @@ export const ReactiveHydrate = (
   const id = idProp ?? defaultId;
 
   const { reactiveHydratingId } = useContext(ReactiveHydrateContext);
+
+  const reactiveHydrationContainerContext = useContext(
+    ReactiveHydrationContainerContext
+  );
+
+  const { isWithinReactiveHydrationContainer } =
+    reactiveHydrationContainerContext ?? {};
+
+  console.log(
+    "*** isWithinReactiveHydrationContainer",
+    isWithinReactiveHydrationContainer
+  );
+
+  if (!isWithinReactiveHydrationContainer) {
+    return <>{props.children}</>;
+  }
 
   // TODO: Is this still needed?
   const isHydratingSelf = reactiveHydratingId === id;
