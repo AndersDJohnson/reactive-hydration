@@ -5,11 +5,15 @@ import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <RecoilRoot>
-      <RecoilNexus />
+    <>
+      <a href="?forceHydrate">?forceHydrate</a>
 
-      <Component {...pageProps} />
-    </RecoilRoot>
+      <RecoilRoot>
+        <RecoilNexus />
+
+        <Component {...pageProps} />
+      </RecoilRoot>
+    </>
   );
 }
 
