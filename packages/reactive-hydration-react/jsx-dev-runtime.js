@@ -1,15 +1,7 @@
 const jsxDevRuntime = require("_react/jsx-dev-runtime");
-// const { logRender } = require("./log");
-const { makeJsx } = require("./makeJsx");
 
-// console.log(
-//   "*** reactive-hydration-react _react/jsx-dev-runtime.id",
-//   jsxDevRuntime.id
-// );
+const React = require("_react");
 
-// console.log("*** jsxDevRuntime.jsxDEV", jsxDevRuntime.jsxDEV);
-
-// // TODO: Do we need to override this one?
-jsxDevRuntime.jsxDEV = makeJsx("jsxDEV", jsxDevRuntime.jsxDEV);
+console.log("*** reactive-hydration-react jsx-dev-runtime _react id", React.id);
 
 module.exports = jsxDevRuntime;

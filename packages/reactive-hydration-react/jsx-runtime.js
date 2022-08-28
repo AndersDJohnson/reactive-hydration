@@ -1,13 +1,7 @@
 const jsxRuntime = require("_react/jsx-runtime");
-const { makeJsx } = require("./makeJsx");
 
-// console.log(
-//   "*** reactive-hydration-react _react/jsx-runtime.id",
-//   jsxRuntime.id
-// );
+const React = require("_react");
 
-jsxRuntime.jsx = makeJsx("jsx", jsxRuntime.jsx);
-// TODO: Do we need to override this one for static children?
-// jsxRuntime.jsxs = makeJsx("jsxs", jsxRuntime.jsxs);
+console.log("*** reactive-hydration-react jsx-runtime _react id", React.id);
 
 module.exports = jsxRuntime;
