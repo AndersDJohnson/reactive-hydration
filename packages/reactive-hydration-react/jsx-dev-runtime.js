@@ -66,8 +66,13 @@ const jsxDEV = (type, ...args) => {
     const { isWithinReactiveHydrationContainer } =
       reactiveHydrationContainerContext ?? {};
 
+    console.log(
+      "*** isWithinReactiveHydrationContainer",
+      isWithinReactiveHydrationContainer
+    );
+
     if (!isWithinReactiveHydrationContainer) {
-      origJsxDEV(type, ...args);
+      return origJsxDEV(type, ...args);
     }
 
     return origJsxDEV(ReactiveHydrateType, {
