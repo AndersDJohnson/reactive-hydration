@@ -6,9 +6,10 @@ const React = require("_react");
 const useState = React.useState;
 const useContext = React.useContext;
 
-// const {
-//   useStateSerialize,
-// } = require("reactive-hydration/dist/useStateSerialize");
+// It works with just this imported, but not used...
+const {
+  useStateSerialize,
+} = require("reactive-hydration/dist/useStateSerialize");
 
 console.log("*** reactive-hydration-react index _react id", React.id);
 
@@ -20,13 +21,14 @@ React.useState = (init, bypass) => {
     bypass
   );
 
-  return useState(init);
+  // // It works with just this, even if we've imported `useStateSerialize` but not using
+  // return useState(init);
 
-  // if (bypass) {
-  //   return useState(init);
-  // }
+  if (bypass) {
+    return useState(init);
+  }
 
-  // return useStateSerialize(init);
+  return useStateSerialize(init);
 };
 
 React.useContext = (init) => {
