@@ -26,6 +26,7 @@ const {
  */
 const useStateReactiveHydrationMonkeypatch = (init, bypass) => {
   return useState(init);
+
   // if (bypass) {
   //   return useState(init, true);
   // }
@@ -74,3 +75,9 @@ React.useContext = useContextReactiveHydrationMonkeypatch;
 // export = React;
 
 module.exports = React;
+
+if (typeof window !== "undefined") {
+  window.ReactMonkeypatch = window.ReactMonkeypatch || module.exports;
+
+  module.exports = window.ReactMonkeypatch;
+}

@@ -49,7 +49,7 @@ exports.makeJsx =
 
     // TODO: forwardRef ?
     const NewType = (p, ...restNewType) => {
-      console.log("*** NewType", { p, restNewType });
+      // console.log("*** NewType", { p, restNewType });
 
       const { isReactiveHydrationServerComponent } = p;
 
