@@ -3,7 +3,7 @@ import { useContext, useState } from "../react-actual";
 import { SerializedStateContext } from "../SerializedStateContext";
 
 console.log(
-  "*** react reactive-hydration useStateSerialize",
+  "*** react reactive-hydration useStateSerialize React.id",
   // @ts-expect-error
   React.id
 );

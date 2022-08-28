@@ -1,7 +1,11 @@
-const React = require("_react");
+const React =
+  typeof window !== "undefined"
+    ? window.React || require("_react")
+    : require("_react");
+
 const { useContext } = React;
 
-console.log("*** react reactive-hydration-react makeJsx", React.id);
+console.log("*** react reactive-hydration-react makeJsx React.id", React.id);
 
 const {
   reactiveHydrate,
