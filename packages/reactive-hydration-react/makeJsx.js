@@ -1,21 +1,10 @@
 const React = require("_react");
 
-const { useContext } = React;
+const { useContext, useId } = React;
 
-// const {
-//   SerializedStateContext,
-// } = require("reactive-hydration/dist/SerializedStateContext");
-
-// const { reactiveHydrate } = require("reactive-hydration/dist/ReactiveHydrate");
 const {
   ReactiveHydrationContainerContext,
 } = require("reactive-hydration/dist/ReactiveHydrationContainerContext");
-// const {
-//   reactiveHydrate,
-//   // ReactiveHydrationContainerContext,
-//   // ReactiveHydrationInnardsContext,
-// } =
-//   // global.ReactiveHydrationSingleton ??
 
 console.log("*** reactive-hydration-react/jsx-dev-runtime _react id", React.id);
 
@@ -25,7 +14,7 @@ exports.makeJsx =
   (_label, origJsx) =>
   (type, ...args) => {
     if (type._context) {
-      console.log("*** render context", type._context.displayName);
+      // console.log("*** render context", type._context.displayName);
       return origJsx(type, ...args);
     }
 
@@ -40,7 +29,7 @@ exports.makeJsx =
       type.render?.displayName ??
       type.render?.name;
 
-    console.log("*** jsxDEV name", name);
+    // console.log("*** jsxDEV name", name);
 
     if (!name) {
       return origJsx(type, ...args);
@@ -62,20 +51,22 @@ exports.makeJsx =
       // );
 
       ReactiveHydrateType = ({ childArgs }) => {
-        console.log(`*** render ReactiveHydrateType(${name})`);
+        // console.log(`*** render ReactiveHydrateType(${name})`);
+
+        const id = useId();
 
         const { isWithinReactiveHydrationContainer } = useContext(
           ReactiveHydrationContainerContext
         );
 
-        console.log(
-          "*** ReactiveHydrateType isWithinReactiveHydrationContainer",
-          isWithinReactiveHydrationContainer
-        );
-
         if (!isWithinReactiveHydrationContainer) {
           return origJsx(Type, ...childArgs);
         }
+
+        console.log(
+          `*** ReactiveHydrateType(${name}) isWithinReactiveHydrationContainer`,
+          isWithinReactiveHydrationContainer
+        );
 
         // TODO: isHydratingSelf?
         // TODO: forceHydrate?
@@ -84,7 +75,7 @@ exports.makeJsx =
             "data-component": name,
             "data-states": states,
             // This ID has to be here since it's the only one stable between server render and post client hydration.
-            "data-id": "TODO",
+            "data-id": id,
             // For soft route loading on client-side, check for `window`.
             "data-loaded": false,
             children: origJsx(Type, ...childArgs),
