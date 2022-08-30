@@ -1,5 +1,8 @@
-import { useMemo, useState } from "react";
-import { createContextWithDefaultValue } from "reactive-hydration";
+import { useContext, useMemo, useState } from "react";
+import {
+  createContextWithDefaultValue,
+  ReactiveHydrationContainerContext,
+} from "reactive-hydration";
 import { ExampleClientComponent } from "../ExampleClientComponent";
 import { ExampleClientComponent1 } from "../ExampleClientComponent1";
 import { ExampleClientComponent2 } from "../ExampleClientComponent2";
@@ -19,6 +22,20 @@ const DummyContext = createContextWithDefaultValue(
 );
 
 export const ExampleServerComponent = () => {
+  const reactiveHydrationContainerContext = useContext(
+    ReactiveHydrationContainerContext,
+    // @ts-ignore
+    true
+  );
+
+  const { isWithinReactiveHydrationContainer } =
+    reactiveHydrationContainerContext ?? {};
+
+  console.log(
+    "*** ExampleServerComponent isWithinReactiveHydrationContainer",
+    isWithinReactiveHydrationContainer
+  );
+
   // const [message, setMessage] = useState(`initial ${Math.random()}`);
   const [message, setMessage] = useState(`initial 1`);
 

@@ -1,28 +1,37 @@
-const React = require("reactive-hydration/dist/react-actual");
+const React = require("_react");
 
 const { useContext } = React;
 
-console.log("*** react reactive-hydration-react makeJsx React.id", React.id);
+// const {
+//   SerializedStateContext,
+// } = require("reactive-hydration/dist/SerializedStateContext");
 
+// const { reactiveHydrate } = require("reactive-hydration/dist/ReactiveHydrate");
 const {
-  reactiveHydrate,
   ReactiveHydrationContainerContext,
-  ReactiveHydrationInnardsContext,
-} =
-  // global.ReactiveHydrationSingleton ??
-  require("reactive-hydration");
+} = require("reactive-hydration/dist/ReactiveHydrationContainerContext");
+// const {
+//   reactiveHydrate,
+//   // ReactiveHydrationContainerContext,
+//   // ReactiveHydrationInnardsContext,
+// } =
+//   // global.ReactiveHydrationSingleton ??
 
-// const { logRender } = require("./log");
+console.log("*** reactive-hydration-react/jsx-dev-runtime _react id", React.id);
+
+const reactiveHydrateRegistry = new Map();
 
 exports.makeJsx =
   (_label, origJsx) =>
-  // type, props, key, isStaticChildren, source, self
-  (type, ...rest) => {
-    // logRender("*** render", _label, type);
+  (type, ...args) => {
+    if (type._context) {
+      console.log("*** render context", type._context.displayName);
+      return origJsx(type, ...args);
+    }
 
-    // // TODO: Handle memo objects?
+    // TODO: Handle memo objects?
     if (typeof type !== "function") {
-      return origJsx(type, ...rest);
+      return origJsx(type, ...args);
     }
 
     const name =
@@ -31,58 +40,64 @@ exports.makeJsx =
       type.render?.displayName ??
       type.render?.name;
 
-    if (name?.startsWith("ContextProviderSerialized")) {
-      return origJsx(type, ...rest);
+    console.log("*** jsxDEV name", name);
+
+    if (!name) {
+      return origJsx(type, ...args);
     }
 
     const Type = type;
 
     const { states } = Type;
 
-    const ReactiveHydrateType = reactiveHydrate(
-      {
-        name,
-        states,
-      },
-      Type
-    );
+    let ReactiveHydrateType = reactiveHydrateRegistry.get(name);
 
-    // TODO: forwardRef ?
-    const NewType = (p, ...restNewType) => {
-      // console.log("*** NewType", { p, restNewType });
+    if (!ReactiveHydrateType) {
+      // ReactiveHydrateType = reactiveHydrate(
+      //   {
+      //     name,
+      //     states,
+      //   },
+      //   Type
+      // );
 
-      const { isReactiveHydrationServerComponent } = p;
+      ReactiveHydrateType = ({ childArgs }) => {
+        console.log(`*** render ReactiveHydrateType(${name})`);
 
-      const reactiveHydrationContainerContext = useContext(
-        ReactiveHydrationContainerContext,
-        true
-      );
+        const { isWithinReactiveHydrationContainer } = useContext(
+          ReactiveHydrationContainerContext
+        );
 
-      const { isWithinReactiveHydrationContainer } =
-        reactiveHydrationContainerContext;
+        console.log(
+          "*** ReactiveHydrateType isWithinReactiveHydrationContainer",
+          isWithinReactiveHydrationContainer
+        );
 
-      const reactiveHydrationInnardsContext =
-        useContext(ReactiveHydrationInnardsContext, true) ?? {};
+        if (!isWithinReactiveHydrationContainer) {
+          return origJsx(Type, ...childArgs);
+        }
 
-      const { isInReactiveHydrationInnards } = reactiveHydrationInnardsContext;
+        // TODO: isHydratingSelf?
+        // TODO: forceHydrate?
+        if (typeof window !== "object") {
+          return origJsx("div", {
+            "data-component": name,
+            "data-states": states,
+            // This ID has to be here since it's the only one stable between server render and post client hydration.
+            "data-id": "TODO",
+            // For soft route loading on client-side, check for `window`.
+            "data-loaded": false,
+            children: origJsx(Type, ...childArgs),
+          });
+        }
 
-      if (
-        !isWithinReactiveHydrationContainer ||
-        isInReactiveHydrationInnards ||
-        isReactiveHydrationServerComponent
-      ) {
-        // TODO: Should this be `props` or `p`?
-        return origJsx(Type, p);
-      }
+        return origJsx(Type, ...childArgs);
+      };
 
-      // TODO: Should this be `props` or `p`?
-      return origJsx(ReactiveHydrateType, p);
-    };
+      reactiveHydrateRegistry.set(name, ReactiveHydrateType);
+    }
 
-    NewType.displayName = `ReactiveHydrationCreateElementWrapper(${name})`;
-
-    return origJsx(NewType, {
-      // displayName,
-      children: origJsx(Type, ...rest),
+    return origJsx(ReactiveHydrateType, {
+      childArgs: args,
     });
   };

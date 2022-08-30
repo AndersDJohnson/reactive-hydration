@@ -1,7 +1,7 @@
 const jsxRuntime = require("_react/jsx-runtime");
+const { makeJsx } = require("./makeJsx");
 
-const React = require("_react");
-
-console.log("*** reactive-hydration-react/jsx-runtime _react id", React.id);
+jsxRuntime.jsx = makeJsx("jsx", jsxRuntime.jsx);
+// jsxRuntime.jsxs = makeJsx("jsxs", jsxRuntime.jsxs);
 
 module.exports = jsxRuntime;
