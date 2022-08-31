@@ -6,7 +6,6 @@ const { makeJsx } = require("./makeJsx");
 // Not capturing these before importing from `react-hydration` will cause infinite loops.
 const useState = React.useState;
 const useContext = React.useContext;
-const createElement = React.createElement;
 
 // It works with just this imported, but not used...
 const {
@@ -15,7 +14,7 @@ const {
 
 console.log("*** reactive-hydration-react index _react id", React.id);
 
-React.createElement = makeJsx("createElement", createElement);
+React.createElement = makeJsx("createElement", React);
 
 React.useState = (init, bypass) => {
   console.log(
