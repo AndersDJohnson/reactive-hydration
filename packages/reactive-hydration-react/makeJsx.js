@@ -5,6 +5,9 @@ const { useContext, useId } = React;
 const {
   ReactiveHydrationContainerContext,
 } = require("reactive-hydration/dist/ReactiveHydrationContainerContext");
+const {
+  ReactiveHydrationInnardsContext,
+} = require("reactive-hydration/dist/ReactiveHydrationInnardsContext");
 
 console.log("*** reactive-hydration-react/jsx-dev-runtime _react id", React.id);
 
@@ -24,11 +27,13 @@ exports.makeJsx = (_label, origJsx) => {
 
     const id = useId();
 
-    const { isWithinReactiveHydrationContainer } = useContext(
-      ReactiveHydrationContainerContext
-    );
+    const { isInReactiveHydrationInnards } =
+      useContext(ReactiveHydrationInnardsContext) ?? {};
 
-    if (!isWithinReactiveHydrationContainer) {
+    const { isWithinReactiveHydrationContainer } =
+      useContext(ReactiveHydrationContainerContext) ?? {};
+
+    if (!isWithinReactiveHydrationContainer || isInReactiveHydrationInnards) {
       return origJsx(Type, ...childArgs);
     }
 
@@ -36,6 +41,8 @@ exports.makeJsx = (_label, origJsx) => {
       `*** ReactiveHydrateType(${name}) isWithinReactiveHydrationContainer`,
       isWithinReactiveHydrationContainer
     );
+
+    const children = origJsx(Type, ...childArgs);
 
     // TODO: isHydratingSelf?
     // TODO: forceHydrate?
@@ -47,11 +54,11 @@ exports.makeJsx = (_label, origJsx) => {
         "data-id": id,
         // For soft route loading on client-side, check for `window`.
         "data-loaded": false,
-        children: origJsx(Type, ...childArgs),
+        children,
       });
     }
 
-    return origJsx(Type, { childArgs });
+    return children;
   };
 
   return (type, ...args) => {

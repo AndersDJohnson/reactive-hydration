@@ -4,6 +4,7 @@ import React, {
   PropsWithChildren,
   ReactPortal,
 } from "_react";
+import { ReactiveHydrationInnardsContext } from "../ReactiveHydrationInnardsContext";
 
 export interface ContextPortalTreeEntry {
   key: string;
@@ -29,10 +30,20 @@ export const ContextPortalTreeRenderer = (props: {
     ));
 
     if (ContextWrapper) {
-      return <ContextWrapper>{leafPortalsWithKeys}</ContextWrapper>;
+      return (
+        <ContextWrapper>
+          <ReactiveHydrationInnardsContext.Provider value={undefined}>
+            {leafPortalsWithKeys}
+          </ReactiveHydrationInnardsContext.Provider>
+        </ContextWrapper>
+      );
     }
 
-    return <>{leafPortalsWithKeys}</>;
+    return (
+      <ReactiveHydrationInnardsContext.Provider value={undefined}>
+        {leafPortalsWithKeys}
+      </ReactiveHydrationInnardsContext.Provider>
+    );
   }
 
   if (!ContextWrapper) return null;
