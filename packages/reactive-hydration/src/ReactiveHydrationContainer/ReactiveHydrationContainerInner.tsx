@@ -21,6 +21,7 @@ import {
 import { usePluginRecoil } from "./plugins/recoil";
 import { Hydrate, Hydrator } from "./types";
 import { pluginContext } from "./plugins/context";
+import { ReactiveHydrationInnardsContext } from "../ReactiveHydrationInnardsContext";
 
 const hydratedComponentsMap = new Map();
 const ContextDefaultProviderWrapperByContextElement = new Map();
@@ -490,7 +491,9 @@ export const ReactiveHydrationContainerInner = memo(
         )}
 
         {contextFreePortals.map((portal) => (
-          <Fragment key={portal.key}>{portal.portal}</Fragment>
+          <ReactiveHydrationInnardsContext.Provider value={undefined}>
+            <Fragment key={portal.key}>{portal.portal}</Fragment>
+          </ReactiveHydrationInnardsContext.Provider>
         ))}
       </>
     );
