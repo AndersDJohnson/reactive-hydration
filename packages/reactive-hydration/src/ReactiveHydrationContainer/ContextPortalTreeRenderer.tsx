@@ -21,7 +21,7 @@ export const ContextPortalTreeRenderer = (props: {
   const { contextPortalTreeEntry } = props;
 
   const { ContextWrapper, childPortalTreeEntries, leafPortals } =
-    contextPortalTreeEntry;
+    contextPortalTreeEntry ?? {};
 
   if (leafPortals?.length) {
     const leafPortalsWithKeys = leafPortals.map((leafPortal) => (
