@@ -1,6 +1,7 @@
 const React = require("_react");
 
-const { useContext, useId, useMemo, useState, useCallback } = React;
+const { useContext, useId, useMemo, useState, useCallback, useRef, useEffect } =
+  React;
 
 const {
   ReactiveHydrationContainerContext,
@@ -11,8 +12,9 @@ const {
 const {
   ReactiveHydrateContext,
 } = require("reactive-hydration/dist/ReactiveHydrateContext");
-
-console.log("*** reactive-hydration-react/jsx-dev-runtime _react id", React.id);
+const {
+  SerializedStateContext,
+} = require("reactive-hydration/dist/SerializedStateContext");
 
 const getTypeName = (type) =>
   type.displayName ??
@@ -21,10 +23,26 @@ const getTypeName = (type) =>
   type.render?.name;
 
 exports.makeJsx = (_label, origJsx) => {
+  const WriteContextsConsumed = () => {
+    const { usedHooksRef } = useContext(ReactiveHydrateContext) ?? {};
+
+    const setValues = usedHooksRef?.current?.contexts.values();
+
+    const contexts = setValues ? [...setValues] : undefined;
+
+    if (!contexts?.length) {
+      return null;
+    }
+
+    return origJsx("div", {
+      "data-contexts": contexts.join(","),
+    });
+  };
+
   const ReactiveHydrateType = (props) => {
     // console.log(`*** render ReactiveHydrateType(${name})`);
 
-    const { Type, childArgs, usedHooksRef } = props;
+    const { Type, childArgs } = props;
 
     const [childProps] = childArgs;
     const {
@@ -38,11 +56,17 @@ exports.makeJsx = (_label, origJsx) => {
 
     const [registry] = useState(() => new Map());
 
-    const { reactiveHydratePortalState: reactiveHydratePortalStateContext } =
-      useContext(ReactiveHydrateContext);
+    const {
+      reactiveHydratePortalState: reactiveHydratePortalStateContext,
+      parentComponentPath,
+      registerComponentPath: registerComponentPathFromContext,
+      unregisterComponentPath: unregisterComponentPathFromContext,
+    } = useContext(ReactiveHydrateContext) ?? {};
 
     const reactiveHydratePortalState =
       reactiveHydratePortalStateProp ?? reactiveHydratePortalStateContext;
+
+    const usedHooksRef = useRef();
 
     const registerComponentPath = useCallback(() => {
       const currentIndex = registry.get(name);
@@ -93,6 +117,52 @@ exports.makeJsx = (_label, origJsx) => {
     //   ReactiveHydrateContext
     // );
 
+    const [componentIndex, setComponentIndex] = useState(0);
+
+    useEffect(() => {
+      setComponentIndex(registerComponentPathFromContext?.(name) ?? 0);
+
+      return () => unregisterComponentPathFromContext?.(name);
+    }, [
+      registerComponentPathFromContext,
+      unregisterComponentPathFromContext,
+      name,
+    ]);
+
+    const componentPath = useMemo(
+      () => [...parentComponentPath, name, componentIndex],
+      [name, parentComponentPath, componentIndex]
+    );
+
+    const [reactiveHydrateState] = useState(() => {
+      if (!reactiveHydratePortalState) return;
+
+      const portalKey = componentPath.join(".");
+
+      const state = reactiveHydratePortalState[portalKey];
+
+      return state;
+    });
+
+    const [serializableState, setSerializableState] = useState(() => []);
+
+    const serializeStateContextValue = useMemo(
+      () => ({
+        serializableState,
+        setSerializableState,
+        reactiveHydrateState,
+      }),
+      [serializableState, setSerializableState, reactiveHydrateState]
+    );
+
+    const serializedState = useMemo(
+      () =>
+        serializableState?.length
+          ? JSON.stringify(serializableState)
+          : undefined,
+      [serializableState]
+    );
+
     const isHydratingSelf = Boolean(reactiveHydrateId);
 
     if (!isWithinReactiveHydrationContainer || isInReactiveHydrationInnards) {
@@ -106,7 +176,23 @@ exports.makeJsx = (_label, origJsx) => {
 
     const children = origJsx(ReactiveHydrateContext.Provider, {
       value: reactiveHydrationComponentPathContextValue,
-      children: origJsx(Type, ...childArgs),
+      children: [
+        origJsx(SerializedStateContext.Provider, {
+          value: serializeStateContextValue,
+          children: [
+            serializedState
+              ? origJsx("div", {
+                  "data-id": reactiveHydrateId,
+                  "data-state": serializedState,
+                })
+              : undefined,
+
+            origJsx(Type, ...childArgs),
+          ].filter(Boolean),
+        }),
+
+        origJsx(WriteContextsConsumed, {}),
+      ],
     });
 
     console.log("*** isHydratingSelf", name, isHydratingSelf);
