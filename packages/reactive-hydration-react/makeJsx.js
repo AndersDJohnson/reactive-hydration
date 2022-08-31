@@ -1,7 +1,7 @@
-const React = require("_react");
+// const React = require("_react");
 
-const { useContext, useId, useMemo, useState, useCallback, useRef, useEffect } =
-  React;
+// const { useContext, useId, useMemo, useState, useCallback, useRef, useEffect } =
+//   React;
 
 // const {
 //   ReactiveHydrationContainerContext,
