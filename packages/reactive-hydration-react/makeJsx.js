@@ -271,6 +271,10 @@ exports.makeJsx = (_label, jsxRuntime) => {
       return origJsx(Type, ...args);
     }
 
+    console.log("*** jsx name", name);
+
+    // return origJsx(Type, ...args);
+
     // TODO: Memoize?
     const ReactiveHydrateType = getType(Type);
 

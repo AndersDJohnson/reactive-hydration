@@ -29,5 +29,7 @@ export function makeContextDefaultProviderWrapper<T>(
 
   ContextDefaultProviderWrapper.displayName = "ContextDefaultProviderWrapper";
 
+  ContextDefaultProviderWrapper.reactiveHydrateSkip = true;
+
   return ContextDefaultProviderWrapper;
 }
