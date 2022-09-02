@@ -56,196 +56,6 @@ exports.makeJsx = (_label, jsxRuntime) => {
   const origJsx =
     jsxRuntime.createElement ?? jsxRuntime.jsxDEV ?? jsxRuntime.jsx;
 
-  // const WriteContextsConsumed = () => {
-  //   const { usedHooksRef } = useContext(ReactiveHydrateContext) ?? {};
-
-  //   const setValues = usedHooksRef?.current?.contexts.values();
-
-  //   const contexts = setValues ? [...setValues] : undefined;
-
-  //   if (!contexts?.length) {
-  //     return null;
-  //   }
-
-  //   return origJsx("div", {
-  //     "data-contexts": contexts.join(","),
-  //   });
-  // };
-
-  // const ReactiveHydrateType = (props) => {
-  //   // console.log(`*** render ReactiveHydrateType(${name})`);
-
-  //   const { Type, childArgs } = props;
-
-  //   const [childProps] = childArgs;
-  //   const {
-  //     reactiveHydrateId,
-  //     reactiveHydratePortalState: reactiveHydratePortalStateProp,
-  //   } = childProps ?? {};
-
-  //   const { states } = Type;
-
-  //   const name = getTypeName(Type);
-
-  //   const [registry] = useState(() => new Map());
-
-  //   const {
-  //     reactiveHydratePortalState: reactiveHydratePortalStateContext,
-  //     parentComponentPath,
-  //     registerComponentPath: registerComponentPathFromContext,
-  //     unregisterComponentPath: unregisterComponentPathFromContext,
-  //   } = useContext(ReactiveHydrateContext) ?? {};
-
-  //   const reactiveHydratePortalState =
-  //     reactiveHydratePortalStateProp ?? reactiveHydratePortalStateContext;
-
-  //   const usedHooksRef = useRef();
-
-  //   const registerComponentPath = useCallback(() => {
-  //     const currentIndex = registry.get(name);
-
-  //     const newIndex = (currentIndex ?? -1) + 1;
-
-  //     registry.set(name, newIndex);
-
-  //     return newIndex;
-  //   }, [registry, name]);
-
-  //   const unregisterComponentPath = useCallback(
-  //     (name) => {
-  //       const currentIndex = registry.get(name);
-
-  //       registry.set(name, currentIndex - 1);
-  //     },
-  //     [registry]
-  //   );
-
-  //   const reactiveHydrationComponentPathContextValue = useMemo(
-  //     () => ({
-  //       reactiveHydrateId,
-  //       reactiveHydratePortalState,
-  //       parentComponentPath: [],
-  //       registerComponentPath,
-  //       unregisterComponentPath,
-  //       usedHooksRef,
-  //     }),
-  //     [
-  //       reactiveHydrateId,
-  //       reactiveHydratePortalState,
-  //       registerComponentPath,
-  //       unregisterComponentPath,
-  //       usedHooksRef,
-  //     ]
-  //   );
-
-  //   const id = useId();
-
-  //   const { isWithinReactiveHydrationContainer } =
-  //     useContext(ReactiveHydrationContainerContext) ?? {};
-
-  //   const { isInReactiveHydrationInnards } =
-  //     useContext(ReactiveHydrationInnardsContext) ?? {};
-
-  //   // const { reactiveHydrateId: reactiveHydrateIdFromContext } = useContext(
-  //   //   ReactiveHydrateContext
-  //   // );
-
-  //   const [componentIndex, setComponentIndex] = useState(0);
-
-  //   useEffect(() => {
-  //     setComponentIndex(registerComponentPathFromContext?.(name) ?? 0);
-
-  //     return () => unregisterComponentPathFromContext?.(name);
-  //   }, [
-  //     registerComponentPathFromContext,
-  //     unregisterComponentPathFromContext,
-  //     name,
-  //   ]);
-
-  //   const componentPath = useMemo(
-  //     () => [...parentComponentPath, name, componentIndex],
-  //     [name, parentComponentPath, componentIndex]
-  //   );
-
-  //   const [reactiveHydrateState] = useState(() => {
-  //     if (!reactiveHydratePortalState) return;
-
-  //     const portalKey = componentPath.join(".");
-
-  //     const state = reactiveHydratePortalState[portalKey];
-
-  //     return state;
-  //   });
-
-  //   const [serializableState, setSerializableState] = useState(() => []);
-
-  //   const serializeStateContextValue = useMemo(
-  //     () => ({
-  //       serializableState,
-  //       setSerializableState,
-  //       reactiveHydrateState,
-  //     }),
-  //     [serializableState, setSerializableState, reactiveHydrateState]
-  //   );
-
-  //   const serializedState = useMemo(
-  //     () =>
-  //       serializableState?.length
-  //         ? JSON.stringify(serializableState)
-  //         : undefined,
-  //     [serializableState]
-  //   );
-
-  //   const isHydratingSelf = Boolean(reactiveHydrateId);
-
-  //   if (!isWithinReactiveHydrationContainer || isInReactiveHydrationInnards) {
-  //     return origJsx(Type, ...childArgs);
-  //   }
-
-  //   console.log(
-  //     `*** ReactiveHydrateType(${name}) isWithinReactiveHydrationContainer`,
-  //     isWithinReactiveHydrationContainer
-  //   );
-
-  //   const children = origJsx(ReactiveHydrateContext.Provider, {
-  //     value: reactiveHydrationComponentPathContextValue,
-  //     children: [
-  //       origJsx(SerializedStateContext.Provider, {
-  //         value: serializeStateContextValue,
-  //         children: [
-  //           serializedState
-  //             ? origJsx("div", {
-  //                 "data-id": reactiveHydrateId,
-  //                 "data-state": serializedState,
-  //               })
-  //             : undefined,
-
-  //           origJsx(Type, ...childArgs),
-  //         ].filter(Boolean),
-  //       }),
-
-  //       origJsx(WriteContextsConsumed, {}),
-  //     ],
-  //   });
-
-  //   console.log("*** isHydratingSelf", name, isHydratingSelf);
-
-  //   // TODO: forceHydrate?
-  //   if (typeof window !== "object" || !isHydratingSelf) {
-  //     return origJsx("div", {
-  //       "data-component": name,
-  //       "data-states": states,
-  //       // This ID has to be here since it's the only one stable between server render and post client hydration.
-  //       "data-id": id,
-  //       // For soft route loading on client-side, check for `window`.
-  //       "data-loaded": typeof window === "object",
-  //       children,
-  //     });
-  //   }
-
-  //   return children;
-  // };
-
   return (type, ...args) => {
     if (type._context) {
       // console.log("*** render context", type._context.displayName);
@@ -259,10 +69,14 @@ exports.makeJsx = (_label, jsxRuntime) => {
 
     const Type = type;
 
-    const [props] = args;
+    const [props, ...restArgs] = args;
+
+    const { reactiveHydrateSkip, ...restProps } = props ?? {};
+
+    const propsWithoutreactiveHydrateSkip = props ? restProps : props;
 
     if (props?.reactiveHydrateSkip) {
-      return origJsx(type, ...args);
+      return origJsx(type, propsWithoutreactiveHydrateSkip, ...restArgs);
     }
 
     const name = getTypeName(Type);
@@ -283,14 +97,6 @@ exports.makeJsx = (_label, jsxRuntime) => {
 
     // TODO: Memoize?
     const ReactiveHydrateType = getType(Type);
-
-    console.log("*** Type", Type);
-    console.log("*** ReactiveHydrateType", ReactiveHydrateType);
-    console.log("*** ReactiveHydrateType args", args);
-    console.log(
-      "*** ReactiveHydrateType args[0].children.type",
-      args[0]?.children?.type
-    );
 
     return origJsx(ReactiveHydrateType, ...args);
   };
