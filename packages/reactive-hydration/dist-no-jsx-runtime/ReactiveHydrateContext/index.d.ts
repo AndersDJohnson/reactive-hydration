@@ -11,8 +11,11 @@ export declare const ReactiveHydrateContext: React.Context<{
     unregisterComponentPath?: ((name: string) => void) | undefined;
     usedHooksRef?: React.RefObject<HooksRef> | undefined;
 }>;
-export declare const ReactiveHydrateContextProvider: (props: React.PropsWithChildren<{
-    reactiveHydratingId?: string | undefined;
-    reactiveHydratePortalState?: Record<string, any> | undefined;
-    usedHooksRef?: React.RefObject<HooksRef> | undefined;
-}>) => JSX.Element;
+export declare const ReactiveHydrateContextProvider: {
+    (props: React.PropsWithChildren<{
+        reactiveHydratingId?: string | undefined;
+        reactiveHydratePortalState?: Record<string, any> | undefined;
+        usedHooksRef?: React.RefObject<HooksRef> | undefined;
+    }>): JSX.Element;
+    reactiveHydrateSkip: boolean;
+};

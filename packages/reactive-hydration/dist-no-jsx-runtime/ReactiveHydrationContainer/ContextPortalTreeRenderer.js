@@ -31,3 +31,4 @@ var ContextPortalTreeRenderer = function (props) {
 };
 exports.ContextPortalTreeRenderer = ContextPortalTreeRenderer;
 exports.ContextPortalTreeRenderer.displayName = "ContextPortalTreeRenderer";
+exports.ContextPortalTreeRenderer.reactiveHydrateSkip = true;

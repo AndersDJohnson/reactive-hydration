@@ -6,4 +6,5 @@ export declare function contextProviderSerialized<T>(context: Context<T>): {
         id: string;
     }>): JSX.Element;
     displayName: string;
+    reactiveHydrateSkip: boolean;
 };

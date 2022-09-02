@@ -61,3 +61,5 @@ export const ContextPortalTreeRenderer = (props: {
 };
 
 ContextPortalTreeRenderer.displayName = "ContextPortalTreeRenderer";
+
+ContextPortalTreeRenderer.reactiveHydrateSkip = true;

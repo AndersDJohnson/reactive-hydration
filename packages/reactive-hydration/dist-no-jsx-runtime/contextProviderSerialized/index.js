@@ -52,6 +52,7 @@ function contextProviderSerialized(context) {
         return ((0, global.jsx_runtime_1.jsx)("div", __assign({ "data-context-id": id, "data-context-name": displayName, "data-context-value": serializedValue }, { children: (0, global.jsx_runtime_1.jsx)(Provider, __assign({ value: value }, { children: children })) })));
     };
     ContextProviderSerialized.displayName = "ContextProviderSerialized(".concat(displayName, ")");
+    ContextProviderSerialized.reactiveHydrateSkip = true;
     return ContextProviderSerialized;
 }
 exports.contextProviderSerialized = contextProviderSerialized;

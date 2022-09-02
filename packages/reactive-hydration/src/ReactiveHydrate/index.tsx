@@ -140,5 +140,7 @@ export const reactiveHydrate = <
 
   ReactiveHydrateWrapper.displayName = `ReactiveHydrateWrapper(${Comp.displayName})`;
 
+  ReactiveHydrateWrapper.reactiveHydrateSkip = true;
+
   return ReactiveHydrateWrapper;
 };

@@ -6,7 +6,7 @@ const React = { ...ReactActual };
 
 // Destructuring could transpile to live lookup below and therefore infinite loops.
 // Not capturing these before importing from `react-hydration` would cause infinite loops.
-const useState = React.useState;
+// const useState = React.useState;
 // const useContext = React.useContext;
 
 // It works with just this imported, but not used...
@@ -18,23 +18,23 @@ console.log("*** reactive-hydration-react index _react id", React.id);
 
 React.createElement = makeJsx("createElement", React);
 
-React.useState = (init, bypass) => {
-  console.log(
-    "*** reactive-hydration-react/index useState _react id",
-    React.id,
-    "bypass",
-    bypass
-  );
+// React.useState = (init, bypass) => {
+//   console.log(
+//     "*** reactive-hydration-react/index useState _react id",
+//     React.id,
+//     "bypass",
+//     bypass
+//   );
 
-  // // It works with just this, even if we've imported `useStateSerialize` but not using
-  return useState(init);
+//   // // It works with just this, even if we've imported `useStateSerialize` but not using
+//   return useState(init);
 
-  // if (bypass) {
-  //   return useState(init);
-  // }
+//   // if (bypass) {
+//   //   return useState(init);
+//   // }
 
-  // return useStateSerialize(init);
-};
+//   // return useStateSerialize(init);
+// };
 
 // React.useContext = (init) => {
 //   console.log(

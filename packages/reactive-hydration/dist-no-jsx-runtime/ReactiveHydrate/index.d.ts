@@ -15,4 +15,5 @@ export declare const reactiveHydrate: <P extends {
 }, Comp: React.ComponentType<P>) => {
     (props: P): JSX.Element;
     displayName: string;
+    reactiveHydrateSkip: boolean;
 };

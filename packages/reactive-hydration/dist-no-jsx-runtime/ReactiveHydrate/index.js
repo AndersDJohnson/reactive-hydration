@@ -96,6 +96,7 @@ var reactiveHydrate = function (args, Comp) {
     // TODO: Do we really want/need to hoist these?
     // hoistNonReactStatics(ReactiveHydrateWrapper, Comp);
     ReactiveHydrateWrapper.displayName = "ReactiveHydrateWrapper(".concat(Comp.displayName, ")");
+    ReactiveHydrateWrapper.reactiveHydrateSkip = true;
     return ReactiveHydrateWrapper;
 };
 exports.reactiveHydrate = reactiveHydrate;

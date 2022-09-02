@@ -60,3 +60,5 @@ exports.ReactiveHydrationContainer = (0, _react_1.memo)(function (props) {
 // Never re-render only due to parent re-renders.
 function () { return true; });
 exports.ReactiveHydrationContainer.displayName = "ReactiveHydrationContainer";
+// @ts-expect-error
+exports.ReactiveHydrationContainer.reactiveHydrateSkip = true;

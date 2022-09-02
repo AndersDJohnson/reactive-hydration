@@ -14,4 +14,5 @@ export declare const ContextPortalTreeRenderer: {
         contextPortalTreeEntry: ContextPortalTreeEntry;
     }): JSX.Element | null;
     displayName: string;
+    reactiveHydrateSkip: boolean;
 };

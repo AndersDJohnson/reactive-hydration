@@ -60,5 +60,7 @@ export function contextProviderSerialized<T>(context: Context<T>) {
 
   ContextProviderSerialized.displayName = `ContextProviderSerialized(${displayName})`;
 
+  ContextProviderSerialized.reactiveHydrateSkip = true;
+
   return ContextProviderSerialized;
 }

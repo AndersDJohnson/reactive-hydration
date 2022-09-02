@@ -133,3 +133,6 @@ export const ReactiveHydrationContainer = memo(
 );
 
 ReactiveHydrationContainer.displayName = "ReactiveHydrationContainer";
+
+// @ts-expect-error
+ReactiveHydrationContainer.reactiveHydrateSkip = true;

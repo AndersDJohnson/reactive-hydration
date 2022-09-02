@@ -40,3 +40,4 @@ var ReactiveHydrate = function (props) {
     return ((0, global.jsx_runtime_1.jsx)(global.jsx_runtime_1.Fragment, { children: typeof window !== "object" || !isHydratingSelf || forceHydrate ? ((0, global.jsx_runtime_1.jsx)("div", __assign({ "data-component": props.name, "data-states": props.states, "data-id": id, "data-loaded": typeof window === "object" }, { children: props.children }))) : ((0, global.jsx_runtime_1.jsx)(global.jsx_runtime_1.Fragment, { children: props.children })) }));
 };
 exports.ReactiveHydrate = ReactiveHydrate;
+exports.ReactiveHydrate.reactiveHydrateSkip = true;

@@ -257,19 +257,19 @@ exports.makeJsx = (_label, jsxRuntime) => {
       return origJsx(type, ...args);
     }
 
-    const name = getTypeName(type);
+    const Type = type;
+
+    const name = getTypeName(Type);
 
     // console.log("*** jsxDEV name", name);
 
     if (!name) {
-      return origJsx(type, ...args);
+      return origJsx(Type, ...args);
     }
 
-    if (name.startsWith("ContextProviderSerialized(")) {
-      return origJsx(type, ...args);
+    if (type.reactiveHydrateSkip) {
+      return origJsx(Type, ...args);
     }
-
-    const Type = type;
 
     // TODO: Memoize?
     const ReactiveHydrateType = getType(Type);

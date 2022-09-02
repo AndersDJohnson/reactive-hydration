@@ -15,3 +15,5 @@ export const WriteContextsConsumed = () => {
 
   return <div data-contexts={contexts.join(",")} />;
 };
+
+WriteContextsConsumed.reactiveHydrateSkip = true;
