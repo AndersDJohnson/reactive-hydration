@@ -111,17 +111,6 @@ export const reactiveHydrate = <
       contexts: new Set(),
     });
 
-    const reactiveHydrationContainerContext = useContext(
-      ReactiveHydrationContainerContext
-    );
-
-    const { isWithinReactiveHydrationContainer } =
-      reactiveHydrationContainerContext ?? {};
-
-    if (!isWithinReactiveHydrationContainer) {
-      return <>{props.children}</>;
-    }
-
     return (
       <ReactiveHydrationInnardsContext.Provider
         value={reactiveHydrationInnardsContextValue}
@@ -169,7 +158,7 @@ export const reactiveHydrate = <
       reactiveHydrationContainerContext ?? {};
 
     if (!isWithinReactiveHydrationContainer) {
-      return <>{props.children}</>;
+      return <Comp {...props} reactiveHydrateSkip />;
     }
 
     return <ReactiveHydrateWrapper {...props} />;
