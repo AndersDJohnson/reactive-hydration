@@ -463,10 +463,10 @@ export const ReactiveHydrationContainerInner = memo(
       });
     }, [hydrate, contextHydratorsByContextId]);
 
-    usePluginRecoil({
-      hydrate,
-      componentRef,
-    });
+    // usePluginRecoil({
+    //   hydrate,
+    //   componentRef,
+    // });
 
     return (
       <>
