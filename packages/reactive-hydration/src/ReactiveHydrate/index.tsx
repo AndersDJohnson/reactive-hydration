@@ -164,9 +164,9 @@ export const reactiveHydrate = <
     return <ReactiveHydrateWrapper {...props} />;
   };
 
-  ReactiveHydrateWrapper.displayName = `ReactiveHydrateShortCircuitWrapper(${Comp.displayName})`;
+  ReactiveHydrateShortCircuitWrapper.displayName = `ReactiveHydrateShortCircuitWrapper(${Comp.displayName})`;
 
   ReactiveHydrateShortCircuitWrapper.reactiveHydrateSkip = true;
 
-  return ReactiveHydrateWrapper;
+  return ReactiveHydrateShortCircuitWrapper;
 };
