@@ -120,7 +120,7 @@ export const reactiveHydrate = <
               ) : null}
 
               <ReactiveHydrationInnardsContext.Provider value={undefined}>
-                <Comp {...props} />
+                <Comp {...props} reactiveHydrateSkip />
               </ReactiveHydrationInnardsContext.Provider>
             </SerializedStateContext.Provider>
 

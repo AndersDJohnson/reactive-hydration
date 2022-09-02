@@ -259,6 +259,12 @@ exports.makeJsx = (_label, jsxRuntime) => {
 
     const Type = type;
 
+    const [props] = args;
+
+    if (props?.reactiveHydrateSkip) {
+      return origJsx(type, ...args);
+    }
+
     const name = getTypeName(Type);
 
     // console.log("*** jsxDEV name", name);
@@ -280,6 +286,11 @@ exports.makeJsx = (_label, jsxRuntime) => {
 
     console.log("*** Type", Type);
     console.log("*** ReactiveHydrateType", ReactiveHydrateType);
+    console.log("*** ReactiveHydrateType args", args);
+    console.log(
+      "*** ReactiveHydrateType args[0].children.type",
+      args[0]?.children?.type
+    );
 
     return origJsx(ReactiveHydrateType, ...args);
   };
