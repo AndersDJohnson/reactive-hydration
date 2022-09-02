@@ -15,6 +15,7 @@
 // const {
 //   SerializedStateContext,
 // } = require("reactive-hydration/dist-no-jsx-runtime/SerializedStateContext");
+require("reactive-hydration/dist-no-jsx-runtime/react-actual");
 const {
   reactiveHydrate,
 } = require("reactive-hydration/dist-no-jsx-runtime/ReactiveHydrate");

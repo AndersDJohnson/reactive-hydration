@@ -1,8 +1,11 @@
 import type { Context } from "_react";
 import {
-  useState as useStateMonkeypatch,
-  useContext as useContextMonkeypatch,
+  useState as useStateMonkeypatchImport,
+  useContext as useContextMonkeypatchImport,
 } from "_react";
+
+const useStateMonkeypatch = useStateMonkeypatchImport;
+const useContextMonkeypatch = useContextMonkeypatchImport;
 
 // const React: typeof import("_react") =
 //   typeof window !== "undefined" && window.React

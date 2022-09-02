@@ -131,9 +131,9 @@ export const reactiveHydrate = <
     );
   };
 
-  // if (!Comp.displayName) {
-  //   Comp.displayName = args.name;
-  // }
+  if (!Comp.displayName) {
+    Comp.displayName = args.name;
+  }
 
   // TODO: Do we really want/need to hoist these?
   // hoistNonReactStatics(ReactiveHydrateWrapper, Comp);
