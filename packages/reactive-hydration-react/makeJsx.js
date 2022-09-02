@@ -1,20 +1,3 @@
-// const React = require("_react");
-
-// const { useContext, useId, useMemo, useState, useCallback, useRef, useEffect } =
-//   React;
-
-// const {
-//   ReactiveHydrationContainerContext,
-// } = require("reactive-hydration/dist-no-jsx-runtime/ReactiveHydrationContainerContext");
-// const {
-//   ReactiveHydrationInnardsContext,
-// } = require("reactive-hydration/dist-no-jsx-runtime/ReactiveHydrationInnardsContext");
-// const {
-//   ReactiveHydrateContext,
-// } = require("reactive-hydration/dist-no-jsx-runtime/ReactiveHydrateContext");
-// const {
-//   SerializedStateContext,
-// } = require("reactive-hydration/dist-no-jsx-runtime/SerializedStateContext");
 require("reactive-hydration/dist-no-jsx-runtime/react-actual");
 const {
   reactiveHydrate,
@@ -58,7 +41,6 @@ exports.makeJsx = (_label, jsxRuntime) => {
 
   return (type, ...args) => {
     if (type._context) {
-      // console.log("*** render context", type._context.displayName);
       return origJsx(type, ...args);
     }
 
@@ -81,8 +63,6 @@ exports.makeJsx = (_label, jsxRuntime) => {
 
     const name = getTypeName(Type);
 
-    // console.log("*** jsxDEV name", name);
-
     if (!name) {
       return origJsx(Type, ...args);
     }
@@ -90,10 +70,6 @@ exports.makeJsx = (_label, jsxRuntime) => {
     if (type.reactiveHydrateSkip) {
       return origJsx(Type, ...args);
     }
-
-    console.log("*** jsx name", name);
-
-    // return origJsx(Type, ...args);
 
     // TODO: Memoize?
     const ReactiveHydrateType = getType(Type);
