@@ -40,6 +40,10 @@ export const reactiveHydrate = <
   },
   Comp: React.ComponentType<P>
 ) => {
+  if (!Comp.displayName) {
+    Comp.displayName = args.name;
+  }
+
   // TODO: memo wrap? if so, fix display name
   const ReactiveHydrateWrapper = (props: P) => {
     const { name, states } = args;
@@ -137,10 +141,6 @@ export const reactiveHydrate = <
       </ReactiveHydrationInnardsContext.Provider>
     );
   };
-
-  if (!Comp.displayName) {
-    Comp.displayName = args.name;
-  }
 
   // TODO: Do we really want/need to hoist these?
   // hoistNonReactStatics(ReactiveHydrateWrapper, Comp);
