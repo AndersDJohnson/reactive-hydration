@@ -1,4 +1,10 @@
-import React, { useEffect, useId, useMemo, useRef } from "_react";
+import React, {
+  PropsWithChildren,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+} from "_react";
 import { useState, useContext } from "../react-actual";
 // import hoistNonReactStatics from "hoist-non-react-statics";
 import {
@@ -13,15 +19,16 @@ import {
   ReactiveHydrationInnardsContext,
   reactiveHydrationInnardsContextValue,
 } from "../ReactiveHydrationInnardsContext";
+import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 
 /**
  * TODO: This wrapper could perhaps be wrapped around all components by the compiler.
  */
 export const reactiveHydrate = <
-  P extends {
+  P extends PropsWithChildren<{
     reactiveHydrateId?: string;
     reactiveHydratePortalState?: Record<string, any>;
-  }
+  }>
 >(
   args: {
     name: string;
@@ -104,6 +111,17 @@ export const reactiveHydrate = <
       contexts: new Set(),
     });
 
+    const reactiveHydrationContainerContext = useContext(
+      ReactiveHydrationContainerContext
+    );
+
+    const { isWithinReactiveHydrationContainer } =
+      reactiveHydrationContainerContext ?? {};
+
+    if (!isWithinReactiveHydrationContainer) {
+      return <>{props.children}</>;
+    }
+
     return (
       <ReactiveHydrationInnardsContext.Provider
         value={reactiveHydrationInnardsContextValue}
@@ -141,6 +159,25 @@ export const reactiveHydrate = <
   ReactiveHydrateWrapper.displayName = `ReactiveHydrateWrapper(${Comp.displayName})`;
 
   ReactiveHydrateWrapper.reactiveHydrateSkip = true;
+
+  const ReactiveHydrateShortCircuitWrapper = (props: P) => {
+    const reactiveHydrationContainerContext = useContext(
+      ReactiveHydrationContainerContext
+    );
+
+    const { isWithinReactiveHydrationContainer } =
+      reactiveHydrationContainerContext ?? {};
+
+    if (!isWithinReactiveHydrationContainer) {
+      return <>{props.children}</>;
+    }
+
+    return <ReactiveHydrateWrapper {...props} />;
+  };
+
+  ReactiveHydrateWrapper.displayName = `ReactiveHydrateShortCircuitWrapper(${Comp.displayName})`;
+
+  ReactiveHydrateShortCircuitWrapper.reactiveHydrateSkip = true;
 
   return ReactiveHydrateWrapper;
 };

@@ -27,22 +27,6 @@ export const ReactiveHydrate = (
 
   const { reactiveHydratingId } = useContext(ReactiveHydrateContext);
 
-  const reactiveHydrationContainerContext = useContext(
-    ReactiveHydrationContainerContext
-  );
-
-  const { isWithinReactiveHydrationContainer } =
-    reactiveHydrationContainerContext ?? {};
-
-  console.log(
-    "*** ReactiveHydrate isWithinReactiveHydrationContainer",
-    isWithinReactiveHydrationContainer
-  );
-
-  if (!isWithinReactiveHydrationContainer) {
-    return <>{props.children}</>;
-  }
-
   // TODO: Is this still needed?
   const isHydratingSelf = reactiveHydratingId === id;
 
