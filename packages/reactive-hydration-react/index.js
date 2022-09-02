@@ -3,7 +3,7 @@ const React = require("_react");
 const { makeJsx } = require("./makeJsx");
 
 // Destructuring could transpile to live lookup below and therefore infinite loops.
-// Not capturing these before importing from `react-hydration` will cause infinite loops.
+// Not capturing these before importing from `react-hydration` would cause infinite loops.
 const useState = React.useState;
 const useContext = React.useContext;
 
@@ -39,6 +39,8 @@ React.useContext = (init) => {
     "*** reactive-hydration-react/index useContext _react id",
     React.id
   );
+
+  // TODO: Implement `useContextUsageTracker`.
 
   return useContext(init);
 };
