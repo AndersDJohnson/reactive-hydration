@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useContext = exports.useState = void 0;
 var _react_1 = require("_react");
-var useStateMonkeypatch = _react_1.useState;
-var useContextMonkeypatch = _react_1.useContext;
+var useStateActualReference = _react_1.useState;
+var useContextActualReference = _react_1.useContext;
 // const React: typeof import("_react") =
 //   typeof window !== "undefined" && window.React
 //     ? window.React
@@ -24,14 +24,14 @@ var useContextMonkeypatch = _react_1.useContext;
 // } = React;
 var useState = function (init) {
     console.log("*** useStateActual");
-    return useStateMonkeypatch(init, 
+    return useStateActualReference(init, 
     // @ts-expect-error The bypass argument is checked in our `jsx-runtime` monkeypatches.
     true);
 };
 exports.useState = useState;
 var useContext = function (context) {
     console.log("*** useContextActual");
-    return useContextMonkeypatch(context, 
+    return useContextActualReference(context, 
     // @ts-expect-error The bypass argument is checked in our `jsx-runtime` monkeypatches.
     true);
 };

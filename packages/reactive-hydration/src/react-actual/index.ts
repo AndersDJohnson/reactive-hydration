@@ -1,11 +1,11 @@
 import type { Context } from "_react";
 import {
-  useState as useStateMonkeypatchImport,
-  useContext as useContextMonkeypatchImport,
+  useState as useStateActual,
+  useContext as useContextActual,
 } from "_react";
 
-const useStateMonkeypatch = useStateMonkeypatchImport;
-const useContextMonkeypatch = useContextMonkeypatchImport;
+const useStateActualReference = useStateActual;
+const useContextActualReference = useContextActual;
 
 // const React: typeof import("_react") =
 //   typeof window !== "undefined" && window.React
@@ -32,7 +32,7 @@ const useContextMonkeypatch = useContextMonkeypatchImport;
 export const useState = <S>(init: S | (() => S)) => {
   console.log("*** useStateActual");
 
-  return useStateMonkeypatch(
+  return useStateActualReference(
     init,
     // @ts-expect-error The bypass argument is checked in our `jsx-runtime` monkeypatches.
     true
@@ -42,7 +42,7 @@ export const useState = <S>(init: S | (() => S)) => {
 export const useContext = <T>(context: Context<T>) => {
   console.log("*** useContextActual");
 
-  return useContextMonkeypatch(
+  return useContextActualReference(
     context,
     // @ts-expect-error The bypass argument is checked in our `jsx-runtime` monkeypatches.
     true
