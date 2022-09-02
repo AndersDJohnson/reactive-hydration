@@ -1,7 +1,7 @@
 import type { Context } from "_react";
 import {
-  useState as useStateActual,
-  useContext as useContextActual,
+  useState as useStateMonkeypatch,
+  useContext as useContextMonkeypatch,
 } from "_react";
 
 // const React: typeof import("_react") =
@@ -29,7 +29,7 @@ import {
 export const useState = <S>(init: S | (() => S)) => {
   console.log("*** useStateActual");
 
-  return useStateActual(
+  return useStateMonkeypatch(
     init,
     // @ts-expect-error The bypass argument is checked in our `jsx-runtime` monkeypatches.
     true
@@ -39,7 +39,7 @@ export const useState = <S>(init: S | (() => S)) => {
 export const useContext = <T>(context: Context<T>) => {
   console.log("*** useContextActual");
 
-  return useContextActual(
+  return useContextMonkeypatch(
     context,
     // @ts-expect-error The bypass argument is checked in our `jsx-runtime` monkeypatches.
     true
