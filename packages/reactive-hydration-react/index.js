@@ -9,11 +9,15 @@ const React = { ...ReactActual };
 const useState = React.useState;
 const useContext = React.useContext;
 
+// Direct imports to avoid `react-dom` import in `ReactiveHydrationContainerInner` - still needed?
 const {
   useStateSerialize,
 } = require("reactive-hydration/dist/useStateSerialize");
+const {
+  useContextUsageTracker,
+} = require("reactive-hydration/dist/useContextUsageTracker");
 
-console.log("*** reactive-hydration-react index _react id", React.id);
+// console.log("*** reactive-hydration-react index _react id", React.id);
 
 React.createElement = makeJsx("createElement", React);
 
@@ -25,9 +29,6 @@ React.useState = (init, bypass) => {
   //   bypass
   // );
 
-  // // It works with just this, even if we've imported `useStateSerialize` but not using
-  // return useState(init);
-
   if (bypass) {
     return useState(init);
   }
@@ -35,15 +36,19 @@ React.useState = (init, bypass) => {
   return useStateSerialize(init);
 };
 
-// React.useContext = (init) => {
-//   console.log(
-//     "*** reactive-hydration-react/index useContext _react id",
-//     React.id
-//   );
+React.useContext = (init, bypass) => {
+  // console.log(
+  //   "*** reactive-hydration-react/index useContext _react id",
+  //   React.id
+  // );
 
-//   // TODO: Implement `useContextUsageTracker`.
+  // return useContext(init);
 
-//   return useContext(init);
-// };
+  if (bypass) {
+    return useContext(init);
+  }
+
+  return useContextUsageTracker(init);
+};
 
 module.exports = React;
