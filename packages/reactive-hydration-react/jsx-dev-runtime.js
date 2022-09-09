@@ -1,4 +1,4 @@
-const jsxDevRuntime = require("_react/jsx-dev-runtime");
+const jsxDevRuntime = require("react-actual/jsx-dev-runtime");
 const { makeJsx } = require("./makeJsx");
 
 jsxDevRuntime.jsxDEV = makeJsx("jsxDEV", jsxDevRuntime);

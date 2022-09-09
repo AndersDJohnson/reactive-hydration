@@ -1,4 +1,4 @@
-const jsxRuntime = require("_react/jsx-runtime");
+const jsxRuntime = require("react-actual/jsx-runtime");
 const { makeJsx } = require("./makeJsx");
 
 jsxRuntime.jsx = makeJsx("jsx", jsxRuntime);

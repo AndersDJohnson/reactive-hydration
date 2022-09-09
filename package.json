@@ -10,6 +10,9 @@
     "lint": "npx turbo run lint",
     "postinstall": "rm -rf packages/*/node_modules/{react,react-dom,recoil,recoil-nexus}"
   },
+  "dependencies": {
+    "react": "file:./packages/reactive-hydration-react"
+  },
   "devDependencies": {
     "turbo": "^1.4.6"
   }
