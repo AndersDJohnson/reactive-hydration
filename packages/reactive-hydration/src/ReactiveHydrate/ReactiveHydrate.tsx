@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useId } from "_react";
+import { PropsWithChildren, useId } from "_react";
 import { useContext } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 

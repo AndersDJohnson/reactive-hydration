@@ -1,4 +1,4 @@
-import React, { createContext } from "_react";
+import { createContext } from "_react";
 
 export const ReactiveHydrationContainerContext = createContext({
   isWithinReactiveHydrationContainer: false,

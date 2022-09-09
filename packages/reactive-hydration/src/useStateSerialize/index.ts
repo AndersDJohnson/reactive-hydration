@@ -1,12 +1,6 @@
-import React, { useCallback, useRef } from "_react";
+import { useCallback, useRef } from "_react";
 import { useContext, useState } from "../react-actual";
 import { SerializedStateContext } from "../SerializedStateContext";
-
-console.log(
-  "*** react reactive-hydration useStateSerialize React.id",
-  // @ts-expect-error
-  React.id
-);
 
 export const useStateSerialize = <S>(init: S | (() => S)) => {
   const { serializableState, setSerializableState, reactiveHydrateState } =
