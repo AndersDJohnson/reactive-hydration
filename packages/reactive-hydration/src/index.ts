@@ -1,6 +1,8 @@
 export { reactiveHydrate } from "./ReactiveHydrate";
 export { createContextWithDefaultValue } from "./createContextWithDefaultValue";
 export type { ContextWithDefaultValues } from "./createContextWithDefaultValue";
+export { useContextUsageTracker } from "./useContextUsageTracker";
+export { useStateSerialize } from "./useStateSerialize";
 export { registerState } from "./stateRegistry";
 export { ReactiveHydrationContainer } from "./ReactiveHydrationContainer";
 // TODO: Do we really need to export this?

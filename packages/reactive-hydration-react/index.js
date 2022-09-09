@@ -12,23 +12,18 @@ const useContext = React.useContext;
 // Direct imports to avoid `react-dom` import in `ReactiveHydrationContainerInner` - still needed?
 const {
   useStateSerialize,
-} = require("reactive-hydration/dist/useStateSerialize");
+} = require("reactive-hydration/dist-no-jsx-runtime/useStateSerialize");
 const {
   useContextUsageTracker,
-} = require("reactive-hydration/dist/useContextUsageTracker");
-
-// console.log("*** reactive-hydration-react index _react id", React.id);
+} = require("reactive-hydration/dist-no-jsx-runtime/useContextUsageTracker");
+// const {
+//   useStateSerialize,
+//   useContextUsageTracker,
+// } = require("reactive-hydration/dist-no-jsx-runtime");
 
 React.createElement = makeJsx("createElement", React);
 
 React.useState = (init, bypass) => {
-  // console.log(
-  //   "*** reactive-hydration-react/index useState _react id",
-  //   React.id,
-  //   "bypass",
-  //   bypass
-  // );
-
   if (bypass) {
     return useState(init);
   }
@@ -37,13 +32,6 @@ React.useState = (init, bypass) => {
 };
 
 React.useContext = (init, bypass) => {
-  // console.log(
-  //   "*** reactive-hydration-react/index useContext _react id",
-  //   React.id
-  // );
-
-  // return useContext(init);
-
   if (bypass) {
     return useContext(init);
   }
