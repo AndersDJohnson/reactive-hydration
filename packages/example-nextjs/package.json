@@ -3,19 +3,22 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "yarn clean && next dev",
+    "build": "yarn clean && next build",
     "build:export": "BUILD_EXPORT=true next build && BUILD_EXPORT=true next export",
+    "clean": "rm -rf .next out",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "react-actual": "npm:react@^18",
     "next": "12.2.5",
-    "react": "18.2.0",
+    "react": "file:../reactive-hydration-react",
     "react-dom": "18.2.0",
     "reactive-hydration": "*",
     "reactive-hydration-example-common": "*",
-    "recoil": "^0.7.5"
+    "recoil": "^0.7.5",
+    "recoil-nexus": "^0.4.0"
   },
   "devDependencies": {
     "@types/node": "18.7.6",

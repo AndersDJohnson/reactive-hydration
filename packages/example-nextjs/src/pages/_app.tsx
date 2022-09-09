@@ -1,20 +1,19 @@
 import type { AppProps } from "next/app";
 import { RecoilRoot } from "recoil";
 import RecoilNexus from "recoil-nexus";
-import "reactive-hydration/monkeypatch";
-// import { ReactiveHydrateContextProvider } from "reactive-hydration";
 import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <RecoilRoot>
-      <RecoilNexus />
+    <>
+      <a href="?forceHydrate">?forceHydrate</a>
 
-      {/* TODO: Do we really need `ReactiveHydrateContextProvider` at the root? */}
-      {/* <ReactiveHydrateContextProvider> */}
-      <Component {...pageProps} />
-      {/* </ReactiveHydrateContextProvider> */}
-    </RecoilRoot>
+      <RecoilRoot>
+        <RecoilNexus />
+
+        <Component {...pageProps} />
+      </RecoilRoot>
+    </>
   );
 }
 

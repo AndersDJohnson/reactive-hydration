@@ -3,7 +3,7 @@ import {
   Context,
   PropsWithChildren,
   createContext,
-} from "react";
+} from "react-actual";
 import { contextProviderSerialized } from "../contextProviderSerialized";
 
 export type ContextUpdater<T> = (value: T) => void;

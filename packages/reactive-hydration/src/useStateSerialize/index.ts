@@ -1,18 +1,6 @@
-import { createContext, useCallback, useRef } from "react";
+import { useCallback, useRef } from "react-actual";
 import { useContext, useState } from "../react-actual";
-
-export const SerializedStateContext = createContext<
-  | {
-      serializableState: string[] | undefined;
-      setSerializableState:
-        | (() => string[])
-        | ((sf: (s: any[] | undefined) => any[] | undefined) => void);
-      reactiveHydrateState?: any[];
-    }
-  | undefined
->(undefined);
-
-SerializedStateContext.displayName = "SerializedStateContext";
+import { SerializedStateContext } from "../SerializedStateContext";
 
 export const useStateSerialize = <S>(init: S | (() => S)) => {
   const { serializableState, setSerializableState, reactiveHydrateState } =
@@ -67,3 +55,15 @@ export const useStateSerialize = <S>(init: S | (() => S)) => {
 
   return [state, setStateAndSerializedState] as const;
 };
+
+if (typeof global !== "undefined") {
+  // @ts-expect-error
+  if (global.useStateSerialize) {
+    module.exports =
+      // @ts-expect-error
+      global.useStateSerialize;
+  } else {
+    // @ts-expect-error
+    global.useStateSerialize = exports;
+  }
+}

@@ -1,3 +1,4 @@
+import React from "react-actual";
 import { useContext } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 
@@ -8,7 +9,11 @@ export const WriteContextsConsumed = () => {
 
   const contexts = setValues ? [...setValues] : undefined;
 
-  if (!contexts?.length) return null;
+  if (!contexts?.length) {
+    return null;
+  }
 
   return <div data-contexts={contexts.join(",")} />;
 };
+
+WriteContextsConsumed.reactiveHydrateSkip = true;

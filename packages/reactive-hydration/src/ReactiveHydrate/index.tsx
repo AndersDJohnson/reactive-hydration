@@ -1,31 +1,49 @@
-import { useEffect, useId, useMemo, useRef } from "react";
-import hoistNonReactStatics from "hoist-non-react-statics";
+import {
+  PropsWithChildren,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+} from "react-actual";
+import { useState, useContext } from "../react-actual";
+// import hoistNonReactStatics from "hoist-non-react-statics";
 import {
   HooksRef,
   ReactiveHydrateContext,
   ReactiveHydrateContextProvider,
 } from "../ReactiveHydrateContext";
-import { SerializedStateContext } from "../useStateSerialize";
+import { SerializedStateContext } from "../SerializedStateContext";
 import { WriteContextsConsumed } from "./WriteContextsConsumed";
 import { ReactiveHydrate } from "./ReactiveHydrate";
-import { useContext, useState } from "../react-actual";
+import {
+  ReactiveHydrationInnardsContext,
+  reactiveHydrationInnardsContextValue,
+} from "../ReactiveHydrationInnardsContext";
+import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 
 /**
  * TODO: This wrapper could perhaps be wrapped around all components by the compiler.
  */
 export const reactiveHydrate = <
-  P extends {
+  P extends PropsWithChildren<{
     reactiveHydrateId?: string;
     reactiveHydratePortalState?: Record<string, any>;
-  }
+  }>
 >(
   args: {
     name: string;
+    /**
+     * @deprecated We'll transition to a hook monkeypatch for Recoil `useAtom` to detect and track similar to `useContextUsageTracker`.
+     * TODO: We'll transition to a hook monkeypatch for Recoil `useAtom` to detect and track similar to `useContextUsageTracker`.
+     */
     states?: string;
-    contexts?: string;
   },
   Comp: React.ComponentType<P>
 ) => {
+  if (!Comp.displayName) {
+    Comp.displayName = args.name;
+  }
+
   // TODO: memo wrap? if so, fix display name
   const ReactiveHydrateWrapper = (props: P) => {
     const { name, states } = args;
@@ -98,34 +116,57 @@ export const reactiveHydrate = <
     });
 
     return (
-      <ReactiveHydrateContextProvider
-        reactiveHydratingId={reactiveHydrateIdProp}
-        reactiveHydratePortalState={reactiveHydratePortalState}
-        usedHooksRef={usedHooksRef}
+      <ReactiveHydrationInnardsContext.Provider
+        value={reactiveHydrationInnardsContextValue}
       >
-        <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
-          <SerializedStateContext.Provider value={serializeStateContextValue}>
-            {serializedState ? (
-              <div data-id={reactiveHydrateId} data-state={serializedState} />
-            ) : null}
+        <ReactiveHydrateContextProvider
+          reactiveHydratingId={reactiveHydrateIdProp}
+          reactiveHydratePortalState={reactiveHydratePortalState}
+          usedHooksRef={usedHooksRef}
+        >
+          <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
+            <SerializedStateContext.Provider value={serializeStateContextValue}>
+              {serializedState ? (
+                <div data-id={reactiveHydrateId} data-state={serializedState} />
+              ) : null}
 
-            <Comp {...props} />
-          </SerializedStateContext.Provider>
+              <ReactiveHydrationInnardsContext.Provider value={undefined}>
+                <Comp {...props} reactiveHydrateSkip />
+              </ReactiveHydrationInnardsContext.Provider>
+            </SerializedStateContext.Provider>
 
-          <WriteContextsConsumed />
-        </ReactiveHydrate>
-      </ReactiveHydrateContextProvider>
+            <WriteContextsConsumed />
+          </ReactiveHydrate>
+        </ReactiveHydrateContextProvider>
+      </ReactiveHydrationInnardsContext.Provider>
     );
   };
 
-  if (!Comp.displayName) {
-    Comp.displayName = args.name;
-  }
-
   // TODO: Do we really want/need to hoist these?
-  hoistNonReactStatics(ReactiveHydrateWrapper, Comp);
+  // hoistNonReactStatics(ReactiveHydrateWrapper, Comp);
 
   ReactiveHydrateWrapper.displayName = `ReactiveHydrateWrapper(${Comp.displayName})`;
 
-  return ReactiveHydrateWrapper;
+  ReactiveHydrateWrapper.reactiveHydrateSkip = true;
+
+  const ReactiveHydrateShortCircuitWrapper = (props: P) => {
+    const reactiveHydrationContainerContext = useContext(
+      ReactiveHydrationContainerContext
+    );
+
+    const { isWithinReactiveHydrationContainer } =
+      reactiveHydrationContainerContext ?? {};
+
+    if (!isWithinReactiveHydrationContainer) {
+      return <Comp {...props} reactiveHydrateSkip />;
+    }
+
+    return <ReactiveHydrateWrapper {...props} />;
+  };
+
+  ReactiveHydrateShortCircuitWrapper.displayName = `ReactiveHydrateShortCircuitWrapper(${Comp.displayName})`;
+
+  ReactiveHydrateShortCircuitWrapper.reactiveHydrateSkip = true;
+
+  return ReactiveHydrateShortCircuitWrapper;
 };

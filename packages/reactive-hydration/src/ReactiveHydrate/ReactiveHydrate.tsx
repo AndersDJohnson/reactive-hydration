@@ -1,6 +1,11 @@
-import { PropsWithChildren, useId } from "react";
+import { PropsWithChildren, useId } from "react-actual";
 import { useContext } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
+
+const forceHydrate =
+  typeof window === "object"
+    ? window.location.search.includes("forceHydrate")
+    : false;
 
 /**
  * On server we'll create a wrapper `div` as a portal host to mount into,
@@ -21,11 +26,12 @@ export const ReactiveHydrate = (
 
   const { reactiveHydratingId } = useContext(ReactiveHydrateContext);
 
+  // TODO: Is this still needed?
   const isHydratingSelf = reactiveHydratingId === id;
 
   return (
     <>
-      {typeof window !== "object" || !isHydratingSelf ? (
+      {typeof window !== "object" || !isHydratingSelf || forceHydrate ? (
         <div
           data-component={props.name}
           data-states={props.states}
@@ -42,3 +48,5 @@ export const ReactiveHydrate = (
     </>
   );
 };
+
+ReactiveHydrate.reactiveHydrateSkip = true;

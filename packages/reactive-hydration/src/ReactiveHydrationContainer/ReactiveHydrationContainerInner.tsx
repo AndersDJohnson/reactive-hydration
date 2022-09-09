@@ -1,5 +1,14 @@
-import { Fragment, PropsWithChildren, ReactNode, useCallback } from "react";
-import { ComponentType, memo, useEffect, useRef } from "react";
+import {
+  Fragment,
+  PropsWithChildren,
+  ReactNode,
+  useCallback,
+  ComponentType,
+  memo,
+  useEffect,
+  useRef,
+} from "react-actual";
+import { useState } from "../react-actual";
 import { createPortal } from "react-dom";
 import { truthy } from "../utilities/truthy";
 import { ContextWithDefaultValues } from "../createContextWithDefaultValue";
@@ -12,7 +21,7 @@ import {
 import { usePluginRecoil } from "./plugins/recoil";
 import { Hydrate, Hydrator } from "./types";
 import { pluginContext } from "./plugins/context";
-import { useState } from "../react-actual";
+import { ReactiveHydrationInnardsContext } from "../ReactiveHydrationInnardsContext";
 
 const hydratedComponentsMap = new Map();
 const ContextDefaultProviderWrapperByContextElement = new Map();
@@ -482,7 +491,12 @@ export const ReactiveHydrationContainerInner = memo(
         )}
 
         {contextFreePortals.map((portal) => (
-          <Fragment key={portal.key}>{portal.portal}</Fragment>
+          <ReactiveHydrationInnardsContext.Provider
+            value={undefined}
+            key={portal.key}
+          >
+            <Fragment>{portal.portal}</Fragment>
+          </ReactiveHydrationInnardsContext.Provider>
         ))}
       </>
     );
@@ -492,3 +506,6 @@ export const ReactiveHydrationContainerInner = memo(
 );
 
 ReactiveHydrationContainerInner.displayName = "ReactiveHydrationContainerInner";
+
+// @ts-expect-error
+ReactiveHydrationContainerInner.reactiveHydrateSkip = true;

@@ -11,6 +11,7 @@ module.exports = {
         // This doesn't work for TypeScript function types.
         args: "none",
         ignoreRestSiblings: true,
+        varsIgnorePattern: "React",
       },
     ],
   },

@@ -1,0 +1,10 @@
+{
+  "name": "reactive-hydration-react",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "devDependencies": {
+    "@types/react-actual": "npm:@types/react@18.0.17",
+    "react-actual": "npm:react@^18"
+  }
+}

@@ -1,11 +1,19 @@
-import { ComponentType, memo } from "react";
+import { ComponentType, memo } from "react-actual";
 import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
+import {
+  ReactiveHydrationInnardsContext,
+  reactiveHydrationInnardsContextValue,
+} from "../ReactiveHydrationInnardsContext";
 import {
   ReactiveHydrationContainerInner,
   ReactiveHydrationContainerInnerProps,
 } from "./ReactiveHydrationContainerInner";
 
 let initialUrl = typeof window === "object" ? window.location.href : undefined;
+const forceHydrate =
+  typeof window === "object"
+    ? window.location.search.includes("forceHydrate")
+    : false;
 let hasSoftRouted = false;
 
 export interface ReactiveHydrationContainerProps
@@ -32,11 +40,11 @@ export interface ReactiveHydrationContainerProps
 }
 
 const reactiveHydrationContainerContextHasNotSoftRouted = {
-  isActive: true,
+  isWithinReactiveHydrationContainer: true,
   hasSoftRouted: false,
 };
 const reactiveHydrationContainerContextHasSoftRouted = {
-  isActive: true,
+  isWithinReactiveHydrationContainer: true,
   hasSoftRouted: true,
 };
 
@@ -59,44 +67,64 @@ export const ReactiveHydrationContainer = memo(
         reactiveHydrationContainerContextHasSoftRouted
       : reactiveHydrationContainerContextHasNotSoftRouted;
 
-    if (hasSoftRouted) {
+    // Client-side render after soft routing - just stand up the whole tree at this point since we don't have SSR HTML to hydrate.
+    if (hasSoftRouted || forceHydrate) {
       return (
         // TODO: Do we want this active after soft route?
-        <ReactiveHydrationContainerContext.Provider
-          value={reactiveHydrationContainerContext}
+        <ReactiveHydrationInnardsContext.Provider
+          value={reactiveHydrationInnardsContextValue}
         >
-          {/* This `div` wrapper matches the suppress hydration `div` below to
+          <ReactiveHydrationContainerContext.Provider
+            value={reactiveHydrationContainerContext}
+          >
+            {/* This `div` wrapper matches the suppress hydration `div` below to
           avoid hydration mismatch. */}
-          <div>
-            <LazyComp />
-          </div>
-        </ReactiveHydrationContainerContext.Provider>
+            <div>
+              <ReactiveHydrationInnardsContext.Provider value={undefined}>
+                {/* @ts-expect-error Forcibly passing `isReactiveHydrationServerComponent` for internal use. */}
+                <LazyComp isReactiveHydrationServerComponent />
+              </ReactiveHydrationInnardsContext.Provider>
+            </div>
+          </ReactiveHydrationContainerContext.Provider>
+        </ReactiveHydrationInnardsContext.Provider>
       );
     }
 
+    // Server-side render.
     if (typeof window !== "object" && Comp) {
       return (
-        <ReactiveHydrationContainerContext.Provider
-          value={reactiveHydrationContainerContext}
+        <ReactiveHydrationInnardsContext.Provider
+          value={reactiveHydrationInnardsContextValue}
         >
-          {/* This `div` wrapper matches the suppress hydration `div` below to
+          <ReactiveHydrationContainerContext.Provider
+            value={reactiveHydrationContainerContext}
+          >
+            {/* This `div` wrapper matches the suppress hydration `div` below to
           avoid hydration mismatch. */}
-          <div>
-            <Comp />
-          </div>
-        </ReactiveHydrationContainerContext.Provider>
+            <div>
+              <ReactiveHydrationInnardsContext.Provider value={undefined}>
+                {/* @ts-expect-error Forcibly passing `isReactiveHydrationServerComponent` for internal use. */}
+                <Comp isReactiveHydrationServerComponent />
+              </ReactiveHydrationInnardsContext.Provider>
+            </div>
+          </ReactiveHydrationContainerContext.Provider>
+        </ReactiveHydrationInnardsContext.Provider>
       );
     }
 
     return (
-      <ReactiveHydrationContainerContext.Provider
-        value={reactiveHydrationContainerContext}
+      <ReactiveHydrationInnardsContext.Provider
+        value={reactiveHydrationInnardsContextValue}
       >
-        <ReactiveHydrationContainerInner
-          importComponent={importComponent}
-          importContext={importContext}
-        />
-      </ReactiveHydrationContainerContext.Provider>
+        <ReactiveHydrationContainerContext.Provider
+          value={reactiveHydrationContainerContext}
+        >
+          <ReactiveHydrationContainerInner
+            importComponent={importComponent}
+            importContext={importContext}
+          />
+        </ReactiveHydrationContainerContext.Provider>
+      </ReactiveHydrationInnardsContext.Provider>
     );
   },
   // Never re-render only due to parent re-renders.
@@ -104,3 +132,6 @@ export const ReactiveHydrationContainer = memo(
 );
 
 ReactiveHydrationContainer.displayName = "ReactiveHydrationContainer";
+
+// @ts-expect-error
+ReactiveHydrationContainer.reactiveHydrateSkip = true;

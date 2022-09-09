@@ -1,4 +1,10 @@
-import { ComponentType, Fragment, PropsWithChildren, ReactPortal } from "react";
+import {
+  ComponentType,
+  Fragment,
+  PropsWithChildren,
+  ReactPortal,
+} from "react-actual";
+import { ReactiveHydrationInnardsContext } from "../ReactiveHydrationInnardsContext";
 
 export interface ContextPortalTreeEntry {
   key: string;
@@ -16,7 +22,7 @@ export const ContextPortalTreeRenderer = (props: {
   const { contextPortalTreeEntry } = props;
 
   const { ContextWrapper, childPortalTreeEntries, leafPortals } =
-    contextPortalTreeEntry;
+    contextPortalTreeEntry ?? {};
 
   if (leafPortals?.length) {
     const leafPortalsWithKeys = leafPortals.map((leafPortal) => (
@@ -24,10 +30,20 @@ export const ContextPortalTreeRenderer = (props: {
     ));
 
     if (ContextWrapper) {
-      return <ContextWrapper>{leafPortalsWithKeys}</ContextWrapper>;
+      return (
+        <ContextWrapper>
+          <ReactiveHydrationInnardsContext.Provider value={undefined}>
+            {leafPortalsWithKeys}
+          </ReactiveHydrationInnardsContext.Provider>
+        </ContextWrapper>
+      );
     }
 
-    return <>{leafPortalsWithKeys}</>;
+    return (
+      <ReactiveHydrationInnardsContext.Provider value={undefined}>
+        {leafPortalsWithKeys}
+      </ReactiveHydrationInnardsContext.Provider>
+    );
   }
 
   if (!ContextWrapper) return null;
@@ -45,3 +61,5 @@ export const ContextPortalTreeRenderer = (props: {
 };
 
 ContextPortalTreeRenderer.displayName = "ContextPortalTreeRenderer";
+
+ContextPortalTreeRenderer.reactiveHydrateSkip = true;

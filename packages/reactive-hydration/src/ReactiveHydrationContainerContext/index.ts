@@ -1,9 +1,24 @@
-import { createContext } from "react";
+import { createContext } from "react-actual";
 
 export const ReactiveHydrationContainerContext = createContext({
-  isActive: false,
+  isWithinReactiveHydrationContainer: false,
   hasSoftRouted: false,
 });
 
 ReactiveHydrationContainerContext.displayName =
   "ReactiveHydrationContainerContext";
+
+if (typeof global !== "undefined") {
+  // @ts-expect-error
+  if (global.ReactiveHydrationContainerContext) {
+    module.exports =
+      // @ts-expect-error
+      global.ReactiveHydrationContainerContext;
+  } else {
+    // @ts-expect-error
+    global.ReactiveHydrationContainerContext = exports;
+  }
+}
+
+// // @ts-expect-error For debugging only.
+// ReactiveHydrationContainerContext.id = Math.random();

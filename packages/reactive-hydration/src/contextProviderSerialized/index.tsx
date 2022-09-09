@@ -1,6 +1,11 @@
-import { Context, PropsWithChildren, useId, useMemo } from "react";
+import { Context, PropsWithChildren, useId, useMemo } from "react-actual";
 import { useContext } from "../react-actual";
 import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
+
+const forceHydrate =
+  typeof window === "object"
+    ? window.location.search.includes("forceHydrate")
+    : false;
 
 const idByValueMap = new WeakMap<any, string>();
 
@@ -18,7 +23,7 @@ export function contextProviderSerialized<T>(context: Context<T>) {
 
     const usedId = useId();
 
-    if (typeof window === "object" && !hasSoftRouted) {
+    if (typeof window === "object" && !hasSoftRouted && !forceHydrate) {
       return <Provider value={value}>{children}</Provider>;
     }
 
@@ -26,8 +31,11 @@ export function contextProviderSerialized<T>(context: Context<T>) {
 
     if (!idFromMap) {
       idFromMap = Math.random().toString();
-
-      idByValueMap.set(value, idFromMap);
+      try {
+        idByValueMap.set(value, idFromMap);
+      } catch (error) {
+        console.error("*** WeakMap error for value", value, error);
+      }
     }
 
     const id =
@@ -51,6 +59,8 @@ export function contextProviderSerialized<T>(context: Context<T>) {
   };
 
   ContextProviderSerialized.displayName = `ContextProviderSerialized(${displayName})`;
+
+  ContextProviderSerialized.reactiveHydrateSkip = true;
 
   return ContextProviderSerialized;
 }

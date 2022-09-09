@@ -1,6 +1,9 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 dist
+dist-no-jsx-runtime
+
+.turbo
 
 # dependencies
 node_modules
@@ -20,8 +23,8 @@ node_modules
 coverage
 
 # next.js
-.next/
-#out/
+.next
+#out
 
 # production
 build
