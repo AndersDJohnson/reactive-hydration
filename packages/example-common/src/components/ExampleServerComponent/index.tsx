@@ -31,11 +31,6 @@ export const ExampleServerComponent = () => {
   const { isWithinReactiveHydrationContainer } =
     reactiveHydrationContainerContext ?? {};
 
-  console.log(
-    "*** ExampleServerComponent isWithinReactiveHydrationContainer",
-    isWithinReactiveHydrationContainer
-  );
-
   // const [message, setMessage] = useState(`initial ${Math.random()}`);
   const [message, setMessage] = useState(`initial 1`);
 
