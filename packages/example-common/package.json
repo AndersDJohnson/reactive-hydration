@@ -6,7 +6,8 @@
   "module": "dist",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint 'src/**'"
   },
   "peerDepenencies": {
     "react": "^18",
@@ -15,6 +16,7 @@
     "recoil": "^0.7.5"
   },
   "devDependencies": {
+    "eslint": "8.22.0",
     "react": "^18",
     "react-dom": "^18",
     "reactive-hydration": "*",

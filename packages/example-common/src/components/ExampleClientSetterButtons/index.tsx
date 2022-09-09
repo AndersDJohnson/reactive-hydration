@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { useRecoilState } from "recoil";
 import { textState } from "../../state/textState";
 import { text2State } from "../../state/text2State";

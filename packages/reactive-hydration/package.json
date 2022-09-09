@@ -22,6 +22,7 @@
   "devDependencies": {
     "@types/hoist-non-react-statics": "^3.3.1",
     "@types/react-actual": "npm:@types/react@18.0.17",
+    "eslint": "8.22.0",
     "react-actual": "npm:react@^18",
     "react": "^18",
     "react-dom": "^18",

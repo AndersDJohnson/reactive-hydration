@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "build": "npx turbo run build",
-    "lint": "npx turbo run --exclude reactive-hydration-root eslint src --ext ts --ext tsx",
+    "lint": "npx turbo run lint",
     "postinstall": "rm -rf packages/*/node_modules/{react,react-dom,recoil,recoil-nexus}"
   },
   "devDependencies": {
