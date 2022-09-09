@@ -1,4 +1,4 @@
-import { Context } from "_react";
+import { Context } from "react-actual";
 import { useState, useContext } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";

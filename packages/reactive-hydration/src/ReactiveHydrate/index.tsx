@@ -1,4 +1,10 @@
-import { PropsWithChildren, useEffect, useId, useMemo, useRef } from "_react";
+import {
+  PropsWithChildren,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+} from "react-actual";
 import { useState, useContext } from "../react-actual";
 // import hoistNonReactStatics from "hoist-non-react-statics";
 import {

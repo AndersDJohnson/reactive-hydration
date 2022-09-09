@@ -2,7 +2,7 @@
 
 set -e
 
-tsc
+./node_modules/.bin/tsc
 
 rm -rf dist-no-jsx-runtime
 

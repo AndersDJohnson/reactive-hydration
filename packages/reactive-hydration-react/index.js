@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-const ReactActual = require("_react");
+const ReactActual = require("react-actual");
 const { makeJsx } = require("./makeJsx");
 
 const React = { ...ReactActual };

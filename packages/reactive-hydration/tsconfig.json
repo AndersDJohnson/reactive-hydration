@@ -15,7 +15,7 @@
     // Needed since we use JSX from our `reactive-hydration-react` jsx monkeypatch, and don't want a circular dependency.
     // "jsx": "react",
     "jsx": "react-jsx",
-    // "jsxImportSource": "_react",
+    // "jsxImportSource": "react-actual",
     "incremental": true,
     "declaration": true,
     "outDir": "dist"

@@ -3,7 +3,7 @@ import {
   Fragment,
   PropsWithChildren,
   ReactPortal,
-} from "_react";
+} from "react-actual";
 import { ReactiveHydrationInnardsContext } from "../ReactiveHydrationInnardsContext";
 
 export interface ContextPortalTreeEntry {

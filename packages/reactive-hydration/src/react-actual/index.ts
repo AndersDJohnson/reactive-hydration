@@ -1,8 +1,8 @@
-import type { Context } from "_react";
+import type { Context } from "react-actual";
 import {
   useState as useStateActual,
   useContext as useContextActual,
-} from "_react";
+} from "react-actual";
 
 const useStateActualReference = useStateActual;
 const useContextActualReference = useContextActual;

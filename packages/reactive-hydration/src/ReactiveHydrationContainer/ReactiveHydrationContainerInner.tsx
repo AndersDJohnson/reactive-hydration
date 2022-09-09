@@ -7,7 +7,7 @@ import {
   memo,
   useEffect,
   useRef,
-} from "_react";
+} from "react-actual";
 import { useState } from "../react-actual";
 import { createPortal } from "react-dom";
 import { truthy } from "../utilities/truthy";

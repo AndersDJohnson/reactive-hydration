@@ -1,0 +1,6 @@
+[34mreactive-hydration-example-nextjs:build[0m: cache hit, replaying output [2m90187a9f2ce8858e[0m
+[34mreactive-hydration-example-nextjs:build: [0m$ next build
+[34mreactive-hydration-example-nextjs:build: [0minfo  - SWC minify release candidate enabled. https://nextjs.link/swcmin
+[34mreactive-hydration-example-nextjs:build: [0minfo  - Linting and checking validity of types...
+[34mreactive-hydration-example-nextjs:build: [0merror - ESLint: Failed to load parser './parser.js' declared in '.eslintrc.js » eslint-config-next/core-web-vitals » /Users/anders/code/reactive-hydration/node_modules/eslint-config-next/index.js': Cannot find module 'next/dist/compiled/babel/eslint-parser' Require stack: - /Users/anders/code/reactive-hydration/node_modules/eslint-config-next/parser.js - /Users/anders/code/reactive-hydration/node_modules/@eslint/eslintrc/dist/eslintrc.cjs
+[34mreactive-hydration-example-nextjs:build: [0minfo  - Creating an optimized production build...

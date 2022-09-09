@@ -1,4 +1,4 @@
-import { ComponentType, memo } from "_react";
+import { ComponentType, memo } from "react-actual";
 import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainerContext";
 import {
   ReactiveHydrationInnardsContext,
