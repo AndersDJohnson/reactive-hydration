@@ -16,8 +16,9 @@
     "recoil": "^0.7.5"
   },
   "devDependencies": {
+    "@types/react": "18.0.17",
     "eslint": "8.22.0",
-    "react": "^18",
+    "react": "file:../reactive-hydration-react",
     "react-dom": "^18",
     "reactive-hydration": "*",
     "recoil": "^0.7.5",
