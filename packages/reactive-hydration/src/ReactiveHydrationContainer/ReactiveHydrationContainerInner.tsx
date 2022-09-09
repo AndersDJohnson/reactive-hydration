@@ -491,8 +491,11 @@ export const ReactiveHydrationContainerInner = memo(
         )}
 
         {contextFreePortals.map((portal) => (
-          <ReactiveHydrationInnardsContext.Provider value={undefined}>
-            <Fragment key={portal.key}>{portal.portal}</Fragment>
+          <ReactiveHydrationInnardsContext.Provider
+            value={undefined}
+            key={portal.key}
+          >
+            <Fragment>{portal.portal}</Fragment>
           </ReactiveHydrationInnardsContext.Provider>
         ))}
       </>
