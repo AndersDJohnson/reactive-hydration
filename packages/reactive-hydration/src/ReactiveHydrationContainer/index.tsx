@@ -92,7 +92,6 @@ export const ReactiveHydrationContainer = memo(
 
     // Server-side render.
     if (typeof window !== "object" && Comp) {
-      console.log("*** render ReactiveHydrationContainer");
       return (
         <ReactiveHydrationInnardsContext.Provider
           value={reactiveHydrationInnardsContextValue}
