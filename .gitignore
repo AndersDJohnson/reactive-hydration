@@ -3,6 +3,8 @@
 dist
 dist-no-jsx-runtime
 
+.turbo
+
 # dependencies
 node_modules
 .pnp
