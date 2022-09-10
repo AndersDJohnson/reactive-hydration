@@ -42,6 +42,9 @@ export function createContextWithDefaultValue<T>(
   // @ts-expect-error We know this isn't a native Provider, but a wrapper - but consumers should mostly use it without knowing the difference.
   RawContext.Provider = contextProviderSerialized(RawContext);
 
+  // @ts-expect-error This is special property known to us only.
+  DefaultProvider.reactiveHydrateSkip = true;
+
   RawContext.DefaultProvider = DefaultProvider;
 
   DefaultProvider.displayName = "DefaultProvider";

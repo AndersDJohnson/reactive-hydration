@@ -366,6 +366,8 @@ export const ReactiveHydrationContainerInner = memo(
 
               ContextWrapper.displayName = "ContextWrapper";
 
+              ContextWrapper.reactiveHydrateSkip = true;
+
               contextPortalTreeEntry.ContextWrapper = ContextWrapper;
             }
           });
