@@ -65,7 +65,7 @@ export const ReactiveHydrateContextProvider = (
     [registry]
   );
 
-  const reactiveHydrationComponentPathContextValue = useMemo(
+  const reactiveHydrateContextValue = useMemo(
     () => ({
       reactiveHydratingId,
       reactiveHydratePortalState,
@@ -84,9 +84,7 @@ export const ReactiveHydrateContextProvider = (
   );
 
   return (
-    <ReactiveHydrateContext.Provider
-      value={reactiveHydrationComponentPathContextValue}
-    >
+    <ReactiveHydrateContext.Provider value={reactiveHydrateContextValue}>
       {children}
     </ReactiveHydrateContext.Provider>
   );
