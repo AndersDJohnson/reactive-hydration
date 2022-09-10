@@ -1,4 +1,3 @@
-import React from "react-actual";
 import { useContext } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 
