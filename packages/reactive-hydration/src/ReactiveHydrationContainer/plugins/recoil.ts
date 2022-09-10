@@ -8,12 +8,12 @@ import { Hydrate } from "../types";
 
 interface UsePluginRecoilArgs {
   hydrate: Hydrate;
-  componentRef: RefObject<HTMLElement>;
+  containerRef: RefObject<HTMLElement>;
 }
 
 // TODO: Instead of requiring component state annotations, monkeypatch `useAtom` to detect and track similar to `useContextUsageTracker`.
 export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
-  const { hydrate, componentRef } = args;
+  const { hydrate, containerRef } = args;
 
   const [allNesteds, setAllNesteds] = useState<
     {
@@ -68,7 +68,7 @@ export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
 
   useEffect(() => {
     const $components =
-      componentRef.current?.querySelectorAll<HTMLElement>("[data-component]");
+      containerRef.current?.querySelectorAll<HTMLElement>("[data-component]");
 
     if (!$components) return;
 
@@ -104,5 +104,5 @@ export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
       .filter(truthy);
 
     setAllNesteds((a) => [...a, ...newAllNesteds]);
-  }, [hydrate, componentRef]);
+  }, [hydrate, containerRef]);
 };

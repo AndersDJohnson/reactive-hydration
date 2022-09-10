@@ -54,7 +54,7 @@ export const ReactiveHydrationContainerInner = memo(
   (props: ReactiveHydrationContainerInnerProps) => {
     const { importComponent, importContext } = props;
 
-    const componentRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const [contextPortalTree] = useState(
       () => new Map<string, ContextPortalTreeEntry>()
@@ -444,8 +444,15 @@ export const ReactiveHydrationContainerInner = memo(
     }, [forcedRender, pendingCallbacks]);
 
     useEffect(() => {
+      if (!containerRef.current) return;
+
+      pluginClick({
+        $container: containerRef.current,
+        hydrate,
+      });
+
       const $components =
-        componentRef.current?.querySelectorAll<HTMLElement>("[data-component]");
+        containerRef.current?.querySelectorAll<HTMLElement>("[data-component]");
 
       if (!$components) return;
 
@@ -460,12 +467,6 @@ export const ReactiveHydrationContainerInner = memo(
         if (!id) return;
         if (!component) return;
 
-        pluginClick({
-          $component,
-          id,
-          hydrate,
-        });
-
         pluginContext({
           $component,
           hydrate,
@@ -476,7 +477,7 @@ export const ReactiveHydrationContainerInner = memo(
 
     usePluginRecoil({
       hydrate,
-      componentRef,
+      containerRef,
     });
 
     return (
@@ -486,7 +487,7 @@ export const ReactiveHydrationContainerInner = memo(
           dangerouslySetInnerHTML={{
             __html: "",
           }}
-          ref={componentRef}
+          ref={containerRef}
           suppressHydrationWarning
         />
 
