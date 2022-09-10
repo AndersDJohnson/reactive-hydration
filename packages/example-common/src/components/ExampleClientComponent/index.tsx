@@ -1,6 +1,7 @@
 import { useRecoilState } from "recoil";
 import { textState } from "../../state/textState";
 import { text2State } from "../../state/text2State";
+import { ExampleClientComponentInner } from "./ExampleClientComponentInner";
 
 export const ExampleClientComponent = (props: any) => {
   const [text] = useRecoilState(textState);
@@ -14,6 +15,12 @@ export const ExampleClientComponent = (props: any) => {
       <div>recoil text2State = {text2}</div>
 
       <button data-click>hydrate</button>
+
+      <hr />
+
+      <div>
+        <ExampleClientComponentInner />
+      </div>
     </>
   );
 };
