@@ -1,6 +1,8 @@
 import domElementPath from "dom-element-path";
 import { Hydrate } from "../types";
 
+const hydratedMap = new WeakMap<HTMLElement, boolean>();
+
 interface Args {
   $container: HTMLElement;
   hydrate: Hydrate;
@@ -31,6 +33,11 @@ export const pluginClick = (args: Args) => {
     );
 
     if (!$component) return;
+
+    // Don't re-hydrate - would cause infinite loops.
+    if (hydratedMap.has($component)) return;
+
+    hydratedMap.set($component, true);
 
     // const clickId = $click.dataset.click;
 

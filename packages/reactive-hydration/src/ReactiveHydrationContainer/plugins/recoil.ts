@@ -67,6 +67,8 @@ export const usePluginRecoil = (args: UsePluginRecoilArgs) => {
   }, [allNestedValuesAtom, allNesteds, hydrate]);
 
   useEffect(() => {
+    // TODO: Effects should not short circuit on refs - refactor to ref callback.
+
     const $components =
       containerRef.current?.querySelectorAll<HTMLElement>("[data-component]");
 

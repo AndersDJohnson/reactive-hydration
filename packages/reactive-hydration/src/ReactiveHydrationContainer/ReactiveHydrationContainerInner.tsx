@@ -444,12 +444,19 @@ export const ReactiveHydrationContainerInner = memo(
     }, [forcedRender, pendingCallbacks]);
 
     useEffect(() => {
+      // TODO: Effects should not short circuit on refs - refactor to ref callback.
       if (!containerRef.current) return;
 
       pluginClick({
         $container: containerRef.current,
         hydrate,
       });
+    }, [hydrate]);
+
+    useEffect(() => {
+      // TODO: Effects should not short circuit on refs - refactor to ref callback.
+
+      if (!containerRef.current) return;
 
       const $components =
         containerRef.current?.querySelectorAll<HTMLElement>("[data-component]");
