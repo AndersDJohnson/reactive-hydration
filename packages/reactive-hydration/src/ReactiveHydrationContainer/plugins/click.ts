@@ -1,8 +1,6 @@
 import domElementPath from "dom-element-path";
 import { Hydrate } from "../types";
 
-const clicksMap = new WeakMap();
-
 interface Args {
   $container: HTMLElement;
   hydrate: Hydrate;
@@ -26,8 +24,6 @@ export const pluginClick = (args: Args) => {
 
     if (!$click.matches(clicksSelector)) return;
 
-    if (clicksMap.has($click)) return;
-
     const closestId = $click.closest<HTMLElement>("[data-id]")?.dataset.id;
 
     const $component = $container.querySelector<HTMLElement>(
@@ -35,8 +31,6 @@ export const pluginClick = (args: Args) => {
     );
 
     if (!$component) return;
-
-    clicksMap.set($click, true);
 
     // const clickId = $click.dataset.click;
 
