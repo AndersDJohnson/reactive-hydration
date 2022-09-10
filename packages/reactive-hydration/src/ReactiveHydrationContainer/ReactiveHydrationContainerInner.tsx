@@ -134,6 +134,8 @@ export const ReactiveHydrationContainerInner = memo(
 
         const ImportedComponent: ComponentType<{
           reactiveHydrateId?: string;
+          // TODO: Different type
+          reactiveHydrateNestedHtml?: string;
           reactiveHydratePortalState?: Record<string, any>;
         }> = await importComponent(name);
 
@@ -377,6 +379,7 @@ export const ReactiveHydrationContainerInner = memo(
           <ImportedComponent
             reactiveHydrateId={reactiveHydrateId}
             reactiveHydratePortalState={portalState}
+            reactiveHydrateNestedHtml="<div>I am the server HTML</div>"
           />,
           $newElement
         );

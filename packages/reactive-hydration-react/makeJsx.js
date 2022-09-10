@@ -2,6 +2,9 @@ require("reactive-hydration/dist-no-jsx-runtime/react-actual");
 const {
   reactiveHydrate,
 } = require("reactive-hydration/dist-no-jsx-runtime/ReactiveHydrate");
+const {
+  ReactiveHydrateLoader,
+} = require("reactive-hydration/dist-no-jsx-runtime/ReactiveHydrateLoader");
 
 const getTypeName = (type) =>
   type.displayName ??
@@ -42,6 +45,12 @@ exports.makeJsx = (_label, jsxRuntime) => {
   return (type, ...args) => {
     if (type._context) {
       return origJsx(type, ...args);
+    }
+
+    // Handle our `React.lazy` wrappers for nested hydration deferral.
+    if (typeof window === "object" && type.reactiveHydrateLoader) {
+      // TODO: A component that consumes and renders the SSR HTML from its hydrating ancestor.
+      return origJsx(ReactiveHydrateLoader, {});
     }
 
     // TODO: Handle memo objects?

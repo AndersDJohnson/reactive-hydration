@@ -26,6 +26,8 @@ import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainer
  */
 export const reactiveHydrate = <
   P extends PropsWithChildren<{
+    // TODO: Different type
+    reactiveHydrateNestedHtml?: string;
     reactiveHydrateId?: string;
     reactiveHydratePortalState?: Record<string, any>;
   }>
@@ -49,6 +51,7 @@ export const reactiveHydrate = <
     const { name, states } = args;
 
     const {
+      reactiveHydrateNestedHtml: reactiveHydrateNestedHtmlProp,
       reactiveHydratePortalState: reactiveHydratePortalStateProp,
       reactiveHydrateId: reactiveHydrateIdProp,
     } = props;
@@ -66,6 +69,9 @@ export const reactiveHydrate = <
 
     const reactiveHydratePortalState =
       reactiveHydratePortalStateProp ?? reactiveHydratePortalStateContext;
+
+    const reactiveHydrateNestedHtml = reactiveHydrateNestedHtmlProp;
+    // TODO: ?? reactiveHydrateNestedHtmlContext
 
     const [componentIndex, setComponentIndex] = useState(0);
 
@@ -120,8 +126,10 @@ export const reactiveHydrate = <
         value={reactiveHydrationInnardsContextValue}
       >
         <ReactiveHydrateContextProvider
+          componentPath={componentPath}
           reactiveHydratingId={reactiveHydrateIdProp}
           reactiveHydratePortalState={reactiveHydratePortalState}
+          reactiveHydrateNestedHtml={reactiveHydrateNestedHtml}
           usedHooksRef={usedHooksRef}
         >
           <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
