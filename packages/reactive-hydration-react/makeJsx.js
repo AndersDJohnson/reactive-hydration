@@ -23,12 +23,27 @@ const getType = (Type) => {
 
   const { states } = Type;
 
+  const {
+    // Strip this to avoid infinite recursion.
+    reactiveHydrateLoader,
+    ...RestType
+  } = Type;
+
+  let NewType;
+
+  if (typeof Type === "function") {
+    NewType = Type.bind({});
+    Object.assign(NewType, RestType);
+  } else {
+    NewType = RestType;
+  }
+
   const RType = reactiveHydrate(
     {
       name,
       states,
     },
-    Type
+    NewType
   );
 
   RTypes.set(Type, RType);
@@ -48,9 +63,15 @@ exports.makeJsx = (_label, jsxRuntime) => {
     }
 
     // Handle our `React.lazy` wrappers for nested hydration deferral.
-    if (typeof window === "object" && type.reactiveHydrateLoader) {
-      // TODO: A component that consumes and renders the SSR HTML from its hydrating ancestor.
-      return origJsx(ReactiveHydrateLoader, {});
+    if (type.reactiveHydrateLoader) {
+      if (typeof window === "object") {
+        // TODO: A component that consumes and renders the SSR HTML from its hydrating ancestor.
+        return origJsx(ReactiveHydrateLoader, {});
+      } else {
+        const ReactiveHydrateType = getType(type);
+
+        return origJsx(ReactiveHydrateType, {});
+      }
     }
 
     // TODO: Handle memo objects?
@@ -80,7 +101,6 @@ exports.makeJsx = (_label, jsxRuntime) => {
       return origJsx(Type, ...args);
     }
 
-    // TODO: Memoize?
     const ReactiveHydrateType = getType(Type);
 
     return origJsx(ReactiveHydrateType, ...args);

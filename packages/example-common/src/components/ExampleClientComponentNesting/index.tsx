@@ -12,6 +12,9 @@ const ExampleClientComponent = lazy(() =>
 );
 
 // @ts-expect-error This property is only known to us.
+ExampleClientComponent.displayName = "ExampleClientComponent";
+// TODO: Copy `states` any other static properties?
+// @ts-expect-error This property is only known to us.
 ExampleClientComponent.reactiveHydrateLoader = true;
 
 // const ExampleClientComponent1 = lazy(() =>
