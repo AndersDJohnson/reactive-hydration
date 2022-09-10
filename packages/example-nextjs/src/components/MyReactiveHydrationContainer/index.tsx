@@ -6,14 +6,16 @@ import {
 import { ExampleServerComponentDynamic } from "components/ExampleServerComponent/dynamic";
 
 const importComponent = (component: string) =>
-  import("reactive-hydration-example-common").then(
-    (mod) => mod[component] as ComponentType<unknown>
-  );
+  import(
+    /* webpackInclude: /\.js$/ */
+    `reactive-hydration-example-common/dist/components/${component}`
+  ).then((mod) => mod[component] as ComponentType<unknown>);
 
 const importContext = (context: string) =>
-  import("reactive-hydration-example-common").then(
-    (mod) => mod[context] as ContextWithDefaultValues<unknown>
-  );
+  import(
+    /* webpackInclude: /\.js$/ */
+    `reactive-hydration-example-common/dist/contexts/${context}`
+  ).then((mod) => mod[context] as ContextWithDefaultValues<unknown>);
 
 export const MyReactiveHydrationContainer = () => (
   <ReactiveHydrationContainer

@@ -7,7 +7,7 @@ import { ExampleClientComponent } from "../ExampleClientComponent";
 import { ExampleClientComponent1 } from "../ExampleClientComponent1";
 import { ExampleClientComponent2 } from "../ExampleClientComponent2";
 import { ExampleClientComponentNesting } from "../ExampleClientComponentNesting";
-import { MyContext } from "../MyContext";
+import { MyContext } from "../../contexts/MyContext";
 
 const DummyContext = createContextWithDefaultValue(
   "DummyContext",

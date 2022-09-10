@@ -1,7 +1,7 @@
 import { useCallback, useContext } from "react";
 import { useRecoilState } from "recoil";
 import { textState } from "../../state/textState";
-import { MyContext } from "../MyContext";
+import { MyContext } from "../../contexts/MyContext";
 
 export const ExampleClientComponent1 = () => {
   const [text] = useRecoilState(textState);

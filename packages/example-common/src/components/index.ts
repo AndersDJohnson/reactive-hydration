@@ -6,4 +6,3 @@ export * from "./ExampleServerComponent";
 export * from "./ExampleServerComponent/loader";
 export * from "./ExampleClientSetterButtons";
 export * from "./ExampleClientSetterButtons/loader";
-export * from "./MyContext";
