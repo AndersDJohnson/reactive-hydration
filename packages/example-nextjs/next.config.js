@@ -21,6 +21,21 @@ module.exports = () => {
     swcMinify: true,
 
     webpack(config, { isServer }) {
+      if (!isServer) {
+        const originalChunks = config.optimization.splitChunks.chunks;
+
+        config.optimization.splitChunks.chunks = (chunk) => {
+          if (
+            chunk.name?.startsWith("component-") ||
+            chunk.name?.startsWith("context-")
+          ) {
+            return false;
+          }
+
+          return originalChunks(chunk);
+        };
+      }
+
       return config;
     },
   };
