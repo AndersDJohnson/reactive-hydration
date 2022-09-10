@@ -2,6 +2,11 @@
 
 const BUILD_EXPORT = process.env.BUILD_EXPORT;
 
+const withTM = require("next-transpile-modules")([
+  "reactive-hydration",
+  "reactive-hydration-example-common",
+]);
+
 module.exports = () => {
   /**
    * @type {import('next').NextConfig}
@@ -20,5 +25,5 @@ module.exports = () => {
     },
   };
 
-  return nextConfig;
+  return withTM(nextConfig);
 };

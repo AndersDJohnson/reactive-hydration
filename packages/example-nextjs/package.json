@@ -11,12 +11,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "react-actual": "npm:react@^18",
     "next": "12.2.5",
     "react": "file:../reactive-hydration-react",
+    "react-actual": "npm:react@^18",
     "react-dom": "18.2.0",
-    "reactive-hydration": "*",
-    "reactive-hydration-example-common": "*",
+    "reactive-hydration": "file:../reactive-hydration",
+    "reactive-hydration-example-common": "file:../example-common",
     "recoil": "^0.7.5",
     "recoil-nexus": "^0.4.0"
   },
@@ -26,6 +26,7 @@
     "@types/react-dom": "18.0.6",
     "eslint": "8.22.0",
     "eslint-config-next": "12.2.5",
+    "next-transpile-modules": "^9.0.0",
     "typescript": "4.7.4"
   }
 }
