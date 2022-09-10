@@ -7,12 +7,14 @@ import { ExampleServerComponentDynamic } from "components/ExampleServerComponent
 
 const importComponent = (component: string) =>
   import(
+    /* webpackChunkName: "component-[request]" */
     /* webpackInclude: /\.js$/ */
     `reactive-hydration-example-common/dist/components/${component}`
   ).then((mod) => mod[component] as ComponentType<unknown>);
 
 const importContext = (context: string) =>
   import(
+    /* webpackChunkName: "context-[request]" */
     /* webpackInclude: /\.js$/ */
     `reactive-hydration-example-common/dist/contexts/${context}`
   ).then((mod) => mod[context] as ContextWithDefaultValues<unknown>);
