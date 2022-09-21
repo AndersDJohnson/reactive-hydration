@@ -59,15 +59,18 @@ export const ReactiveHydrateContextProvider = (
     reactiveHydrateNestedHtmlByComponentPathProp;
   // TODO: ?? reactiveHydrateNestedHtmlByComponentPathContext
 
-  const registerComponentPath = useCallback(() => {
-    const currentIndex = registry.get(name);
+  const registerComponentPath = useCallback(
+    (name: string) => {
+      const currentIndex = registry.get(name);
 
-    const newIndex = (currentIndex ?? -1) + 1;
+      const newIndex = (currentIndex ?? -1) + 1;
 
-    registry.set(name, newIndex);
+      registry.set(name, newIndex);
 
-    return newIndex;
-  }, [registry]);
+      return newIndex;
+    },
+    [registry]
+  );
 
   const unregisterComponentPath = useCallback(
     (name: string) => {
