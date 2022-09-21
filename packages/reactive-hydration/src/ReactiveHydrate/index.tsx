@@ -139,6 +139,8 @@ export const reactiveHydrate = <
               ) : null}
 
               <ReactiveHydrationInnardsContext.Provider value={undefined}>
+                <span>componentPath = {componentPath.join(".")}</span>
+
                 <Comp {...props} reactiveHydrateSkip />
               </ReactiveHydrationInnardsContext.Provider>
             </SerializedStateContext.Provider>
