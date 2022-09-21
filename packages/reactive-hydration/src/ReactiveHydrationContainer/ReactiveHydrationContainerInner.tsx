@@ -388,14 +388,17 @@ export const ReactiveHydrationContainerInner = memo(
           });
         }
 
-        // TODO: This is a testing hack. We need to actually deep scrape nested components
-        // and provide a data structure to map them by component path.
-        const reactiveHydrateNestedHtmlByComponentPath = {
-          "ExampleServerComponent.0.ExampleClientComponentNesting.0.ExampleClientComponent.0":
-            $component.querySelector(
-              '[data-component="ExampleClientComponent"]'
-            )?.outerHTML,
-        };
+        const $components = [
+          ...$component.querySelectorAll<HTMLElement>("[data-component]"),
+        ];
+
+        const reactiveHydrateNestedHtmlByComponentPath = $components.reduce(
+          (acc, $c) => ({
+            ...acc,
+            [$c.dataset.componentPath ?? ""]: $c?.outerHTML,
+          }),
+          {}
+        );
 
         const portal = createPortal(
           <ImportedComponent

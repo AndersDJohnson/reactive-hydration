@@ -70,8 +70,6 @@ exports.makeJsx = (_label, jsxRuntime) => {
         // TODO: A component that consumes and renders the SSR HTML from its hydrating ancestor.
         return origJsx(ReactiveHydrateLoader, {
           name,
-          // TODO: Don't hard-code to zero.
-          index: 0,
         });
       } else {
         const ReactiveHydrateType = getType(type);

@@ -1,4 +1,5 @@
-import { useContext } from "../react-actual";
+import { useEffect, useMemo, useRef } from "react-actual";
+import { useContext, useState } from "../react-actual";
 import { ReactiveHydrateContext } from "../ReactiveHydrateContext";
 
 interface ReactiveHydrateLoaderProps {
@@ -7,16 +8,38 @@ interface ReactiveHydrateLoaderProps {
 }
 
 export const ReactiveHydrateLoader = (props: ReactiveHydrateLoaderProps) => {
+  const { name } = props;
+
   const {
-    name,
-    // TODO: Don't hard-code to zero.
-    index = 0,
-  } = props;
+    reactiveHydrateNestedHtmlByComponentPath,
+    parentComponentPath,
+    registerComponentPath,
+    unregisterComponentPath,
+  } = useContext(ReactiveHydrateContext);
 
-  const { reactiveHydrateNestedHtmlByComponentPath, parentComponentPath } =
-    useContext(ReactiveHydrateContext);
+  const [componentIndex, setComponentIndex] = useState(0);
 
-  const componentPathKey = [...parentComponentPath, name, index].join(".");
+  /**
+   * Disable the React 18 double effect call in dev, otherwise we bump indexes too many times.
+   */
+  const effectCalled = useRef(false);
+
+  useEffect(() => {
+    if (effectCalled.current) return;
+
+    effectCalled.current = true;
+
+    setComponentIndex(registerComponentPath?.(name) ?? 0);
+
+    return () => unregisterComponentPath?.(name);
+  }, [registerComponentPath, unregisterComponentPath, name]);
+
+  const componentPathComputed = useMemo(
+    () => [...parentComponentPath, name, componentIndex],
+    [name, parentComponentPath, componentIndex]
+  );
+
+  const componentPathKey = componentPathComputed.join(".");
 
   const reactiveHydrateNestedHtml =
     reactiveHydrateNestedHtmlByComponentPath?.[componentPathKey];

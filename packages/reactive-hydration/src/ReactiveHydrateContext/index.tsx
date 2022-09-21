@@ -71,7 +71,7 @@ export const ReactiveHydrateContextProvider = (
 
   const unregisterComponentPath = useCallback(
     (name: string) => {
-      const currentIndex = registry.get(name);
+      const currentIndex = registry.get(name) ?? 0;
 
       registry.set(name, currentIndex - 1);
     },
