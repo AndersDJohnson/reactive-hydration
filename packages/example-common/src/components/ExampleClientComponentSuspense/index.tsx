@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { makeResourceFromPromise } from "./makeResourceFromPromise";
 
 const resource = makeResourceFromPromise(
-  new Promise<string>((resolve) => setTimeout(() => resolve("hello"), 2000))
+  (data: string) =>
+    new Promise<string>((resolve) => setTimeout(() => resolve(data), 2000))
 );
 
 export const ExampleClientComponentSuspense = () => {
-  const value = resource();
+  const [data] = useState(() => Math.random().toString());
+
+  const value = resource(data);
 
   return (
     <>
@@ -17,5 +21,7 @@ export const ExampleClientComponentSuspense = () => {
     </>
   );
 };
+
+ExampleClientComponentSuspense.reactiveHydrateSkip = true;
 
 ExampleClientComponentSuspense.displayName = "ExampleClientComponentSuspense";
