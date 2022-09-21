@@ -40,6 +40,15 @@ type HeadHTMLProps = React.DetailedHTMLProps<
 
 type HeadProps = OriginProps & HeadHTMLProps;
 
+const getShouldExcludeFile = (file: string, label: string) => {
+  console.log("*** getShouldExcludeFile", label, file);
+
+  return (
+    file.match(/\/(component|context)-/) ||
+    file.includes("ExampleServerComponent")
+  );
+};
+
 function getDocumentFiles(
   buildManifest: BuildManifest,
   pathname: string,
@@ -151,8 +160,7 @@ function getDynamicChunks(
   return dynamicImports.map((file) => {
     if (!file.endsWith(".js") || files.allFiles.includes(file)) return null;
 
-    console.log("*** getDynamicChunks", file);
-    if (file.match(/\/(component|context)-/)) {
+    if (getShouldExcludeFile(file, "getDynamicChunks")) {
       return null;
     }
 
@@ -191,8 +199,7 @@ function getScripts(
   );
 
   return [...normalScripts, ...lowPriorityScripts].map((file) => {
-    console.log("*** getScripts", file);
-    if (file.match(/\/(component|context)-/)) {
+    if (getShouldExcludeFile(file, "getScripts")) {
       return null;
     }
 
@@ -462,8 +469,7 @@ export class Head extends React.Component<HeadProps> {
             return null;
           }
 
-          console.log("*** getPreloadDynamicChunks", file);
-          if (file.match(/\/(component|context)-/)) {
+          if (getShouldExcludeFile(file, "getPreloadDynamicChunks")) {
             return null;
           }
 
