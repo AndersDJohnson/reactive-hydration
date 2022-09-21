@@ -400,6 +400,11 @@ export const ReactiveHydrationContainerInner = memo(
           {}
         );
 
+        console.log(
+          "*** reactiveHydrateNestedHtmlByComponentPath",
+          reactiveHydrateNestedHtmlByComponentPath
+        );
+
         const portal = createPortal(
           <ImportedComponent
             componentPath={componentPath}

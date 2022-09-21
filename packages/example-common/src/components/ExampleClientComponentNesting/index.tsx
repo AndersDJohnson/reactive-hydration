@@ -17,17 +17,27 @@ ExampleClientComponent.displayName = "ExampleClientComponent";
 // @ts-expect-error This property is only known to us.
 ExampleClientComponent.reactiveHydrateLoader = true;
 
-// const ExampleClientComponent1 = lazy(() =>
-//   import("../ExampleClientComponent1").then((mod) => ({
-//     default: mod.ExampleClientComponent1,
-//   }))
-// );
+const ExampleClientComponent1 = lazy(() =>
+  import("../ExampleClientComponent1").then((mod) => ({
+    default: mod.ExampleClientComponent1,
+  }))
+);
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent1.displayName = "ExampleClientComponent1";
+// TODO: Copy `states` any other static properties?
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent1.reactiveHydrateLoader = true;
 
-// const ExampleClientComponent2 = lazy(() =>
-//   import("../ExampleClientComponent2").then((mod) => ({
-//     default: mod.ExampleClientComponent2,
-//   }))
-// );
+const ExampleClientComponent2 = lazy(() =>
+  import("../ExampleClientComponent2").then((mod) => ({
+    default: mod.ExampleClientComponent2,
+  }))
+);
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent2.displayName = "ExampleClientComponent2";
+// TODO: Copy `states` any other static properties?
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent2.reactiveHydrateLoader = true;
 
 export const ExampleClientComponentNesting = () => {
   const [text] = useRecoilState(textState);
@@ -49,9 +59,9 @@ export const ExampleClientComponentNesting = () => {
         <span>lazy:</span>
         <ExampleClientComponent />
 
-        {/* <ExampleClientComponent1 />
+        <ExampleClientComponent1 />
 
-        <ExampleClientComponent2 /> */}
+        <ExampleClientComponent2 />
       </div>
     </>
   );
