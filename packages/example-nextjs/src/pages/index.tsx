@@ -10,6 +10,7 @@ const Home: NextPage = () => {
 
       <nav>
         <Link href="/other">Other Page (SPA)</Link>{" "}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         <a href="/other">Other Page (MPA)</a>
       </nav>
 

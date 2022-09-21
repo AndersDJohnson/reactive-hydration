@@ -9,7 +9,9 @@ const Other: NextPage = () => {
       <h1>Other Page</h1>
 
       <nav>
-        <Link href="/">Home Page (SPA)</Link> <a href="/">Home Page (MPA)</a>
+        <Link href="/">Home Page (SPA)</Link>{" "}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+        <a href="/">Home Page (MPA)</a>
       </nav>
 
       <ExampleClientSetterButtonsDynamic />
