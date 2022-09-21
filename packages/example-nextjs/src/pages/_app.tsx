@@ -6,7 +6,7 @@ import "../styles/globals.css";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <a href="?forceHydrate">?forceHydrate</a>
+      <a href="?forceHydrate=true">?forceHydrate=true</a>
 
       <RecoilRoot>
         <RecoilNexus />

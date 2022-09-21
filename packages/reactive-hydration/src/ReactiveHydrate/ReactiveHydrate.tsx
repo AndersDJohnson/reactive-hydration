@@ -41,7 +41,7 @@ export const ReactiveHydrate = (
           // This ID has to be here since it's the only one stable between server render and post client hydration.
           data-id={id}
           // For soft route loading on client-side, check for `window`.
-          data-loaded={typeof window === "object"}
+          data-loaded={forceHydrate ? false : typeof window === "object"}
         >
           {props.children}
         </div>

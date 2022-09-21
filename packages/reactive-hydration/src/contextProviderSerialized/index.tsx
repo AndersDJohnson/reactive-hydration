@@ -23,10 +23,6 @@ export function contextProviderSerialized<T>(context: Context<T>) {
 
     const usedId = useId();
 
-    if (typeof window === "object" && !hasSoftRouted && !forceHydrate) {
-      return <Provider value={value}>{children}</Provider>;
-    }
-
     let idFromMap = idByValueMap.get(value);
 
     if (!idFromMap) {
@@ -47,9 +43,21 @@ export function contextProviderSerialized<T>(context: Context<T>) {
       // Fallback to a randomly generated unique ID for this context instance.
       usedId;
 
+    if (typeof window === "object" && !hasSoftRouted && !forceHydrate) {
+      return (
+        // <div
+        //   data-context-id={id}
+        //   data-context-name={displayName}
+        //   data-context-value={serializedValue}
+        // >
+        <Provider value={value}>{children}</Provider>
+        // </div>
+      );
+    }
+
     return (
       <div
-        data-context-id={id}
+        data-context-id={forceHydrate ? "" : id}
         data-context-name={displayName}
         data-context-value={serializedValue}
       >

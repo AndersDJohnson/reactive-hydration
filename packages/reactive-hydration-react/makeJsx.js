@@ -51,6 +51,11 @@ const getType = (Type) => {
   return RType;
 };
 
+const forceHydrate =
+  typeof window === "object"
+    ? window.location.search.includes("forceHydrate")
+    : false;
+
 let initialUrl = typeof window === "object" ? window.location.href : undefined;
 let hasSoftRouted = false;
 
@@ -75,7 +80,7 @@ exports.makeJsx = (_label, jsxRuntime) => {
 
     // Handle our `React.lazy` wrappers for nested hydration deferral.
     if (type.reactiveHydrateLoader) {
-      if (typeof window === "object" && !hasSoftRouted) {
+      if (typeof window === "object" && !hasSoftRouted && !forceHydrate) {
         const name = getTypeName(type);
 
         // TODO: A component that consumes and renders the SSR HTML from its hydrating ancestor.
