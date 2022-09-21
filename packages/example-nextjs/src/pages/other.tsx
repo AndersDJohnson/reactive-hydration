@@ -21,4 +21,7 @@ const Other: NextPage = () => {
   );
 };
 
+// Disable Automatic Static Optimization: https://nextjs.org/docs/advanced-features/automatic-static-optimization
+Other.getInitialProps = async () => ({});
+
 export default Other;

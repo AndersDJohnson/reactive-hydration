@@ -1,15 +1,10 @@
-import { useState } from "react";
 import { makeResourceFromPromise } from "./makeResourceFromPromise";
 
-export const ExampleClientComponentSuspense = () => {
-  const [resource] = useState(() =>
-    makeResourceFromPromise(
-      new Promise<string>((resolve) =>
-        setTimeout(() => resolve("hello"), 10000)
-      )
-    )
-  );
+const resource = makeResourceFromPromise(
+  new Promise<string>((resolve) => setTimeout(() => resolve("hello"), 2000))
+);
 
+export const ExampleClientComponentSuspense = () => {
   const value = resource();
 
   return (
