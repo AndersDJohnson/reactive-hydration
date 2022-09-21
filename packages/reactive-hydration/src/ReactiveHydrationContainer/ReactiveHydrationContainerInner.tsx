@@ -75,7 +75,7 @@ export const ReactiveHydrationContainerInner = memo(
       }[]
     >(() => []);
 
-    const [forcedRender, setForcedRender] = useState(() => ({}));
+    const [, setForcedRender] = useState(() => ({}));
     const forceRender = useCallback(() => setForcedRender({}), []);
 
     const [pendingCallbacks, setPendingCallbacks] = useState<(() => void)[]>(
@@ -224,10 +224,6 @@ export const ReactiveHydrationContainerInner = memo(
         $newElement.dataset.id = id;
         $newElement.dataset.loading = "false";
         $newElement.dataset.loaded = "true";
-
-        if (callback) {
-          setPendingCallbacks((p) => [...p, callback]);
-        }
 
         const $contexts = [];
 
@@ -439,6 +435,10 @@ export const ReactiveHydrationContainerInner = memo(
         // And ensure click callbacks fire after new portal is inserted into DOM.
         setTimeout(() => {
           $component.replaceWith($newElement);
+
+          if (callback) {
+            setPendingCallbacks((p) => [...p, callback]);
+          }
         });
       },
       [
@@ -463,7 +463,7 @@ export const ReactiveHydrationContainerInner = memo(
       setTimeout(() => {
         callbacks.forEach((callback) => callback());
       });
-    }, [forcedRender, pendingCallbacks]);
+    }, [pendingCallbacks]);
 
     useEffect(() => {
       // TODO: Effects should not short circuit on refs - refactor to ref callback.
