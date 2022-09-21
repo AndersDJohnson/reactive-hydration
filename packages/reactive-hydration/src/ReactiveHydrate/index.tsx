@@ -26,8 +26,13 @@ import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainer
  */
 export const reactiveHydrate = <
   P extends PropsWithChildren<{
+    reactiveHydrateNestedHtmlByComponentPath?: Record<
+      string,
+      string | undefined
+    >;
     reactiveHydrateId?: string;
     reactiveHydratePortalState?: Record<string, any>;
+    componentPath?: string;
   }>
 >(
   args: {
@@ -49,8 +54,11 @@ export const reactiveHydrate = <
     const { name, states } = args;
 
     const {
+      reactiveHydrateNestedHtmlByComponentPath:
+        reactiveHydrateNestedHtmlByComponentPathProp,
       reactiveHydratePortalState: reactiveHydratePortalStateProp,
       reactiveHydrateId: reactiveHydrateIdProp,
+      componentPath: componentPathProp,
     } = props;
 
     // TODO: If these IDs isn't stable enough, we could just resolve the DOM children at runtime that aren't nested inside a deeper client component.
@@ -67,6 +75,10 @@ export const reactiveHydrate = <
     const reactiveHydratePortalState =
       reactiveHydratePortalStateProp ?? reactiveHydratePortalStateContext;
 
+    const reactiveHydrateNestedHtmlByComponentPath =
+      reactiveHydrateNestedHtmlByComponentPathProp;
+    // TODO: ?? reactiveHydrateNestedHtmlByComponentPathContext
+
     const [componentIndex, setComponentIndex] = useState(0);
 
     useEffect(() => {
@@ -75,10 +87,13 @@ export const reactiveHydrate = <
       return () => unregisterComponentPath?.(name);
     }, [registerComponentPath, unregisterComponentPath, name]);
 
-    const componentPath = useMemo(
+    const componentPathComputed = useMemo(
       () => [...parentComponentPath, name, componentIndex],
       [name, parentComponentPath, componentIndex]
     );
+
+    const componentPath =
+      componentPathProp?.split(".") ?? componentPathComputed;
 
     const [reactiveHydrateState] = useState(() => {
       if (!reactiveHydratePortalState) return;
@@ -120,8 +135,12 @@ export const reactiveHydrate = <
         value={reactiveHydrationInnardsContextValue}
       >
         <ReactiveHydrateContextProvider
+          componentPath={componentPath}
           reactiveHydratingId={reactiveHydrateIdProp}
           reactiveHydratePortalState={reactiveHydratePortalState}
+          reactiveHydrateNestedHtmlByComponentPath={
+            reactiveHydrateNestedHtmlByComponentPath
+          }
           usedHooksRef={usedHooksRef}
         >
           <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
@@ -131,6 +150,8 @@ export const reactiveHydrate = <
               ) : null}
 
               <ReactiveHydrationInnardsContext.Provider value={undefined}>
+                <span>componentPath = {componentPath.join(".")}</span>
+
                 <Comp {...props} reactiveHydrateSkip />
               </ReactiveHydrationInnardsContext.Provider>
             </SerializedStateContext.Provider>

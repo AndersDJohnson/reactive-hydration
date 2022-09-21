@@ -13,6 +13,7 @@ export interface HooksRef {
 
 export const ReactiveHydrateContext = createContext<{
   reactiveHydratingId?: string;
+  reactiveHydrateNestedHtmlByComponentPath?: Record<string, string | undefined>;
   reactiveHydratePortalState?: Record<string, any>;
   parentComponentPath: (string | number)[];
   registerComponentPath?: (name: string) => number;
@@ -26,14 +27,22 @@ ReactiveHydrateContext.displayName = "ReactiveHydrateContext";
 
 export const ReactiveHydrateContextProvider = (
   props: PropsWithChildren<{
+    componentPath: (string | number)[];
     reactiveHydratingId?: string;
+    reactiveHydrateNestedHtmlByComponentPath?: Record<
+      string,
+      string | undefined
+    >;
     reactiveHydratePortalState?: Record<string, any>;
     usedHooksRef?: RefObject<HooksRef>;
   }>
 ) => {
   const {
     children,
+    componentPath,
     reactiveHydratingId,
+    reactiveHydrateNestedHtmlByComponentPath:
+      reactiveHydrateNestedHtmlByComponentPathProp,
     reactiveHydratePortalState: reactiveHydratePortalStateProp,
     usedHooksRef,
   } = props;
@@ -46,19 +55,26 @@ export const ReactiveHydrateContextProvider = (
   const reactiveHydratePortalState =
     reactiveHydratePortalStateProp ?? reactiveHydratePortalStateContext;
 
-  const registerComponentPath = useCallback(() => {
-    const currentIndex = registry.get(name);
+  const reactiveHydrateNestedHtmlByComponentPath =
+    reactiveHydrateNestedHtmlByComponentPathProp;
+  // TODO: ?? reactiveHydrateNestedHtmlByComponentPathContext
 
-    const newIndex = (currentIndex ?? -1) + 1;
+  const registerComponentPath = useCallback(
+    (name: string) => {
+      const currentIndex = registry.get(name);
 
-    registry.set(name, newIndex);
+      const newIndex = (currentIndex ?? -1) + 1;
 
-    return newIndex;
-  }, [registry]);
+      registry.set(name, newIndex);
+
+      return newIndex;
+    },
+    [registry]
+  );
 
   const unregisterComponentPath = useCallback(
     (name: string) => {
-      const currentIndex = registry.get(name);
+      const currentIndex = registry.get(name) ?? 0;
 
       registry.set(name, currentIndex - 1);
     },
@@ -68,14 +84,17 @@ export const ReactiveHydrateContextProvider = (
   const reactiveHydrateContextValue = useMemo(
     () => ({
       reactiveHydratingId,
+      reactiveHydrateNestedHtmlByComponentPath,
       reactiveHydratePortalState,
-      parentComponentPath: [],
+      parentComponentPath: componentPath ?? [],
       registerComponentPath,
       unregisterComponentPath,
       usedHooksRef,
     }),
     [
+      componentPath,
       reactiveHydratingId,
+      reactiveHydrateNestedHtmlByComponentPath,
       reactiveHydratePortalState,
       registerComponentPath,
       unregisterComponentPath,

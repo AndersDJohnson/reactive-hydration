@@ -1,73 +1,82 @@
 import domElementPath from "dom-element-path";
 import { Hydrate } from "../types";
 
-const clicksMap = new WeakMap();
-
 interface Args {
-  $component: HTMLElement;
+  $container: HTMLElement;
   hydrate: Hydrate;
-  id: string;
 }
 
+// TODO: Also check a global variable tracking any clicks by ID that occur
+// before full JS hydration, using inline onclick listeners in the SSR HTML.
+
+const clickedIdsMap = new Map<string, boolean>();
+
+const clicksSelector = "[data-click]";
+
 export const pluginClick = (args: Args) => {
-  const { $component, hydrate, id } = args;
+  const { $container, hydrate } = args;
 
-  // TODO: Also check a global variable tracking any clicks by ID that occur
-  // before full JS hydration, using inline onclick listeners in the SSR HTML.
-  const clicksSelector = "[data-click]";
+  const handler = (event: MouseEvent) => {
+    const $target = event.target;
 
-  const $clicks = $component.querySelectorAll<HTMLElement>(clicksSelector);
+    if (!$target) return;
+    if (!($target as HTMLElement).matches) return;
 
-  $clicks.forEach(($click) => {
-    if (clicksMap.has($click)) return;
+    const $click = $target as HTMLElement;
+
+    if (!$click.matches(clicksSelector)) return;
 
     const closestId = $click.closest<HTMLElement>("[data-id]")?.dataset.id;
 
-    if (closestId !== id) return;
+    const $component = $container.querySelector<HTMLElement>(
+      `[data-component][data-id="${closestId}"]`
+    );
 
-    clicksMap.set($click, true);
+    if (!$component) return;
 
-    $click.addEventListener("click", () => {
-      // const clickId = $click.dataset.click;
+    const id = $component.dataset.id;
+    const loaded = $component.dataset.loaded;
 
-      const clickPath = domElementPath($click);
+    // Don't re-hydrate - would cause infinite loops.
+    if (loaded === "true") return;
 
-      hydrate({
-        $component,
-        reason: ["clicked", $click],
-        callback: () => {
-          // const $portal = document.querySelector(
-          //   `[data-id="${id}"]`
-          // );
+    if (!id) return;
 
-          // console.log("*** $portal", $portal);
+    if (clickedIdsMap.has(id)) return;
 
-          // if (!$portal) return;
+    clickedIdsMap.set(id, true);
 
-          // const newId = ($portal.children[0] as HTMLElement).dataset
-          //   .id;
+    // const clickId = $click.dataset.click;
 
-          // const postClickSelector = `[data-id="${newId}"][data-click="${clickId}"]`;
+    const clickPath = domElementPath($click);
 
-          // console.log("*** postClickSelector", postClickSelector);
+    hydrate({
+      $component,
+      reason: ["clicked", $click],
+      callback: () => {
+        // const $portal = document.querySelector(
+        //   `[data-id="${id}"]`
+        // );
+        // console.log("*** $portal", $portal);
+        // if (!$portal) return;
+        // const newId = ($portal.children[0] as HTMLElement).dataset
+        //   .id;
+        // const postClickSelector = `[data-id="${newId}"][data-click="${clickId}"]`;
+        // console.log("*** postClickSelector", postClickSelector);
 
-          // TODO: To help avoid issues with hydration mismatch, would it be more stable
-          // to track by component path & index (like state) rather than by `domElementPath`?
+        // TODO: To help avoid issues with hydration mismatch, would it be more stable
+        // to track by component path & index (like state) rather than by `domElementPath`?
+        const $postClick = document.querySelector<HTMLElement>(clickPath);
 
-          const $postClick = document.querySelector<HTMLElement>(clickPath);
+        if (!$postClick) {
+          console.error("Could not find element to click by path:", clickPath);
+        }
 
-          if (!$postClick) {
-            console.error(
-              "Could not find element to click by path:",
-              clickPath
-            );
-          }
-
-          // TODO: Handle missing element target? Maybe something else in DOM changed during load.
-
-          $postClick?.click();
-        },
-      });
+        // TODO: Handle missing element target? Maybe something else in DOM changed during load.
+        $postClick?.click();
+      },
     });
-  });
+  };
+
+  $container.addEventListener("click", handler);
 };

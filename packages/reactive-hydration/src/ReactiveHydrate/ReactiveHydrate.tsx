@@ -24,7 +24,9 @@ export const ReactiveHydrate = (
 
   const id = idProp ?? defaultId;
 
-  const { reactiveHydratingId } = useContext(ReactiveHydrateContext);
+  const { reactiveHydratingId, parentComponentPath } = useContext(
+    ReactiveHydrateContext
+  );
 
   // TODO: Is this still needed?
   const isHydratingSelf = reactiveHydratingId === id;
@@ -34,6 +36,7 @@ export const ReactiveHydrate = (
       {typeof window !== "object" || !isHydratingSelf || forceHydrate ? (
         <div
           data-component={props.name}
+          data-component-path={parentComponentPath.join(".")}
           data-states={props.states}
           // This ID has to be here since it's the only one stable between server render and post client hydration.
           data-id={id}

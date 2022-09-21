@@ -2,7 +2,7 @@ import { useRecoilState } from "recoil";
 import { textState } from "../../state/textState";
 import { text2State } from "../../state/text2State";
 
-export const ExampleClientComponent = (props: any) => {
+export const ExampleClientComponent = () => {
   const [text] = useRecoilState(textState);
   const [text2] = useRecoilState(text2State);
 

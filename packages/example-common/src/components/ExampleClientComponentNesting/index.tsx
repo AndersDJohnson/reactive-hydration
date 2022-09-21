@@ -1,8 +1,43 @@
+import { lazy } from "react";
 import { useRecoilState } from "recoil";
 import { textState } from "../../state/textState";
-import { ExampleClientComponent } from "../ExampleClientComponent";
-import { ExampleClientComponent1 } from "../ExampleClientComponent1";
-import { ExampleClientComponent2 } from "../ExampleClientComponent2";
+
+// This is just a trick to get the nested component out of the bundle for this ancestor component.
+// This would probably be handled by a compile step that would rewrite the import:
+// `import { ExampleClientComponent } from '../ExampleClientComponent.lazy';`
+// after generating a lazy file next to the component with `reactiveHydrateLoader = true`.
+const ExampleClientComponent = lazy(() =>
+  import("../ExampleClientComponent").then((mod) => ({
+    default: mod.ExampleClientComponent,
+  }))
+);
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent.displayName = "ExampleClientComponent";
+// TODO: Copy `states` any other static properties?
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent.reactiveHydrateLoader = true;
+
+const ExampleClientComponent1 = lazy(() =>
+  import("../ExampleClientComponent1").then((mod) => ({
+    default: mod.ExampleClientComponent1,
+  }))
+);
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent1.displayName = "ExampleClientComponent1";
+// TODO: Copy `states` any other static properties?
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent1.reactiveHydrateLoader = true;
+
+const ExampleClientComponent2 = lazy(() =>
+  import("../ExampleClientComponent2").then((mod) => ({
+    default: mod.ExampleClientComponent2,
+  }))
+);
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent2.displayName = "ExampleClientComponent2";
+// TODO: Copy `states` any other static properties?
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent2.reactiveHydrateLoader = true;
 
 export const ExampleClientComponentNesting = () => {
   const [text] = useRecoilState(textState);
@@ -21,6 +56,7 @@ export const ExampleClientComponentNesting = () => {
           paddingTop: 12,
         }}
       >
+        <span>lazy:</span>
         <ExampleClientComponent />
 
         <ExampleClientComponent1 />
