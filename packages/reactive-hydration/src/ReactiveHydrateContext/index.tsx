@@ -13,8 +13,7 @@ export interface HooksRef {
 
 export const ReactiveHydrateContext = createContext<{
   reactiveHydratingId?: string;
-  // TODO: Different type
-  reactiveHydrateNestedHtml?: string;
+  reactiveHydrateNestedHtmlByComponentPath?: Record<string, string | undefined>;
   reactiveHydratePortalState?: Record<string, any>;
   parentComponentPath: (string | number)[];
   registerComponentPath?: (name: string) => number;
@@ -30,8 +29,10 @@ export const ReactiveHydrateContextProvider = (
   props: PropsWithChildren<{
     componentPath: (string | number)[];
     reactiveHydratingId?: string;
-    // TODO: Different type
-    reactiveHydrateNestedHtml?: string;
+    reactiveHydrateNestedHtmlByComponentPath?: Record<
+      string,
+      string | undefined
+    >;
     reactiveHydratePortalState?: Record<string, any>;
     usedHooksRef?: RefObject<HooksRef>;
   }>
@@ -40,7 +41,8 @@ export const ReactiveHydrateContextProvider = (
     children,
     componentPath,
     reactiveHydratingId,
-    reactiveHydrateNestedHtml: reactiveHydrateNestedHtmlProp,
+    reactiveHydrateNestedHtmlByComponentPath:
+      reactiveHydrateNestedHtmlByComponentPathProp,
     reactiveHydratePortalState: reactiveHydratePortalStateProp,
     usedHooksRef,
   } = props;
@@ -53,8 +55,9 @@ export const ReactiveHydrateContextProvider = (
   const reactiveHydratePortalState =
     reactiveHydratePortalStateProp ?? reactiveHydratePortalStateContext;
 
-  const reactiveHydrateNestedHtml = reactiveHydrateNestedHtmlProp;
-  // TODO: ?? reactiveHydrateNestedHtmlContext
+  const reactiveHydrateNestedHtmlByComponentPath =
+    reactiveHydrateNestedHtmlByComponentPathProp;
+  // TODO: ?? reactiveHydrateNestedHtmlByComponentPathContext
 
   const registerComponentPath = useCallback(() => {
     const currentIndex = registry.get(name);
@@ -78,7 +81,7 @@ export const ReactiveHydrateContextProvider = (
   const reactiveHydrateContextValue = useMemo(
     () => ({
       reactiveHydratingId,
-      reactiveHydrateNestedHtml,
+      reactiveHydrateNestedHtmlByComponentPath,
       reactiveHydratePortalState,
       parentComponentPath: componentPath ?? [],
       registerComponentPath,
@@ -88,7 +91,7 @@ export const ReactiveHydrateContextProvider = (
     [
       componentPath,
       reactiveHydratingId,
-      reactiveHydrateNestedHtml,
+      reactiveHydrateNestedHtmlByComponentPath,
       reactiveHydratePortalState,
       registerComponentPath,
       unregisterComponentPath,

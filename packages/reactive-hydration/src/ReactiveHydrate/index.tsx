@@ -26,10 +26,13 @@ import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainer
  */
 export const reactiveHydrate = <
   P extends PropsWithChildren<{
-    // TODO: Different type
-    reactiveHydrateNestedHtml?: string;
+    reactiveHydrateNestedHtmlByComponentPath?: Record<
+      string,
+      string | undefined
+    >;
     reactiveHydrateId?: string;
     reactiveHydratePortalState?: Record<string, any>;
+    componentPath?: string;
   }>
 >(
   args: {
@@ -51,9 +54,11 @@ export const reactiveHydrate = <
     const { name, states } = args;
 
     const {
-      reactiveHydrateNestedHtml: reactiveHydrateNestedHtmlProp,
+      reactiveHydrateNestedHtmlByComponentPath:
+        reactiveHydrateNestedHtmlByComponentPathProp,
       reactiveHydratePortalState: reactiveHydratePortalStateProp,
       reactiveHydrateId: reactiveHydrateIdProp,
+      componentPath: componentPathProp,
     } = props;
 
     // TODO: If these IDs isn't stable enough, we could just resolve the DOM children at runtime that aren't nested inside a deeper client component.
@@ -70,8 +75,9 @@ export const reactiveHydrate = <
     const reactiveHydratePortalState =
       reactiveHydratePortalStateProp ?? reactiveHydratePortalStateContext;
 
-    const reactiveHydrateNestedHtml = reactiveHydrateNestedHtmlProp;
-    // TODO: ?? reactiveHydrateNestedHtmlContext
+    const reactiveHydrateNestedHtmlByComponentPath =
+      reactiveHydrateNestedHtmlByComponentPathProp;
+    // TODO: ?? reactiveHydrateNestedHtmlByComponentPathContext
 
     const [componentIndex, setComponentIndex] = useState(0);
 
@@ -81,10 +87,13 @@ export const reactiveHydrate = <
       return () => unregisterComponentPath?.(name);
     }, [registerComponentPath, unregisterComponentPath, name]);
 
-    const componentPath = useMemo(
+    const componentPathComputed = useMemo(
       () => [...parentComponentPath, name, componentIndex],
       [name, parentComponentPath, componentIndex]
     );
+
+    const componentPath =
+      componentPathProp?.split(".") ?? componentPathComputed;
 
     const [reactiveHydrateState] = useState(() => {
       if (!reactiveHydratePortalState) return;
@@ -129,7 +138,9 @@ export const reactiveHydrate = <
           componentPath={componentPath}
           reactiveHydratingId={reactiveHydrateIdProp}
           reactiveHydratePortalState={reactiveHydratePortalState}
-          reactiveHydrateNestedHtml={reactiveHydrateNestedHtml}
+          reactiveHydrateNestedHtmlByComponentPath={
+            reactiveHydrateNestedHtmlByComponentPath
+          }
           usedHooksRef={usedHooksRef}
         >
           <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>

@@ -118,10 +118,12 @@ export const ReactiveHydrationContainerInner = memo(
 
         const id = $component.dataset?.id;
         const name = $component.dataset?.component;
+        const componentPath = $component.dataset?.componentPath;
         const loaded = $component.dataset?.loaded;
 
         if (!id) return;
         if (!name) return;
+        if (!componentPath) return;
 
         // Don't re-hydrate - would cause infinite loops.
         if (loaded === "true") {
@@ -149,14 +151,17 @@ export const ReactiveHydrationContainerInner = memo(
 
         $component.dataset.loading = "true";
 
-        const ImportedComponent: ComponentType<{
-          reactiveHydrateId?: string;
-          // TODO: Different type
-          reactiveHydrateNestedHtml?: string;
-          reactiveHydratePortalState?: Record<string, any>;
-        }> = await importComponent(name);
-
-        const reactiveHydrateId = $component.dataset.id;
+        const ImportedComponent = (await importComponent(
+          name
+        )) as ComponentType<{
+          componentPath: string;
+          reactiveHydrateId: string;
+          reactiveHydrateNestedHtmlByComponentPath: Record<
+            string,
+            string | undefined
+          >;
+          reactiveHydratePortalState: Record<string, any>;
+        }>;
 
         const portalState: Record<string, any> = {};
 
@@ -216,7 +221,7 @@ export const ReactiveHydrationContainerInner = memo(
         for (const [key, value] of Object.entries(dataset)) {
           $newElement.dataset[key] = value;
         }
-        $newElement.dataset.id = reactiveHydrateId;
+        $newElement.dataset.id = id;
         $newElement.dataset.loading = "false";
         $newElement.dataset.loaded = "true";
 
@@ -385,15 +390,21 @@ export const ReactiveHydrationContainerInner = memo(
 
         // TODO: This is a testing hack. We need to actually deep scrape nested components
         // and provide a data structure to map them by component path.
-        const reactiveHydrateNestedHtml = $component.querySelector(
-          '[data-component="ExampleClientComponent"]'
-        )?.outerHTML;
+        const reactiveHydrateNestedHtmlByComponentPath = {
+          "ExampleServerComponent.0.ExampleClientComponentNesting.0.ExampleClientComponent.0":
+            $component.querySelector(
+              '[data-component="ExampleClientComponent"]'
+            )?.outerHTML,
+        };
 
         const portal = createPortal(
           <ImportedComponent
-            reactiveHydrateId={reactiveHydrateId}
+            componentPath={componentPath}
+            reactiveHydrateId={id}
             reactiveHydratePortalState={portalState}
-            reactiveHydrateNestedHtml={reactiveHydrateNestedHtml}
+            reactiveHydrateNestedHtmlByComponentPath={
+              reactiveHydrateNestedHtmlByComponentPath
+            }
           />,
           $newElement
         );

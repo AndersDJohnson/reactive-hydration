@@ -65,8 +65,14 @@ exports.makeJsx = (_label, jsxRuntime) => {
     // Handle our `React.lazy` wrappers for nested hydration deferral.
     if (type.reactiveHydrateLoader) {
       if (typeof window === "object") {
+        const name = getTypeName(type);
+
         // TODO: A component that consumes and renders the SSR HTML from its hydrating ancestor.
-        return origJsx(ReactiveHydrateLoader, {});
+        return origJsx(ReactiveHydrateLoader, {
+          name,
+          // TODO: Don't hard-code to zero.
+          index: 0,
+        });
       } else {
         const ReactiveHydrateType = getType(type);
 
