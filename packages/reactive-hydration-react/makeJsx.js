@@ -51,6 +51,9 @@ const getType = (Type) => {
   return RType;
 };
 
+let initialUrl = typeof window === "object" ? window.location.href : undefined;
+let hasSoftRouted = false;
+
 exports.makeJsx = (_label, jsxRuntime) => {
   global.jsx_runtime_1 = jsxRuntime;
 
@@ -58,13 +61,21 @@ exports.makeJsx = (_label, jsxRuntime) => {
     jsxRuntime.createElement ?? jsxRuntime.jsxDEV ?? jsxRuntime.jsx;
 
   return (type, ...args) => {
+    // TODO: Subscribe to location changes.
+    if (!hasSoftRouted) {
+      // TODO: Will this have ill effect on any rerenders during page transitions?
+      if (typeof window === "object" && window.location.href !== initialUrl) {
+        hasSoftRouted = true;
+      }
+    }
+
     if (type._context) {
       return origJsx(type, ...args);
     }
 
     // Handle our `React.lazy` wrappers for nested hydration deferral.
     if (type.reactiveHydrateLoader) {
-      if (typeof window === "object") {
+      if (typeof window === "object" && !hasSoftRouted) {
         const name = getTypeName(type);
 
         // TODO: A component that consumes and renders the SSR HTML from its hydrating ancestor.

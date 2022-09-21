@@ -9,11 +9,12 @@ import {
   ReactiveHydrationContainerInnerProps,
 } from "./ReactiveHydrationContainerInner";
 
-let initialUrl = typeof window === "object" ? window.location.href : undefined;
 const forceHydrate =
   typeof window === "object"
     ? window.location.search.includes("forceHydrate")
     : false;
+
+let initialUrl = typeof window === "object" ? window.location.href : undefined;
 let hasSoftRouted = false;
 
 export interface ReactiveHydrationContainerProps
@@ -53,12 +54,11 @@ export const ReactiveHydrationContainer = memo(
     const { Comp, LazyComp, importComponent, importContext } = props;
 
     // TODO: Subscribe to location changes.
-    const isClientSideSoftRouteAwayFromInitialUrl =
+    if (!hasSoftRouted) {
       // TODO: Will this have ill effect on any rerenders during page transitions?
-      typeof window === "object" && window.location.href !== initialUrl;
-
-    if (isClientSideSoftRouteAwayFromInitialUrl) {
-      hasSoftRouted = true;
+      if (typeof window === "object" && window.location.href !== initialUrl) {
+        hasSoftRouted = true;
+      }
     }
 
     const reactiveHydrationContainerContext = hasSoftRouted
