@@ -1,8 +1,6 @@
 import domElementPath from "dom-element-path";
 import { Hydrate } from "../types";
 
-const hydratedMap = new WeakMap<HTMLElement, boolean>();
-
 interface Args {
   $container: HTMLElement;
   hydrate: Hydrate;
@@ -11,12 +9,14 @@ interface Args {
 // TODO: Also check a global variable tracking any clicks by ID that occur
 // before full JS hydration, using inline onclick listeners in the SSR HTML.
 
+const clickedIdsMap = new Map<string, boolean>();
+
 const clicksSelector = "[data-click]";
 
 export const pluginClick = (args: Args) => {
   const { $container, hydrate } = args;
 
-  $container.addEventListener("click", (event) => {
+  const handler = (event: MouseEvent) => {
     const $target = event.target;
 
     if (!$target) return;
@@ -34,10 +34,17 @@ export const pluginClick = (args: Args) => {
 
     if (!$component) return;
 
-    // Don't re-hydrate - would cause infinite loops.
-    if (hydratedMap.has($component)) return;
+    const id = $component.dataset.id;
+    const loaded = $component.dataset.loaded;
 
-    hydratedMap.set($component, true);
+    // Don't re-hydrate - would cause infinite loops.
+    if (loaded === "true") return;
+
+    if (!id) return;
+
+    if (clickedIdsMap.has(id)) return;
+
+    clickedIdsMap.set(id, true);
 
     // const clickId = $click.dataset.click;
 
@@ -50,21 +57,15 @@ export const pluginClick = (args: Args) => {
         // const $portal = document.querySelector(
         //   `[data-id="${id}"]`
         // );
-
         // console.log("*** $portal", $portal);
-
         // if (!$portal) return;
-
         // const newId = ($portal.children[0] as HTMLElement).dataset
         //   .id;
-
         // const postClickSelector = `[data-id="${newId}"][data-click="${clickId}"]`;
-
         // console.log("*** postClickSelector", postClickSelector);
 
         // TODO: To help avoid issues with hydration mismatch, would it be more stable
         // to track by component path & index (like state) rather than by `domElementPath`?
-
         const $postClick = document.querySelector<HTMLElement>(clickPath);
 
         if (!$postClick) {
@@ -72,9 +73,10 @@ export const pluginClick = (args: Args) => {
         }
 
         // TODO: Handle missing element target? Maybe something else in DOM changed during load.
-
         $postClick?.click();
       },
     });
-  });
+  };
+
+  $container.addEventListener("click", handler);
 };

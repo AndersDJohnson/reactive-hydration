@@ -23,8 +23,12 @@ import { Hydrate, Hydrator } from "./types";
 import { pluginContext } from "./plugins/context";
 import { ReactiveHydrationInnardsContext } from "../ReactiveHydrationInnardsContext";
 
-const hydratedComponentsMap = new Map();
-const ContextDefaultProviderWrapperByContextElement = new Map();
+const hydratedComponentIdsMap = new Map<string, boolean>();
+
+const ContextDefaultProviderWrapperByContextElement = new Map<
+  HTMLElement,
+  ReturnType<typeof makeContextDefaultProviderWrapper>
+>();
 
 export interface ReactiveHydrationContainerInnerProps {
   /**
@@ -114,11 +118,26 @@ export const ReactiveHydrationContainerInner = memo(
 
         const id = $component.dataset?.id;
         const name = $component.dataset?.component;
+        const loaded = $component.dataset?.loaded;
 
         if (!id) return;
         if (!name) return;
 
-        if (hydratedComponentsMap.has($component)) return;
+        // Don't re-hydrate - would cause infinite loops.
+        if (loaded === "true") {
+          return;
+        }
+
+        if (hydratedComponentIdsMap.get(id)) return;
+
+        hydratedComponentIdsMap.set(id, true);
+
+        // // TODO: Do we still need this `hasHydratedAncestor` check?
+        // const hasHydratedAncestor = $component.parentElement?.closest(
+        //   '[data-loaded="true"]'
+        // );
+
+        // if (hasHydratedAncestor) return;
 
         console.debug(
           "Hydrating",
@@ -128,8 +147,6 @@ export const ReactiveHydrationContainerInner = memo(
           ...(Array.isArray(reason) ? reason : [reason])
         );
 
-        hydratedComponentsMap.set($component, true);
-
         $component.dataset.loading = "true";
 
         const ImportedComponent: ComponentType<{
@@ -138,20 +155,6 @@ export const ReactiveHydrationContainerInner = memo(
           reactiveHydrateNestedHtml?: string;
           reactiveHydratePortalState?: Record<string, any>;
         }> = await importComponent(name);
-
-        const hasHydratedAncestor = [...hydratedComponentsMap.keys()].some(
-          ($hydratedComponent) =>
-            $hydratedComponent !== $component &&
-            $hydratedComponent.contains($component)
-        );
-
-        if (hasHydratedAncestor) {
-          if (callback) {
-            setPendingCallbacks((p) => [...p, callback]);
-          }
-
-          return;
-        }
 
         const reactiveHydrateId = $component.dataset.id;
 
@@ -351,6 +354,11 @@ export const ReactiveHydrationContainerInner = memo(
               );
             }
 
+            if (!ContextDefaultProviderWrapper) return;
+
+            const ExistingContextDefaultProviderWrapper =
+              ContextDefaultProviderWrapper;
+
             if (
               contextPortalTreeEntry &&
               !contextPortalTreeEntry.ContextWrapper
@@ -358,7 +366,7 @@ export const ReactiveHydrationContainerInner = memo(
               const ContextWrapper = (props: PropsWithChildren<unknown>) => (
                 <DefaultProvider
                   key={contextPortalTreeEntry.key}
-                  Provider={ContextDefaultProviderWrapper}
+                  Provider={ExistingContextDefaultProviderWrapper}
                   defaultValue={Context.defaultValue}
                   deserializedValue={deserializedValue}
                 >

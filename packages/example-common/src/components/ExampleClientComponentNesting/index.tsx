@@ -5,13 +5,12 @@ import { textState } from "../../state/textState";
 // This is just a trick to get the nested component out of the bundle for this ancestor component.
 // This would probably be handled by a compile step that would rewrite the import:
 // `import { ExampleClientComponent } from '../ExampleClientComponent.lazy';`
-// after generating a lazy file next to the component.
+// after generating a lazy file next to the component with `reactiveHydrateLoader = true`.
 const ExampleClientComponent = lazy(() =>
   import("../ExampleClientComponent").then((mod) => ({
     default: mod.ExampleClientComponent,
   }))
 );
-
 // @ts-expect-error This property is only known to us.
 ExampleClientComponent.displayName = "ExampleClientComponent";
 // TODO: Copy `states` any other static properties?
