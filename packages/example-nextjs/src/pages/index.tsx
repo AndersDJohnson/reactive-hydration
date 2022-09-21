@@ -9,7 +9,8 @@ const Home: NextPage = () => {
       <h1>Home Page</h1>
 
       <nav>
-        <Link href="/other">Other Page</Link>
+        <Link href="/other">Other Page (SPA)</Link>{" "}
+        <a href="/other">Other Page (MPA)</a>
       </nav>
 
       <ExampleClientSetterButtonsDynamic />
