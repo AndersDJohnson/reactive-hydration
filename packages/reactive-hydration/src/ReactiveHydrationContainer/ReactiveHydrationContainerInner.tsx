@@ -129,13 +129,18 @@ export const ReactiveHydrationContainerInner = memo(
       for (const args of hydratingQueueRef.current) {
         // TODO: Check if component has a replacement due to a parent hydration.
 
-        const { $component, reason, callback } = args;
+        const { $component: $componentOriginal, reason, callback } = args;
 
-        const id = $component.dataset?.id;
-        const name = $component.dataset?.component;
-        const componentPath = $component.dataset?.componentPath;
-        const loaded = $component.dataset?.loaded;
+        const id = $componentOriginal.dataset?.id;
+        const name = $componentOriginal.dataset?.component;
+        const componentPath = $componentOriginal.dataset?.componentPath;
+        const loaded = $componentOriginal.dataset?.loaded;
 
+        const $component = containerRef.current?.querySelector<HTMLElement>(
+          `[data-component-path="${componentPath}"]`
+        );
+
+        if (!$component) return;
         if (!id) return;
         if (!name) return;
         if (!componentPath) return;
