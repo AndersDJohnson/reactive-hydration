@@ -114,7 +114,7 @@ export const ReactiveHydrationContainerInner = memo(
       [contextHydratorsByContextId]
     );
 
-    const hydratingCountRef = useRef(0);
+    const hydratingQueueRef = useRef<Parameters<Hydrate>[0][]>([]);
     const hydratingFlushQueueRef = useRef<
       {
         name: string;
@@ -123,9 +123,11 @@ export const ReactiveHydrationContainerInner = memo(
       }[]
     >([]);
 
-    const hydrate = useCallback<Hydrate>(
-      async (args) => {
-        hydratingCountRef.current++;
+    const hydrateBatch = useCallback(async () => {
+      // TODO: Sort queue by parents first.
+
+      for (const args of hydratingQueueRef.current) {
+        // TODO: Check if component has a replacement due to a parent hydration.
 
         const { $component, reason, callback } = args;
 
@@ -450,7 +452,9 @@ export const ReactiveHydrationContainerInner = memo(
           });
         }
 
-        hydratingCountRef.current--;
+        console.log("*** hydratingQueueRef.current.pop()");
+
+        hydratingQueueRef.current.pop();
 
         const flushEntry = {
           name,
@@ -464,37 +468,54 @@ export const ReactiveHydrationContainerInner = memo(
           },
         };
 
-        if (hydratingCountRef.current !== 0) {
-          hydratingFlushQueueRef.current.push(flushEntry);
-        } else {
-          forceRender();
+        hydratingFlushQueueRef.current.push(flushEntry);
+      }
 
-          setTimeout(() => {
-            // Sorting so parents run before children.
-            sortBy(hydratingFlushQueueRef.current, (e) => e.name).forEach((e) =>
-              e.flush()
-            );
+      forceRender();
 
-            setTimeout(() => {
-              setPendingCallbacks((p) => [
-                ...p,
-                ...hydratingFlushQueueRef.current
-                  .map((e) => e.callback)
-                  .filter(truthy),
-              ]);
-            });
-          });
-        }
+      setTimeout(() => {
+        // Sorting so parents run before children.
+        sortBy(hydratingFlushQueueRef.current, (e) => e.name).forEach((e) =>
+          e.flush()
+        );
+
+        setTimeout(() => {
+          setPendingCallbacks((p) => [
+            ...p,
+            ...hydratingFlushQueueRef.current
+              .map((e) => e.callback)
+              .filter(truthy),
+          ]);
+
+          hydratingFlushQueueRef.current = [];
+        });
+      });
+    }, [
+      contextFreePortals,
+      contextPortalTree,
+      forceRender,
+      getSetContextValueByContextElement,
+      importComponent,
+      importContext,
+      topmostContextPortalTreeEntries,
+    ]);
+
+    const hydrate = useCallback<Hydrate>(
+      async (args) => {
+        hydratingQueueRef.current.push(args);
+
+        console.log(
+          "*** hydratingQueueRef.current",
+          hydratingQueueRef.current.map(
+            (a) => a.$component.dataset?.componentPath
+          )
+        );
+
+        setTimeout(() => {
+          hydrateBatch();
+        });
       },
-      [
-        contextFreePortals,
-        contextPortalTree,
-        forceRender,
-        getSetContextValueByContextElement,
-        importComponent,
-        importContext,
-        topmostContextPortalTreeEntries,
-      ]
+      [hydrateBatch]
     );
 
     useEffect(() => {
