@@ -26,6 +26,7 @@ import { ReactiveHydrationContainerContext } from "../ReactiveHydrationContainer
  */
 export const reactiveHydrate = <
   P extends PropsWithChildren<{
+    realProps?: Record<string, any>;
     reactiveHydrateNestedHtmlByComponentPath?: Record<
       string,
       string | undefined
@@ -59,7 +60,13 @@ export const reactiveHydrate = <
       reactiveHydratePortalState: reactiveHydratePortalStateProp,
       reactiveHydrateId: reactiveHydrateIdProp,
       componentPath: componentPathProp,
+      ...realProps
     } = props;
+
+    const realPropsSerialized = useMemo(
+      () => JSON.stringify(realProps),
+      [realProps]
+    );
 
     // TODO: If these IDs isn't stable enough, we could just resolve the DOM children at runtime that aren't nested inside a deeper client component.
     const reactiveHydrateIdNew = useId();
@@ -143,7 +150,12 @@ export const reactiveHydrate = <
           }
           usedHooksRef={usedHooksRef}
         >
-          <ReactiveHydrate id={reactiveHydrateId} name={name} states={states}>
+          <ReactiveHydrate
+            id={reactiveHydrateId}
+            name={name}
+            states={states}
+            realPropsSerialized={realPropsSerialized}
+          >
             <SerializedStateContext.Provider value={serializeStateContextValue}>
               {serializedState ? (
                 <div data-id={reactiveHydrateId} data-state={serializedState} />

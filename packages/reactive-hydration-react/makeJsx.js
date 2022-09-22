@@ -90,7 +90,9 @@ exports.makeJsx = (_label, jsxRuntime) => {
       } else {
         const ReactiveHydrateType = getType(type);
 
-        return origJsx(ReactiveHydrateType, {});
+        const [props] = args;
+
+        return origJsx(ReactiveHydrateType, props);
       }
     }
 
