@@ -22,6 +22,7 @@ import { usePluginRecoil } from "./plugins/recoil";
 import { Hydrate, Hydrator } from "./types";
 import { pluginContext } from "./plugins/context";
 import { ReactiveHydrationInnardsContext } from "../ReactiveHydrationInnardsContext";
+import { componentElementRegistry } from "../componentElementRegistry";
 
 const hydratedComponentIdsMap = new Map<string, boolean>();
 
@@ -414,6 +415,8 @@ export const ReactiveHydrationContainerInner = memo(
           />,
           $newElement
         );
+
+        componentElementRegistry.set(componentPath, $newElement);
 
         const key = [...contextPortalTreePath, `${name}[${id}]`].join(" > ");
 
