@@ -16,9 +16,10 @@ export const ReactiveHydrate = (
     id?: string;
     name: string;
     states?: string;
+    realPropsSerialized?: string;
   }>
 ) => {
-  const { id: idProp } = props;
+  const { id: idProp, realPropsSerialized } = props;
 
   const defaultId = useId();
 
@@ -35,11 +36,12 @@ export const ReactiveHydrate = (
     <>
       {typeof window !== "object" || !isHydratingSelf || forceHydrate ? (
         <div
-          data-component={props.name}
-          data-component-path={parentComponentPath.join(".")}
-          data-states={props.states}
           // This ID has to be here since it's the only one stable between server render and post client hydration.
           data-id={id}
+          data-component={props.name}
+          data-component-path={parentComponentPath.join(".")}
+          data-props={realPropsSerialized}
+          data-states={props.states}
           // For soft route loading on client-side, check for `window`.
           data-loaded={forceHydrate ? false : typeof window === "object"}
         >

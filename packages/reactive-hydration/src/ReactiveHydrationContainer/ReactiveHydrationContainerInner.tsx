@@ -134,6 +134,12 @@ export const ReactiveHydrationContainerInner = memo(
 
         hydratedComponentIdsMap.set(id, true);
 
+        const realPropsSerialized = $component.dataset?.props;
+
+        const realProps = realPropsSerialized
+          ? JSON.parse(realPropsSerialized)
+          : undefined;
+
         // // TODO: Do we still need this `hasHydratedAncestor` check?
         // const hasHydratedAncestor = $component.parentElement?.closest(
         //   '[data-loaded="true"]'
@@ -404,6 +410,7 @@ export const ReactiveHydrationContainerInner = memo(
             reactiveHydrateNestedHtmlByComponentPath={
               reactiveHydrateNestedHtmlByComponentPath
             }
+            {...realProps}
           />,
           $newElement
         );

@@ -54,7 +54,7 @@ export const ExampleServerComponent = () => {
         <MyContext.Provider value={myContextValue}>
           <ExampleClientComponent />
 
-          <ExampleClientComponent />
+          <ExampleClientComponent testProp="Hi, I'm a test prop!" />
 
           <ExampleClientComponent1 />
 
