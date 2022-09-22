@@ -13,7 +13,9 @@ const ExampleClientComponent = lazy(() =>
 );
 // @ts-expect-error This property is only known to us.
 ExampleClientComponent.displayName = "ExampleClientComponent";
-// TODO: Copy `states` any other static properties?
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent.states = "textState,text2State";
+// TODO: Copy any other static properties?
 // @ts-expect-error This property is only known to us.
 ExampleClientComponent.reactiveHydrateLoader = true;
 
@@ -24,7 +26,9 @@ const ExampleClientComponent1 = lazy(() =>
 );
 // @ts-expect-error This property is only known to us.
 ExampleClientComponent1.displayName = "ExampleClientComponent1";
-// TODO: Copy `states` any other static properties?
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent1.states = "textState";
+// TODO: Copy any other static properties?
 // @ts-expect-error This property is only known to us.
 ExampleClientComponent1.reactiveHydrateLoader = true;
 
@@ -35,7 +39,9 @@ const ExampleClientComponent2 = lazy(() =>
 );
 // @ts-expect-error This property is only known to us.
 ExampleClientComponent2.displayName = "ExampleClientComponent2";
-// TODO: Copy `states` any other static properties?
+// @ts-expect-error This property is only known to us.
+ExampleClientComponent2.states = "text2State";
+// TODO: Copy any other static properties?
 // @ts-expect-error This property is only known to us.
 ExampleClientComponent2.reactiveHydrateLoader = true;
 
