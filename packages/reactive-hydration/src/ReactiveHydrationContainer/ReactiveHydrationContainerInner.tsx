@@ -8,6 +8,7 @@ import {
   useEffect,
   useRef,
 } from "react-actual";
+import { sortBy } from "lodash";
 import { useState } from "../react-actual";
 import { createPortal } from "react-dom";
 import { truthy } from "../utilities/truthy";
@@ -113,8 +114,19 @@ export const ReactiveHydrationContainerInner = memo(
       [contextHydratorsByContextId]
     );
 
+    const hydratingCountRef = useRef(0);
+    const hydratingFlushQueueRef = useRef<
+      {
+        name: string;
+        flush: () => void;
+        callback?: () => void;
+      }[]
+    >([]);
+
     const hydrate = useCallback<Hydrate>(
       async (args) => {
+        hydratingCountRef.current++;
+
         const { $component, reason, callback } = args;
 
         const id = $component.dataset?.id;
@@ -438,18 +450,41 @@ export const ReactiveHydrationContainerInner = memo(
           });
         }
 
-        forceRender();
+        hydratingCountRef.current--;
 
-        // TODO: Move into separate effect so it's guaranteed to run only after portals are rendered into component tree?
-        // This would avoid any flickering of empty DOM.
-        // And ensure click callbacks fire after new portal is inserted into DOM.
-        setTimeout(() => {
-          $component.replaceWith($newElement);
+        const flushEntry = {
+          name,
+          callback,
+          flush: () => {
+            // TODO: Move into separate effect so it's guaranteed to run only after portals are rendered into component tree?
+            // This would avoid any flickering of empty DOM.
+            // And ensure click callbacks fire after new portal is inserted into DOM.
 
-          if (callback) {
-            setPendingCallbacks((p) => [...p, callback]);
-          }
-        });
+            $component.replaceWith($newElement);
+          },
+        };
+
+        if (hydratingCountRef.current !== 0) {
+          hydratingFlushQueueRef.current.push(flushEntry);
+        } else {
+          forceRender();
+
+          setTimeout(() => {
+            // Sorting so parents run before children.
+            sortBy(hydratingFlushQueueRef.current, (e) => e.name).forEach((e) =>
+              e.flush()
+            );
+
+            setTimeout(() => {
+              setPendingCallbacks((p) => [
+                ...p,
+                ...hydratingFlushQueueRef.current
+                  .map((e) => e.callback)
+                  .filter(truthy),
+              ]);
+            });
+          });
+        }
       },
       [
         contextFreePortals,
