@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import { lazy, useCallback, useState } from "react";
 import { useRecoilState } from "recoil";
 import { textState } from "../../state/textState";
 
@@ -42,11 +42,21 @@ ExampleClientComponent2.reactiveHydrateLoader = true;
 export const ExampleClientComponentNesting = () => {
   const [text] = useRecoilState(textState);
 
+  const [count, setCount] = useState(0);
+
+  const handleClick = useCallback(() => setCount((c) => c + 1), []);
+
   return (
     <>
       <h4>ExampleClientComponentNesting</h4>
 
       <div>recoil textState = {text}</div>
+
+      <div>useState count = {count}</div>
+
+      <button onClick={handleClick} data-click>
+        count++
+      </button>
 
       <button data-click>hydrate</button>
 
