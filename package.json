@@ -7,8 +7,9 @@
   ],
   "scripts": {
     "build": "npx turbo run build",
+    "build-and-start-next": "yarn build --filter=!reactive-hydration-example-nextjs && yarn && yarn build --filter=reactive-hydration-example-nextjs --force --parallel && cd ./packages/example-nextjs && yarn start",
     "lint": "npx turbo run lint",
-    "postinstall": "rm -rf packages/*/node_modules/{react,react-dom,recoil,recoil-nexus}"
+    "postinstall": "rm -rf packages/*/node_modules/{react,react-dom,recoil,recoil-nexus,reactive-hydration,reactive-hydration-react,reactive-hydration-example-common}"
   },
   "devDependencies": {
     "turbo": "^1.4.6"
