@@ -21,4 +21,7 @@ const Home: NextPage = () => {
   );
 };
 
+// Disable Automatic Static Optimization: https://nextjs.org/docs/advanced-features/automatic-static-optimization
+Home.getInitialProps = async () => ({});
+
 export default Home;

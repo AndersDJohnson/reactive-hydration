@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { createContextWithDefaultValue } from "reactive-hydration";
 import { ExampleClientComponent } from "../ExampleClientComponent";
 import { ExampleClientComponent1 } from "../ExampleClientComponent1";
 import { ExampleClientComponent2 } from "../ExampleClientComponent2";
 import { ExampleClientComponentNesting } from "../ExampleClientComponentNesting";
+import { ExampleClientComponentSuspense } from "../ExampleClientComponentSuspense";
 import { MyContext } from "../../contexts/MyContext";
 
 const DummyContext = createContextWithDefaultValue(
@@ -58,6 +59,12 @@ export const ExampleServerComponent = () => {
           <ExampleClientComponent1 />
 
           <ExampleClientComponent2 />
+
+          <Suspense
+            fallback={<div>Loading ExampleClientComponentSuspense...</div>}
+          >
+            <ExampleClientComponentSuspense />
+          </Suspense>
 
           <ExampleClientComponentNesting />
 
