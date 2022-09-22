@@ -27,3 +27,4 @@ export const ExampleClientComponent = (props: ExampleClientComponentProps) => {
 };
 
 ExampleClientComponent.displayName = "ExampleClientComponent";
+ExampleClientComponent.states = "textState,textState2";
