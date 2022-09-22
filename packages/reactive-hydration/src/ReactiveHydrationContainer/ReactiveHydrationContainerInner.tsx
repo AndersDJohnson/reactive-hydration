@@ -127,7 +127,7 @@ export const ReactiveHydrationContainerInner = memo(
                 ...n,
                 dataset: {
                   id: n.$component?.dataset?.id,
-                  name: n.$component?.dataset?.name,
+                  name: n.$component?.dataset?.component,
                   componentPath: n.$component?.dataset?.componentPath,
                   loaded: n.$component?.dataset?.loaded,
                   props: n.$component?.dataset?.props,
@@ -152,9 +152,7 @@ export const ReactiveHydrationContainerInner = memo(
             );
 
             for (const n of sortedHydratingQueueWithDatasets) {
-              // TODO: Check if component has a replacement due to a parent hydration.
-
-              await new Promise((resolve) => setTimeout(resolve, 1000));
+              console.log("*** hydrating", n);
 
               const { dataset, reason, callback } = n;
 
@@ -170,349 +168,364 @@ export const ReactiveHydrationContainerInner = memo(
               if (!name) return;
               if (!componentPath) return;
 
-              // The component may have been replaced due concurrent hydration of an ancestor.
-              const $component =
-                containerRef.current?.querySelector<HTMLElement>(
-                  `[data-component-path="${componentPath}"]`
-                );
+              try {
+                // TODO: Check if component has a replacement due to a parent hydration.
 
-              if (!$component) return;
+                await new Promise((resolve) => setTimeout(resolve, 1000));
 
-              // Don't re-hydrate - would cause infinite loops.
-              if (loaded === "true") {
-                return;
-              }
-
-              if (hydratedComponentIdsMap.get(id)) return;
-
-              hydratedComponentIdsMap.set(id, true);
-
-              const realProps = realPropsSerialized
-                ? JSON.parse(realPropsSerialized)
-                : undefined;
-
-              // // TODO: Do we still need this `hasHydratedAncestor` check?
-              // const hasHydratedAncestor = $component.parentElement?.closest(
-              //   '[data-loaded="true"]'
-              // );
-
-              // if (hasHydratedAncestor) return;
-
-              console.debug(
-                "Hydrating",
-                componentPath,
-                "due to:",
-                ...(Array.isArray(reason) ? reason : [reason]),
-                $component
-              );
-
-              $component.dataset.loading = "true";
-
-              const ImportedComponent = (await importComponent(
-                name
-              )) as ComponentType<{
-                componentPath: string;
-                reactiveHydrateId: string;
-                reactiveHydrateNestedHtmlByComponentPath: Record<
-                  string,
-                  string | undefined
-                >;
-                reactiveHydratePortalState: Record<string, any>;
-              }>;
-
-              const portalState: Record<string, any> = {};
-
-              let handledIds: string[] = [];
-
-              let $currentComponent: HTMLElement | null = $component;
-              let previousComponentIndexByName = new Map();
-
-              while ($currentComponent) {
-                const currentName = $currentComponent?.dataset.component;
-                if (!currentName) continue;
-                const currentId = $currentComponent?.dataset.id;
-                if (!currentId) continue;
-
-                const currentSerializedStateSelector = `[data-id="${currentId}"][data-state]`;
-
-                const currentSerializedStateElement =
-                  $currentComponent?.querySelector<HTMLElement>(
-                    currentSerializedStateSelector
+                // The component may have been replaced due concurrent hydration of an ancestor.
+                const $component =
+                  containerRef.current?.querySelector<HTMLElement>(
+                    `[data-component-path="${componentPath}"]`
                   );
 
-                const currentSerializedState =
-                  currentSerializedStateElement?.dataset.state;
+                if (!$component) return;
 
-                const currentComponentIndex =
-                  (previousComponentIndexByName.get(currentName) ?? -1) + 1;
-
-                previousComponentIndexByName.set(
-                  currentName,
-                  currentComponentIndex
-                );
-
-                if (currentSerializedState) {
-                  const currentStateKey = `${currentName}.${currentComponentIndex}`;
-
-                  portalState[currentStateKey] = JSON.parse(
-                    currentSerializedState
-                  );
+                // Don't re-hydrate - would cause infinite loops.
+                if (loaded === "true") {
+                  return;
                 }
 
-                handledIds.push(currentId);
+                if (hydratedComponentIdsMap.get(id)) return;
 
-                const nextComponentSelector = `[data-component][data-id]${handledIds
-                  .map((hid) => `:not([data-id="${hid}"])`)
-                  .join("")}`;
+                hydratedComponentIdsMap.set(id, true);
 
-                const $nextComponent = $component.querySelector<HTMLElement>(
-                  nextComponentSelector
-                );
-
-                if ($currentComponent.contains($nextComponent)) {
-                  previousComponentIndexByName = new Map();
-                }
-
-                $currentComponent = $nextComponent;
-              }
-
-              const $newElement = document.createElement("div");
-
-              for (const [key, value] of Object.entries(dataset)) {
-                $newElement.dataset[key] = value;
-              }
-              $newElement.dataset.id = id;
-              $newElement.dataset.loading = "false";
-              $newElement.dataset.loaded = "true";
-
-              const $contexts = [];
-
-              let $closestContext: HTMLElement | null | undefined;
-              let $topmostContext: HTMLElement | null | undefined;
-
-              let $context: HTMLElement | null | undefined = $component;
-
-              let contextPortalTreePath = [];
-
-              // eslint-disable-next-line no-constant-condition -- We are handling carefully with `break` statements.
-              while (true) {
-                const $previous: HTMLElement | null | undefined = $context;
-                const previousId = $previous?.dataset.contextId;
-
-                $context = $context?.closest<HTMLElement>(
-                  "[data-context-value]"
-                );
-
-                if ($context) {
-                  $topmostContext = $context;
-                }
-
-                if ($context === $previous) {
-                  $context = $context.parentElement;
-                }
-
-                if (!$context) break;
-
-                if (!$closestContext) {
-                  $closestContext = $context;
-                }
-
-                const contextId = $context?.dataset.contextId;
-                const contextName = $context?.dataset.contextName;
-
-                if (!contextId) break;
-                if (!contextName) break;
-
-                contextPortalTreePath.push(`${contextName}[${contextId}]`);
-
-                const contextPortalTreeEntryKey =
-                  contextPortalTreePath.join(" > ");
-
-                let contextPortalTreeEntry = contextPortalTree.get(contextId);
-
-                if (!contextPortalTreeEntry) {
-                  contextPortalTreeEntry = {
-                    key: contextPortalTreeEntryKey,
-                    childPortalTreeEntries: [],
-                    leafPortals: [],
-                  };
-
-                  contextPortalTree.set(contextId, contextPortalTreeEntry);
-                }
-
-                const previousContextPortalTreeEntry = previousId
-                  ? contextPortalTree.get(previousId)
+                const realProps = realPropsSerialized
+                  ? JSON.parse(realPropsSerialized)
                   : undefined;
 
-                if (previousContextPortalTreeEntry) {
-                  contextPortalTreeEntry.childPortalTreeEntries.push(
-                    previousContextPortalTreeEntry
+                // // TODO: Do we still need this `hasHydratedAncestor` check?
+                // const hasHydratedAncestor = $component.parentElement?.closest(
+                //   '[data-loaded="true"]'
+                // );
+
+                // if (hasHydratedAncestor) return;
+
+                console.debug(
+                  "Hydrating",
+                  componentPath,
+                  "due to:",
+                  ...(Array.isArray(reason) ? reason : [reason]),
+                  $component
+                );
+
+                $component.dataset.loading = "true";
+
+                const ImportedComponent = (await importComponent(
+                  name
+                )) as ComponentType<{
+                  componentPath: string;
+                  reactiveHydrateId: string;
+                  reactiveHydrateNestedHtmlByComponentPath: Record<
+                    string,
+                    string | undefined
+                  >;
+                  reactiveHydratePortalState: Record<string, any>;
+                }>;
+
+                const portalState: Record<string, any> = {};
+
+                let handledIds: string[] = [];
+
+                let $currentComponent: HTMLElement | null = $component;
+                let previousComponentIndexByName = new Map();
+
+                while ($currentComponent) {
+                  const currentName = $currentComponent?.dataset.component;
+                  if (!currentName) continue;
+                  const currentId = $currentComponent?.dataset.id;
+                  if (!currentId) continue;
+
+                  const currentSerializedStateSelector = `[data-id="${currentId}"][data-state]`;
+
+                  const currentSerializedStateElement =
+                    $currentComponent?.querySelector<HTMLElement>(
+                      currentSerializedStateSelector
+                    );
+
+                  const currentSerializedState =
+                    currentSerializedStateElement?.dataset.state;
+
+                  const currentComponentIndex =
+                    (previousComponentIndexByName.get(currentName) ?? -1) + 1;
+
+                  previousComponentIndexByName.set(
+                    currentName,
+                    currentComponentIndex
                   );
+
+                  if (currentSerializedState) {
+                    const currentStateKey = `${currentName}.${currentComponentIndex}`;
+
+                    portalState[currentStateKey] = JSON.parse(
+                      currentSerializedState
+                    );
+                  }
+
+                  handledIds.push(currentId);
+
+                  const nextComponentSelector = `[data-component][data-id]${handledIds
+                    .map((hid) => `:not([data-id="${hid}"])`)
+                    .join("")}`;
+
+                  const $nextComponent = $component.querySelector<HTMLElement>(
+                    nextComponentSelector
+                  );
+
+                  if ($currentComponent.contains($nextComponent)) {
+                    previousComponentIndexByName = new Map();
+                  }
+
+                  $currentComponent = $nextComponent;
                 }
 
-                $contexts.push($context);
-              }
+                const $newElement = document.createElement("div");
 
-              if ($topmostContext) {
-                const topmostContextId = $topmostContext?.dataset.contextId;
-
-                const topmostContextPortalTreeEntry = topmostContextId
-                  ? contextPortalTree.get(topmostContextId)
-                  : undefined;
-
-                if (topmostContextPortalTreeEntry) {
-                  topmostContextPortalTreeEntries.add(
-                    topmostContextPortalTreeEntry
-                  );
+                for (const [key, value] of Object.entries(dataset)) {
+                  $newElement.dataset[key] = value;
                 }
-              }
+                $newElement.dataset.id = id;
+                $newElement.dataset.loading = "false";
+                $newElement.dataset.loaded = "true";
 
-              if ($contexts.length) {
-                const contextMetas = (
-                  await Promise.all(
-                    $contexts.map(async ($context) => {
-                      const contextName = $context?.dataset.contextName;
-                      const serializedValue = $context?.dataset.contextValue;
+                const $contexts = [];
 
-                      if (!contextName) return;
-                      if (!serializedValue) return;
+                let $closestContext: HTMLElement | null | undefined;
+                let $topmostContext: HTMLElement | null | undefined;
 
-                      const Context = await importContext(contextName);
+                let $context: HTMLElement | null | undefined = $component;
 
-                      const deserializedValue = JSON.parse(serializedValue);
+                let contextPortalTreePath = [];
 
-                      return {
-                        $context,
-                        Context,
-                        deserializedValue,
-                      };
-                    })
-                  )
-                ).filter(truthy);
+                // eslint-disable-next-line no-constant-condition -- We are handling carefully with `break` statements.
+                while (true) {
+                  const $previous: HTMLElement | null | undefined = $context;
+                  const previousId = $previous?.dataset.contextId;
 
-                contextMetas.forEach((contextMeta) => {
-                  const { $context, Context, deserializedValue } = contextMeta;
-                  const { DefaultProvider, Provider } = Context;
+                  $context = $context?.closest<HTMLElement>(
+                    "[data-context-value]"
+                  );
+
+                  if ($context) {
+                    $topmostContext = $context;
+                  }
+
+                  if ($context === $previous) {
+                    $context = $context.parentElement;
+                  }
+
+                  if (!$context) break;
+
+                  if (!$closestContext) {
+                    $closestContext = $context;
+                  }
 
                   const contextId = $context?.dataset.contextId;
+                  const contextName = $context?.dataset.contextName;
 
-                  if (!contextId) return;
+                  if (!contextId) break;
+                  if (!contextName) break;
 
-                  const contextPortalTreeEntry =
-                    contextPortalTree.get(contextId);
+                  contextPortalTreePath.push(`${contextName}[${contextId}]`);
 
-                  let ContextDefaultProviderWrapper =
-                    ContextDefaultProviderWrapperByContextElement.get($context);
+                  const contextPortalTreeEntryKey =
+                    contextPortalTreePath.join(" > ");
 
-                  if (!ContextDefaultProviderWrapper) {
-                    const setContextValue =
-                      getSetContextValueByContextElement($context);
+                  let contextPortalTreeEntry = contextPortalTree.get(contextId);
 
-                    ContextDefaultProviderWrapper =
-                      makeContextDefaultProviderWrapper(
-                        contextId,
-                        Provider,
-                        deserializedValue,
-                        setContextValue
+                  if (!contextPortalTreeEntry) {
+                    contextPortalTreeEntry = {
+                      key: contextPortalTreeEntryKey,
+                      childPortalTreeEntries: [],
+                      leafPortals: [],
+                    };
+
+                    contextPortalTree.set(contextId, contextPortalTreeEntry);
+                  }
+
+                  const previousContextPortalTreeEntry = previousId
+                    ? contextPortalTree.get(previousId)
+                    : undefined;
+
+                  if (previousContextPortalTreeEntry) {
+                    contextPortalTreeEntry.childPortalTreeEntries.push(
+                      previousContextPortalTreeEntry
+                    );
+                  }
+
+                  $contexts.push($context);
+                }
+
+                if ($topmostContext) {
+                  const topmostContextId = $topmostContext?.dataset.contextId;
+
+                  const topmostContextPortalTreeEntry = topmostContextId
+                    ? contextPortalTree.get(topmostContextId)
+                    : undefined;
+
+                  if (topmostContextPortalTreeEntry) {
+                    topmostContextPortalTreeEntries.add(
+                      topmostContextPortalTreeEntry
+                    );
+                  }
+                }
+
+                if ($contexts.length) {
+                  const contextMetas = (
+                    await Promise.all(
+                      $contexts.map(async ($context) => {
+                        const contextName = $context?.dataset.contextName;
+                        const serializedValue = $context?.dataset.contextValue;
+
+                        if (!contextName) return;
+                        if (!serializedValue) return;
+
+                        const Context = await importContext(contextName);
+
+                        const deserializedValue = JSON.parse(serializedValue);
+
+                        return {
+                          $context,
+                          Context,
+                          deserializedValue,
+                        };
+                      })
+                    )
+                  ).filter(truthy);
+
+                  contextMetas.forEach((contextMeta) => {
+                    const { $context, Context, deserializedValue } =
+                      contextMeta;
+                    const { DefaultProvider, Provider } = Context;
+
+                    const contextId = $context?.dataset.contextId;
+
+                    if (!contextId) return;
+
+                    const contextPortalTreeEntry =
+                      contextPortalTree.get(contextId);
+
+                    let ContextDefaultProviderWrapper =
+                      ContextDefaultProviderWrapperByContextElement.get(
+                        $context
                       );
 
-                    ContextDefaultProviderWrapperByContextElement.set(
-                      $context,
-                      ContextDefaultProviderWrapper
-                    );
-                  }
+                    if (!ContextDefaultProviderWrapper) {
+                      const setContextValue =
+                        getSetContextValueByContextElement($context);
 
-                  if (!ContextDefaultProviderWrapper) return;
+                      ContextDefaultProviderWrapper =
+                        makeContextDefaultProviderWrapper(
+                          contextId,
+                          Provider,
+                          deserializedValue,
+                          setContextValue
+                        );
 
-                  const ExistingContextDefaultProviderWrapper =
-                    ContextDefaultProviderWrapper;
+                      ContextDefaultProviderWrapperByContextElement.set(
+                        $context,
+                        ContextDefaultProviderWrapper
+                      );
+                    }
 
-                  if (
-                    contextPortalTreeEntry &&
-                    !contextPortalTreeEntry.ContextWrapper
-                  ) {
-                    const ContextWrapper = (
-                      props: PropsWithChildren<unknown>
-                    ) => (
-                      <DefaultProvider
-                        key={contextPortalTreeEntry.key}
-                        Provider={ExistingContextDefaultProviderWrapper}
-                        defaultValue={Context.defaultValue}
-                        deserializedValue={deserializedValue}
-                      >
-                        {props.children}
-                      </DefaultProvider>
-                    );
+                    if (!ContextDefaultProviderWrapper) return;
 
-                    ContextWrapper.displayName = "ContextWrapper";
+                    const ExistingContextDefaultProviderWrapper =
+                      ContextDefaultProviderWrapper;
 
-                    ContextWrapper.reactiveHydrateSkip = true;
+                    if (
+                      contextPortalTreeEntry &&
+                      !contextPortalTreeEntry.ContextWrapper
+                    ) {
+                      const ContextWrapper = (
+                        props: PropsWithChildren<unknown>
+                      ) => (
+                        <DefaultProvider
+                          key={contextPortalTreeEntry.key}
+                          Provider={ExistingContextDefaultProviderWrapper}
+                          defaultValue={Context.defaultValue}
+                          deserializedValue={deserializedValue}
+                        >
+                          {props.children}
+                        </DefaultProvider>
+                      );
 
-                    contextPortalTreeEntry.ContextWrapper = ContextWrapper;
-                  }
-                });
-              }
+                      ContextWrapper.displayName = "ContextWrapper";
 
-              const $components = [
-                ...$component.querySelectorAll<HTMLElement>("[data-component]"),
-              ];
+                      ContextWrapper.reactiveHydrateSkip = true;
 
-              const reactiveHydrateNestedHtmlByComponentPath =
-                $components.reduce(
-                  (acc, $c) => ({
-                    ...acc,
-                    [$c.dataset.componentPath ?? ""]: $c?.outerHTML,
-                  }),
-                  {}
+                      contextPortalTreeEntry.ContextWrapper = ContextWrapper;
+                    }
+                  });
+                }
+
+                const $components = [
+                  ...$component.querySelectorAll<HTMLElement>(
+                    "[data-component]"
+                  ),
+                ];
+
+                const reactiveHydrateNestedHtmlByComponentPath =
+                  $components.reduce(
+                    (acc, $c) => ({
+                      ...acc,
+                      [$c.dataset.componentPath ?? ""]: $c?.outerHTML,
+                    }),
+                    {}
+                  );
+
+                const portal = createPortal(
+                  <ImportedComponent
+                    componentPath={componentPath}
+                    reactiveHydrateId={id}
+                    reactiveHydratePortalState={portalState}
+                    reactiveHydrateNestedHtmlByComponentPath={
+                      reactiveHydrateNestedHtmlByComponentPath
+                    }
+                    {...realProps}
+                  />,
+                  $newElement
                 );
 
-              const portal = createPortal(
-                <ImportedComponent
-                  componentPath={componentPath}
-                  reactiveHydrateId={id}
-                  reactiveHydratePortalState={portalState}
-                  reactiveHydrateNestedHtmlByComponentPath={
-                    reactiveHydrateNestedHtmlByComponentPath
-                  }
-                  {...realProps}
-                />,
-                $newElement
-              );
+                componentElementRegistry.set(componentPath, $newElement);
 
-              componentElementRegistry.set(componentPath, $newElement);
+                const key = [...contextPortalTreePath, `${name}[${id}]`].join(
+                  " > "
+                );
 
-              const key = [...contextPortalTreePath, `${name}[${id}]`].join(
-                " > "
-              );
+                const closestContextId = $closestContext?.dataset?.contextId;
 
-              const closestContextId = $closestContext?.dataset?.contextId;
+                const closestContextPortalTreeEntry = closestContextId
+                  ? contextPortalTree.get(closestContextId)
+                  : undefined;
 
-              const closestContextPortalTreeEntry = closestContextId
-                ? contextPortalTree.get(closestContextId)
-                : undefined;
+                if (closestContextPortalTreeEntry) {
+                  closestContextPortalTreeEntry.leafPortals.push({
+                    key,
+                    portal,
+                  });
+                } else {
+                  contextFreePortals.push({
+                    key,
+                    portal,
+                  });
+                }
 
-              if (closestContextPortalTreeEntry) {
-                closestContextPortalTreeEntry.leafPortals.push({
-                  key,
-                  portal,
-                });
-              } else {
-                contextFreePortals.push({
-                  key,
-                  portal,
-                });
-              }
+                console.log("*** hydratingQueueRef.current.pop()");
 
-              console.log("*** hydratingQueueRef.current.pop()");
+                hydratingQueueRef.current.pop();
 
-              hydratingQueueRef.current.pop();
+                $component.replaceWith($newElement);
 
-              $component.replaceWith($newElement);
-
-              if (callback) {
-                hydratingCallbackQueueRef.current.push(callback);
+                if (callback) {
+                  hydratingCallbackQueueRef.current.push(callback);
+                }
+              } catch (error) {
+                console.error("Error hydrating", n);
               }
             }
+
+            console.log("*** exhausted hydrating queue");
 
             forceRender();
 
