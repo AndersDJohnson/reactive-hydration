@@ -5,6 +5,7 @@ import {
   useMemo,
   useRef,
 } from "react-actual";
+import { isEmpty } from "lodash";
 import { useState, useContext } from "../react-actual";
 // import hoistNonReactStatics from "hoist-non-react-statics";
 import {
@@ -64,7 +65,7 @@ export const reactiveHydrate = <
     } = props;
 
     const realPropsSerialized = useMemo(
-      () => JSON.stringify(realProps),
+      () => (isEmpty(realProps) ? undefined : JSON.stringify(realProps)),
       [realProps]
     );
 

@@ -49,15 +49,6 @@ export const ReactiveHydrateLoader = memo(
     const ref = (el: HTMLDivElement | null | undefined) => {
       const existingEl = componentElementRegistry.get(componentPathKey);
 
-      console.log(
-        "*** componentElementRegistry[componentPathKey]",
-        existingEl,
-        componentPathKey,
-        componentElementRegistry,
-        // @ts-expect-error
-        componentElementRegistry.id
-      );
-
       if (!existingEl) return;
 
       el?.replaceWith(existingEl);
