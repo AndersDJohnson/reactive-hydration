@@ -8,7 +8,7 @@ import {
   useEffect,
   useRef,
 } from "react-actual";
-import { sortBy } from "lodash";
+import { sortBy, uniqBy } from "lodash";
 import { useState } from "../react-actual";
 import { createPortal } from "react-dom";
 import { truthy } from "../utilities/truthy";
@@ -115,18 +115,19 @@ export const ReactiveHydrationContainerInner = memo(
     );
 
     const hydratingQueueRef = useRef<Parameters<Hydrate>[0][]>([]);
-    const hydratingFlushQueueRef = useRef<
-      {
-        name: string;
-        flush: () => void;
-        callback?: () => void;
-      }[]
-    >([]);
+    const hydratingCallbackQueueRef = useRef<(() => void)[]>([]);
 
     const hydrateBatch = useCallback(async () => {
-      // TODO: Sort queue by parents first.
+      // Sorting so parents run before children.
+      const sortedHydratingQueue = sortBy(
+        uniqBy(
+          hydratingQueueRef.current,
+          (e) => e.$component?.dataset?.componentPath
+        ),
+        (e) => e.$component?.dataset?.componentPath
+      );
 
-      for (const args of hydratingQueueRef.current) {
+      for (const args of sortedHydratingQueue) {
         // TODO: Check if component has a replacement due to a parent hydration.
 
         const { $component: $componentOriginal, reason, callback } = args;
@@ -139,6 +140,8 @@ export const ReactiveHydrationContainerInner = memo(
         const $component = containerRef.current?.querySelector<HTMLElement>(
           `[data-component-path="${componentPath}"]`
         );
+
+        console.log("*** hydrating", componentPath, $component);
 
         if (!$component) return;
         if (!id) return;
@@ -461,39 +464,22 @@ export const ReactiveHydrationContainerInner = memo(
 
         hydratingQueueRef.current.pop();
 
-        const flushEntry = {
-          name,
-          callback,
-          flush: () => {
-            // TODO: Move into separate effect so it's guaranteed to run only after portals are rendered into component tree?
-            // This would avoid any flickering of empty DOM.
-            // And ensure click callbacks fire after new portal is inserted into DOM.
+        $component.replaceWith($newElement);
 
-            $component.replaceWith($newElement);
-          },
-        };
-
-        hydratingFlushQueueRef.current.push(flushEntry);
+        if (callback) {
+          hydratingCallbackQueueRef.current.push(callback);
+        }
       }
 
       forceRender();
 
       setTimeout(() => {
-        // Sorting so parents run before children.
-        sortBy(hydratingFlushQueueRef.current, (e) => e.name).forEach((e) =>
-          e.flush()
-        );
+        setPendingCallbacks((p) => [
+          ...p,
+          ...hydratingCallbackQueueRef.current,
+        ]);
 
-        setTimeout(() => {
-          setPendingCallbacks((p) => [
-            ...p,
-            ...hydratingFlushQueueRef.current
-              .map((e) => e.callback)
-              .filter(truthy),
-          ]);
-
-          hydratingFlushQueueRef.current = [];
-        });
+        hydratingCallbackQueueRef.current = [];
       });
     }, [
       contextFreePortals,
