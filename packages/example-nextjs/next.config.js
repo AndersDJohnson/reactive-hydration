@@ -20,20 +20,10 @@ module.exports = () => {
 
     swcMinify: true,
 
-    webpack(config, { isServer }) {
-      if (!isServer) {
-        const originalChunks = config.optimization.splitChunks.chunks;
-
-        config.optimization.splitChunks.chunks = (chunk) => {
-          if (
-            chunk.name?.startsWith("component-") ||
-            chunk.name?.startsWith("context-")
-          ) {
-            return false;
-          }
-
-          return originalChunks(chunk);
-        };
+    webpack(config, options) {
+      if (!options.isServer) {
+        // Just for demo.
+        config.optimization.splitChunks.minSize = 0;
       }
 
       return config;
