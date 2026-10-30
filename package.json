@@ -11,6 +11,6 @@
     "postinstall": "rm -rf packages/*/node_modules/{react,react-dom,recoil,recoil-nexus}"
   },
   "devDependencies": {
-    "turbo": "^1.4.6"
+    "turbo": "^2.9.14"
   }
 }
