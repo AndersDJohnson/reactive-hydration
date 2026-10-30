@@ -11,7 +11,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "12.2.5",
+    "next": "15.5.28",
     "react": "file:../reactive-hydration-react",
     "react-actual": "npm:react@^18",
     "react-dom": "18.2.0",
